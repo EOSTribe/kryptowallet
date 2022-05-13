@@ -146,7 +146,7 @@ const EthereumAccountScreen = props => {
     const index = findIndex(
       accounts,
       el =>
-        el.accountName === account.accountName &&
+        el.address === account.address &&
         el.chainName === account.chainName,
     );
     Alert.alert(
