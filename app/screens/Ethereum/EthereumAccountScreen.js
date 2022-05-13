@@ -46,6 +46,7 @@ const EthereumAccountScreen = props => {
     },
     deleteAccount,
     accountsState: { accounts, addresses, keys, totals, history, config },
+    deleteNFTsByAccount,
   } = props;
 
   const divider = 1000000;
@@ -139,6 +140,7 @@ const EthereumAccountScreen = props => {
 
   const _handleDeleteAccount = index => {
     deleteAccount(index);
+    deleteNFTsByAccount(account)
     goBack();
   };
 
