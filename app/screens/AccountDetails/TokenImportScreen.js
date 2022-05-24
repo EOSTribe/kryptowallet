@@ -58,10 +58,11 @@ const TokenImportScreen = props => {
     setTokenAddress(value);
   };
 
-  const _handleImportToken = () => {
+  const _handleImportToken = (event) => {
+    event.stopPropagation();
     const index = tokens.findIndex((cell) => cell.chainName === account.chainName && cell.address === tokenAddress);
     if(index >= 0) {
-      Alert("Already exist the token!");
+      Alert.alert("Already exist the token!");
       return;
     }
     const item = {

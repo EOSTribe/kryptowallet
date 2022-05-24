@@ -256,7 +256,7 @@ const FIOSendDirectScreen = props => {
         await doFIOTransfer(toAccountPubkey, fromAccountPubkey);
       } else if(chainCode === 'XLM') {
         await doStellarTransfer(toAccountPubkey, fromAccountPubkey);
-      } else if(chainCode === 'ETH' || chainCode === 'BNB' || chainCode === 'MATIC') { //TODO
+      } else if(chainCode === 'ETH' || chainCode === 'BNB' || chainCode === 'MATIC' || chainCode === 'AURORA') { //TODO
         await doEthereumTransfer(toAccountPubkey, fromAccountPubkey);
       } else {
         // Any of EOSIO based chains:

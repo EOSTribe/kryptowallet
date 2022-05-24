@@ -83,7 +83,7 @@ const ERC20TokenDetailsScreen = props => {
   };
 
   const getSubtitle = () => {
-    return token.name + ' on ' + account.chainName;
+    return token.name + ' on ' + (account.chainName === 'AURORA' ? 'ETH': account.chainName);
   };
 
   const _handleTransfer = async () => {
@@ -184,8 +184,8 @@ const ERC20TokenDetailsScreen = props => {
               />
               <KText>From: {account.address}</KText>
               <KText>To: {toAccountName}</KText>
-              <KText>Amount: {amount} {token.name} on {account.chainName}</KText>
-              <KText>Gas fee: {estimatedFee} {account.chainName} (Estimated)</KText>
+              <KText>Amount: {amount} {token.name} on {account.chainName === 'AURORA' ? 'ETH': account.chainName}</KText>
+              <KText>Gas fee: {estimatedFee} {account.chainName === 'AURORA' ? 'ETH': account.chainName} (Estimated)</KText>
               <KText>Balance: {tokenBalance} {token.name}</KText>
               {/* <View style={styles.gasOption}>
                 <KText style={styles.label}> Gas option: </KText>

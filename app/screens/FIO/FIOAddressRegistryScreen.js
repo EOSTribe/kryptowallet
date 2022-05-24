@@ -51,7 +51,7 @@ const FIOAddressRegistryScreen = props => {
     accountsState: { accounts, addresses, keys, totals, history, config },
   } = props;
 
-  const blockchains = ['EOS','TLOS','FIO','XLM','ALGO','ETH','BNB','MATIC'];
+  const blockchains = ['EOS', 'TLOS', 'FIO', 'XLM', 'ALGO', 'ETH', 'BNB', 'MATIC', 'AURORA'];
 
   const fioDivider = 1000000000;
   const privateKey = fioAccount.privateKey;
@@ -95,12 +95,12 @@ const FIOAddressRegistryScreen = props => {
   const getItemFromAccount = (account, external) => {
     const chainName = account.chainName;
     var address = account.accountName;
-    if(chainName==='FIO'||chainName==='XLM'||chainName==='ETH'||chainName==='BNB'||chainName==='MATIC') {
+    if (chainName === 'FIO' || chainName === 'XLM' || chainName === 'ETH' || chainName === 'BNB' || chainName === 'MATIC' || chainName === 'AURORA') {
       address = account.address;
-    } else if(chainName==='ALGO' && account.account !== undefined && account.account.addr !== undefined) {
+    } else if (chainName === 'ALGO' && account.account !== undefined && account.account.addr !== undefined) {
       address = account.account.addr;
     }
-    return {chainName: chainName, address: address, external: external};
+    return { chainName: chainName, address: address, external: external };
   }
 
   const addAccountToConnectedList = (account, external) => {
@@ -109,10 +109,10 @@ const FIOAddressRegistryScreen = props => {
     }
     const chainName = account.chainName;
     var address = account.accountName;
-    if(chainName==='FIO'||chainName==='XLM'||chainName==='ETH'||chainName==='BNB'||chainName==='MATIC') {
+    if (chainName === 'FIO' || chainName === 'XLM' || chainName === 'ETH' || chainName === 'BNB' || chainName === 'MATIC' || chainName === 'AURORA') {
       address = account.address;
-    } else if(chainName==='ALGO') {
-      if(account.account !== undefined && account.account.addr !== undefined) {
+    } else if (chainName === 'ALGO') {
+      if (account.account !== undefined && account.account.addr !== undefined) {
         address = account.account.addr;
       } else {
         address = account.address;
@@ -147,7 +147,7 @@ const FIOAddressRegistryScreen = props => {
     var accPubkey = '';
     if (account.chainName === 'ALGO') {
       accPubkey = account.account.addr;
-    } else if(account.chainName === 'XLM' || account.chainName === 'ETH' || account.chainName === 'FIO' || account.chainName === 'BNB' || account.chainName === 'MATIC') {
+    } else if (account.chainName === 'XLM' || account.chainName === 'ETH' || account.chainName === 'FIO' || account.chainName === 'BNB' || account.chainName === 'MATIC' || chainName === 'AURORA') {
       accPubkey = account.address;
     } else if (account.privateKey) {
       accPubkey = ecc.privateToPublic(account.privateKey);
@@ -174,7 +174,7 @@ const FIOAddressRegistryScreen = props => {
     try {
       setLoading(true);
       setFilteredAccounts(
-        filteredAccounts.filter(function(item) {
+        filteredAccounts.filter(function (item) {
           return item !== account;
         }),
       );
@@ -201,7 +201,7 @@ const FIOAddressRegistryScreen = props => {
           log(error);
           Alert.alert('Failed to link ALGO account to FIO address.');
         }
-      } else if(account.chainName === 'XLM') {
+      } else if (account.chainName === 'XLM') {
         const res = await fioAddExternalAddress(
           fioAccount,
           'XLM',
@@ -223,7 +223,7 @@ const FIOAddressRegistryScreen = props => {
           log(error);
           Alert.alert('Failed to link Stellar account to FIO address.');
         }
-      } else if(account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC') {
+      } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || chainName === 'AURORA') {
         const res = await fioAddExternalAddress(
           fioAccount,
           account.chainName,
@@ -244,7 +244,7 @@ const FIOAddressRegistryScreen = props => {
             fioFee: fioFee,
           };
           log(error);
-          let networkName = account.chainName === 'ETH' ? 'Ethereum' : account.chainName === 'BNB' ? 'Binance' : 'Polygon'
+          let networkName = getNetworkName(account.chainName);
           Alert.alert(`Failed to link ${networkName} account to FIO address.`);
         }
       } else {
@@ -272,6 +272,27 @@ const FIOAddressRegistryScreen = props => {
     }
   };
 
+  const getNetworkName = (chainName) => {
+    let ret = 'Ethereum';
+    switch (chainName) {
+      case 'ETH':
+        ret = 'Ethereum';
+        break;
+      case 'BNB':
+        ret = 'Binance';
+        break;
+      case 'MATIC':
+        ret = 'Polygon';
+        break;
+      case 'AURORA':
+        ret = 'Aurora';
+        break;
+      default:
+        break;
+    }
+
+    return ret;
+  }
 
   const getFee = async address => {
     fetch(fioEndpoint + '/v1/chain/get_fee', {
@@ -306,15 +327,15 @@ const FIOAddressRegistryScreen = props => {
         [address, publicKey] = pubkey.split(',');
       }
       var external = true;
-      var item = {chainName: chain, address: address, accountName: address};
+      var item = { chainName: chain, address: address, accountName: address };
       accounts.map((value, index, array) => {
-        if(chain === 'TLOS' && value.chainName === 'Telos'  && address === value.accountName) {
+        if (chain === 'TLOS' && value.chainName === 'Telos' && address === value.accountName) {
           external = false;
         } else if (chain === value.chainName && address === value.accountName) {
           external = false;
-        } else if(chain === value.chainName && address === value.address) {
+        } else if (chain === value.chainName && address === value.address) {
           external = false;
-        } else if(chain === value.chainName && value.chainName === 'ALGO' && value.account != null && address === value.account.addr) {
+        } else if (chain === value.chainName && value.chainName === 'ALGO' && value.account != null && address === value.account.addr) {
           external = false;
         }
       });
@@ -366,7 +387,7 @@ const FIOAddressRegistryScreen = props => {
     loadExternalAccounts();
     accounts.map((value, index, array) => {
       if (value.chainName !== 'FIO') {
-          checkRegPubkey(value);
+        checkRegPubkey(value);
       }
     });
     setLoading(false);
@@ -379,13 +400,13 @@ const FIOAddressRegistryScreen = props => {
     accounts.map((value, index, array) => {
       if (item.chainName === value.chainName && item.address === value.accountName) {
         account = value;
-      } else if(item.chainName === value.chainName && item.address === value.address) {
+      } else if (item.chainName === value.chainName && item.address === value.address) {
         account = value;
-      } else if(item.chainName === value.chainName && value.chainName === 'ALGO' && value.account != null && item.address === value.account.addr) {
+      } else if (item.chainName === value.chainName && value.chainName === 'ALGO' && value.account != null && item.address === value.account.addr) {
         account = value;
       }
     });
-    if(account == null) {
+    if (account == null) {
       Alert.alert("Could not load matching account!");
       return;
     }
@@ -401,7 +422,9 @@ const FIOAddressRegistryScreen = props => {
       navigate('PolygonAccount', { account });
     } else if (account.chainName === 'ETH') {
       navigate('EthereumAccount', { account });
-    } else {
+    } else if (account.chainName === 'AURORA') {
+      navigate('AuroraAccount', { account });
+    }else {
       navigate('AccountDetails', { account });
     }
   };
@@ -432,11 +455,11 @@ const FIOAddressRegistryScreen = props => {
           />
         </TouchableOpacity>
         <View style={styles.rowContainer}>
-         <Image
-          source={require('../../../assets/chains/fio.png')}
-          style={styles.buttonIcon}
-         />
-         <KHeader title={fioAccount.address} subTitle={"Registry"} style={styles.top_header} />
+          <Image
+            source={require('../../../assets/chains/fio.png')}
+            style={styles.buttonIcon}
+          />
+          <KHeader title={fioAccount.address} subTitle={"Registry"} style={styles.top_header} />
         </View>
         <KText> </KText>
         {showLoadingIcon()}

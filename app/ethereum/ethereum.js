@@ -17,10 +17,12 @@ const nftAddress = '0xe5af1c8813a80d34a960e019b7eab7e0b4b1ead5';
 
 const ethEndpoint = 'https://mainnet.infura.io/v3/2b2ef31c5ecc4c58ac7d2a995688806c';
 const bscEndpoint = 'https://speedy-nodes-nyc.moralis.io/bc13383d2e304f8cc8589928/bsc/mainnet';
-const polygonEndpoint = "https://speedy-nodes-nyc.moralis.io/bc13383d2e304f8cc8589928/polygon/mainnet"
+const polygonEndpoint = "https://speedy-nodes-nyc.moralis.io/bc13383d2e304f8cc8589928/polygon/mainnet";
+const auroraEndpoint = "https://mainnet.aurora.dev";
 const ethWeb3 = new Web3(new Web3.providers.HttpProvider(ethEndpoint));
 const bscWeb3 = new Web3(new Web3.providers.HttpProvider(bscEndpoint));
 const polygonWeb3 = new Web3(new Web3.providers.HttpProvider(polygonEndpoint));
+const auroraWeb3 = new Web3(new Web3.providers.HttpProvider(auroraEndpoint));
 
 const getWeb3 = (chainName) => {
   let ret;
@@ -33,6 +35,9 @@ const getWeb3 = (chainName) => {
       break;
     case "MATIC":
       ret = polygonWeb3;
+      break;
+    case "AURORA":
+      ret = auroraWeb3;
       break;
     default:
       ret = ethWeb3;
@@ -53,6 +58,9 @@ const getChainId = (chainName) => {
     case "MATIC":
       ret = 137;
       break;
+    case "AURORA":
+      ret = 1313161554;
+      break;
     default:
       ret = 1;
   }
@@ -72,6 +80,9 @@ const getNodeUrl = (chainName) => {
     case "MATIC":
       ret = polygonEndpoint;
       break;
+    case "AURORA":
+      ret = auroraEndpoint;
+      break;
     default:
       ret = ethEndpoint;
   }
@@ -90,6 +101,9 @@ const getMulitCallAddress = (chainName) => {
       break;
     case "MATIC":
       ret = "0x275617327c958bD06b5D6b871E7f491D76113dd8";
+      break;
+    case "AURORA":
+      ret = "0x49eb1F160e167aa7bA96BdD88B6C1f2ffda5212A";
       break;
     default:
       ret = ethEndpoint;
