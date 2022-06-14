@@ -33,7 +33,7 @@ const {
   });
 
 
-const BinanceAccountScreen = props => {
+const AuroraAccountScreen = props => {
   const [accountBalance, setAccountBalance] = useState();
   const [connectedHeader, setConnectedHeader] = useState('');
   const [connectedAddress, setConnectedAddress] = useState('');
@@ -51,7 +51,7 @@ const BinanceAccountScreen = props => {
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
   // var runOnce = 0;
-  const name =  "BNB:" + account.accountName;
+  const name =  "AURORA:" + account.accountName;
   var usdValue = 0;
   for (const elem of totals) {
     if(elem.account===name) {
@@ -95,8 +95,8 @@ const BinanceAccountScreen = props => {
           },
           body: JSON.stringify({
             fio_address: value.address,
-            chain_code: 'BNB',
-            token_code: 'BNB',
+            chain_code: 'AURORA',
+            token_code: 'AURORA',
           }),
         })
           .then(response => response.json())
@@ -108,7 +108,7 @@ const BinanceAccountScreen = props => {
                 fioEndpoint +
                 '/v1/chain/get_pub_address',
               cause: error,
-              location: 'BinanceAccountScreen',
+              location: 'AuroraAccountScreen',
             }),
           );
       }
@@ -121,7 +121,7 @@ const BinanceAccountScreen = props => {
       return;
     }
     try {
-      const ethBalanceInGwei = await getBalanceOfAccount("BNB", account.address);
+      const ethBalanceInGwei = await getBalanceOfAccount("AURORA", account.address);
       const ethBalanceInEth = ethBalanceInGwei/ethMultiplier;
       setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
       checkConnectedFIOAccounts();
@@ -129,7 +129,7 @@ const BinanceAccountScreen = props => {
       log({
         description: 'loadEthereumAccountBalance',
         cause: err,
-        location: 'BinanceAccountScreen',
+        location: 'AuroraAccountScreen',
       });
       return;
     } finally {
@@ -150,7 +150,7 @@ const BinanceAccountScreen = props => {
         el.chainName === account.chainName,
     );
     Alert.alert(
-      'Delete Binance Account',
+      'Delete Aurora Account',
       'Are you sure you want to delete this account?',
       [
         {
@@ -191,11 +191,11 @@ const BinanceAccountScreen = props => {
         </TouchableOpacity>
         <View style={styles.spacer} />
         <Image
-          source={require('../../../assets/chains/bsc.png')}
+          source={require('../../../assets/chains/aurora.png')}
           style={styles.buttonIcon}
         />
         <View style={styles.spacer} />
-        <KText>Balance: {accountBalance} BNB</KText>
+        <KText>Balance: {accountBalance} ETH</KText>
         <KText>USD Value: ${usdValue}</KText>
         <Text style={styles.link} onPress={copyToClipboard}>
           {account.address}
@@ -228,4 +228,4 @@ const BinanceAccountScreen = props => {
   );
 };
 
-export default connectAccounts()(BinanceAccountScreen);
+export default connectAccounts()(AuroraAccountScreen);

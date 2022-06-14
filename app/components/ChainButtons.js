@@ -8,6 +8,7 @@ const ChainButtons = ({
   onClosePress,
   closeIcon,
   bscIcon,
+  auroraIcon,
   polygonIcon,
   ethIcon,
   fioIcon,
@@ -18,6 +19,15 @@ const ChainButtons = ({
 
   return (
     <View style={styles.rowContainer}>
+      <TouchableOpacity onPress={() => onChainPress('AURORA')}>
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          colors={['#FFFFFF', '#FFFFFF']}
+          style={styles.container}>
+          <View style={styles.icon}>{auroraIcon()}</View>
+        </LinearGradient>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => onChainPress('MATIC')}>
         <LinearGradient
           start={{ x: 0, y: 0 }}

@@ -24,15 +24,17 @@ const ConnectAddressItem = ({ account, onPress, ...props }) => {
   };
 
   const getChainIcon = name => {
-    if(name == "BNB") {
+    if (name == "BNB") {
       return require("../../../../assets/chains/bsc.png");
-    } else if(name == "MATIC") {
+    } else if (name == "MATIC") {
       return require("../../../../assets/chains/polygon.png");
-    } else if(name == "ETH") {
+    } else if (name == "ETH") {
       return require("../../../../assets/chains/eth.png");
-    } else if(name == "EOS") {
+    } else if (name == "AURORA") {
+      return require("../../../../assets/chains/aurora.png");
+    } else if (name == "EOS") {
       return require("../../../../assets/chains/eos.png");
-    } else if(name == "Telos" || name == "TLOS") {
+    } else if (name == "Telos" || name == "TLOS") {
       return require("../../../../assets/chains/telos.png");
     } else if (name == "ALGO") {
       return require("../../../../assets/chains/algo.png");
@@ -46,29 +48,29 @@ const ConnectAddressItem = ({ account, onPress, ...props }) => {
   }
 
   const getFormattedAddress = (account) => {
-    if(account.chainName==='ALGO') {
-      return " " + account.account.addr.substring(0,20) + "..";
-    } else if(account.chainName==='XLM'||account.chainName==='ETH'||account.chainName==='BNB'||account.chainName==='MATIC'||account.chainName==='FIO') {
-      return " " + account.address.substring(0,20) + "..";
+    if (account.chainName === 'ALGO') {
+      return " " + account.account.addr.substring(0, 20) + "..";
+    } else if (account.chainName === 'XLM' || account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'FIO') {
+      return " " + account.address.substring(0, 20) + "..";
     } else {
       return " " + account.accountName;
     }
   }
 
-    return (
-      <View style={styles.rowContainer}>
-        <View style={[styles.container, props.style]}>
-          <Image source={require('../../../../assets/icons/add.png')}  style={styles.chainIcon}/>
-          <KText> </KText>
-          <Image source={getChainIcon(account.chainName)} style={styles.chainIcon}/>
-          <TouchableOpacity onPress={handleOnPress}>
-            <KText style={styles.onPress}>
-              {getFormattedAddress(account)}
-            </KText>
-          </TouchableOpacity>
-        </View>
+  return (
+    <View style={styles.rowContainer}>
+      <View style={[styles.container, props.style]}>
+        <Image source={require('../../../../assets/icons/add.png')} style={styles.chainIcon} />
+        <KText> </KText>
+        <Image source={getChainIcon(account.chainName)} style={styles.chainIcon} />
+        <TouchableOpacity onPress={handleOnPress}>
+          <KText style={styles.onPress}>
+            {getFormattedAddress(account)}
+          </KText>
+        </TouchableOpacity>
       </View>
-    );
+    </View>
+  );
 
 };
 

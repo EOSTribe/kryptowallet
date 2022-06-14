@@ -189,7 +189,7 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
   const [count, setCount] = useState(0);
 
   const updateAccountBalance = (balance) => {
-    let balText = balance + ' ' + account.chainName;
+    let balText = balance + ' ' + (account.chainName == 'AURORA' ? 'ETH' : account.chainName);
     setAccountBalance(balText);
     onBalanceUpdate(account, balance);
   };
@@ -201,7 +201,7 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
       loadAlgoAccountBalance(account, updateAccountBalance);
     } else if (account.chainName === 'XLM') {
       loadStellarAccountBalance(account, updateAccountBalance);
-    } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC') {
+    } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA') {
       loadEthereumAccountBalance(account, updateAccountBalance);
     } else {
       loadAccountBalance(account, updateAccountBalance);
@@ -231,7 +231,9 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
       return require("../../../../assets/chains/polygon.png");
     } else if (name == "ETH") {
       return require("../../../../assets/chains/eth.png");
-    } else if (name == "EOS") {
+    } else if (name == "AURORA") {
+      return require("../../../../assets/chains/aurora.png");
+    }else if (name == "EOS") {
       return require("../../../../assets/chains/eos.png");
     } else if (name == "Telos") {
       return require("../../../../assets/chains/telos.png");
@@ -294,30 +296,30 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
         </View>
       </View>
     );
-  } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' ) {
+  } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA') {
     return (
       <View>
-       <View onFocus={refreshBalances} style={styles.rowContainer}>
-        <View style={[styles.container, props.style]}>
-          <Image source={getChainIcon(account.chainName)} style={styles.chainIcon} />
-          <TouchableOpacity onPress={handleOnPress}>
-            <KText style={styles.chainName}>
-              {" "} {account.address.substring(0, 12)}.., {accountBalance}
-            </KText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={refreshBalances}>
-            <Icon name={'refresh'} size={25} color="#000000" />
-          </TouchableOpacity>
+        <View onFocus={refreshBalances} style={styles.rowContainer}>
+          <View style={[styles.container, props.style]}>
+            <Image source={getChainIcon(account.chainName)} style={styles.chainIcon} />
+            <TouchableOpacity onPress={handleOnPress}>
+              <KText style={styles.chainName}>
+                {" "} {account.address.substring(0, 12)}.., {accountBalance}
+              </KText>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={refreshBalances}>
+              <Icon name={'refresh'} size={25} color="#000000" />
+            </TouchableOpacity>
+          </View>
         </View>
-       </View>
-       <TouchableOpacity onPress={handleOnTokensPress}>
-         <View style={[styles.container, props.style]}>
-           <View style={styles.contentContainer}>
-             <KText style={styles.tokenName}> + View Tokens</KText>
-           </View>
-         </View>
-       </TouchableOpacity>
-     </View>
+        <TouchableOpacity onPress={handleOnTokensPress}>
+          <View style={[styles.container, props.style]}>
+            <View style={styles.contentContainer}>
+              <KText style={styles.tokenName}> + View Tokens</KText>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
     );
   } else {
     let tokens = getTokens(account.chainName);

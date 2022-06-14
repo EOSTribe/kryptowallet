@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { KText } from '../../../components';
 import Icon from 'react-native-vector-icons/MaterialIcons';

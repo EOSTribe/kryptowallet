@@ -1,0 +1,58 @@
+{
+    "name": "Umbria Token List",
+    "timestamp": "2021-04-29T08:22:42.675Z",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 55
+    },
+    "tags": {},
+    "logoURI": "ipfs://QmQfq8HaAUBkomKFTeqkwedHyvCnsVMQDNwCc1e9cRQvop",
+    "keywords": [
+      "uniswap",
+      "default"
+    ],
+    "tokens": [
+      {
+        "name": "Aurora",
+        "address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79",
+        "symbol": "AURORA",
+        "decimals": 18,
+        "chainId": 1313161554,
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+      },
+      {
+        "name": "Dai Stablecoin",
+        "address": "0xe3520349f477a5f6eb06107066048508498a291b",
+        "symbol": "DAI",
+        "decimals": 18,
+        "chainId": 1313161554,
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+      },
+      {
+        "name": "binance-usd",
+        "symbol": "abBUSD",
+        "address": "0x5C92A4A7f59A9484AFD79DbE251AD2380E589783",
+        "decimals": 18,
+        "chainId": 1313161554,
+        "logoURI": "https://thesphynx.co/images/tokens/56/0xe9e7cea3dedca5984780bafc599bd69add087d56.png"
+      },
+      {
+        "name": "Tether USD",
+        "address": "0x4988a896b1227218e4a686fde5eabdcabd91571f",
+        "symbol": "USDT",
+        "decimals": 6,
+        "chainId": 1313161554,
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+      },
+      {
+        "name": "USDCoin",
+        "address": "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+        "symbol": "USDC",
+        "decimals": 6,
+        "chainId": 1313161554,
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+      }     
+    ]
+  }
+  

@@ -195,7 +195,7 @@ const ResendTransferScreen = props => {
           transaction.memo,
           addTransactionToHistory,
         );
-      } else if (fromAccount.chainName === 'ETH' || fromAccount.chainName === 'BNB' || fromAccount.chainName === 'MATIC') {
+      } else if (fromAccount.chainName === 'ETH' || fromAccount.chainName === 'BNB' || fromAccount.chainName === 'MATIC' || fromAccount.chainName === 'AURORA') {
         let receiver = transaction.receiver;
         prepareETHTransfer(fromAccount, receiver, floatAmount);
       } else if (chain) {

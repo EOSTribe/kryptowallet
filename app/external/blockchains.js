@@ -10,6 +10,11 @@ const externalChains = [
     explorer: 'https://bscscan.com/address/',
   },
   {
+    chain_code: 'AURORA',
+    token_code: 'AURORA',
+    explorer: 'https://aurorascan.dev/address/',
+  },
+  {
     chain_code: 'MATIC',
     token_code: 'MATIC',
     explorer: 'https://polygonscan.com/address/',

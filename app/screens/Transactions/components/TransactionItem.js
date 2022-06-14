@@ -8,8 +8,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 
 const TransactionItem = ({ item, onPress }) => {
-
-
   const getCoin = () => {
     let coin = "?";
     if(item.chain) {
@@ -18,6 +16,7 @@ const TransactionItem = ({ item, onPress }) => {
       coin = item.sender.chain;
     }
     if(coin=="Telos") coin = "TLOS";
+    if(coin=="AURORA") coin = "ETH";
     return coin;
   };
 
@@ -62,7 +61,7 @@ const TransactionItem = ({ item, onPress }) => {
           <KText style={styles.amount}>{item.amount} {getCoin()}</KText>
         </View>
         <View style={styles.secondRow}>
-          <KText>{getSender()} -> {getReceiver()}</KText>
+          <KText>{getSender()} {'->'} {getReceiver()}</KText>
           <TouchableOpacity onPress={onPress}>
             <LinearGradient
               start={{ x: 0, y: 0 }}

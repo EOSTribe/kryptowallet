@@ -30,6 +30,8 @@ const ChainAddressItem = ({ account, onPress, ...props }) => {
       return require("../../../../assets/chains/polygon.png");
     } else if(name == "ETH") {
       return require("../../../../assets/chains/eth.png");
+    } else if (name == "AURORA") {
+      return require("../../../../assets/chains/aurora.png");
     } else if(name == "EOS") {
       return require("../../../../assets/chains/eos.png");
     } else if(name == "Telos" || name == "TLOS") {

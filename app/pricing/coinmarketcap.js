@@ -11,7 +11,8 @@ var defPriceData = {
   'XLM': 0.18,
   'ETH': 2350.0,
   'BNB': 400.0,
-  'MATIC': 1.7
+  'MATIC': 1.7,
+  'AURORA': 3.48,
 };
 
 const getLatestPrices = async () => {
@@ -31,6 +32,7 @@ const getLatestPrices = async () => {
     const xlmPrice = resJson['data']['XLM']['quote']['USD']['price'];
     const ethPrice = resJson['data']['ETH']['quote']['USD']['price'];
     const bnbPrice = resJson['data']['BNB']['quote']['USD']['price'];
+    const auroraPrice = resJson['data']['AURORA']['quote']['USD']['price'];
     const maticPrice = resJson['data']['MATIC']['quote']['USD']['price'];
     const newPriceData = {
       'EOS': eosPrice,
@@ -41,6 +43,7 @@ const getLatestPrices = async () => {
       'ETH': ethPrice,
       'BNB': bnbPrice,
       'MATIC': maticPrice,
+      'AURORA': auroraPrice,
     };
     return newPriceData;
   } catch (err) {
