@@ -34,7 +34,6 @@ const AccountsScreen = props => {
   const {
     connectAccount,
     deleteAccount,
-    addAddress,
     addKey,
     setTotal,
     navigation: { navigate },
@@ -92,176 +91,12 @@ const AccountsScreen = props => {
     }
   }, [nftTokens])
 
-  const addAddressesToAddressbook = (json, actor, publicKey) => {
-    try {
-      for (var i in json.fio_addresses) {
-        let address = json.fio_addresses[i].fio_address;
-        if (address && publicKey) {
-          let nameDomainArr = address.split('@');
-          let name = nameDomainArr[0];
-          let addressJson = {
-            name: name,
-            address: address,
-            actor: actor,
-            publicKey: publicKey,
-          };
-          let matchingAddresses = addresses.filter(
-            (item, index) => item.address === address,
-          );
-          if (matchingAddresses.length == 0) {
-            addAddress(addressJson);
-            setNewMessageCount(newMessageCount + 1);
-          }
-        } else {
-          log({
-            description:
-              'addAddressesToAddressbook - failed to parse address|publicKey for actor: ' +
-              actor,
-            cause: json,
-            location: 'AccountsScreen',
-          });
-        }
-      }
-    } catch (err) {
-      log({
-        description:
-          'addAddressesToAddressbook - error parsing address|publicKey for actor: ' +
-          actor,
-        cause: err,
-        location: 'AccountsScreen',
-      });
-    }
-  };
-
-  const loadAddressByAccount = (account, actor) => {
-    try {
-      let publicKey = account.permissions[0].required_auth.keys[0].key;
-      if (publicKey) {
-        const endpoint = fioEndpoint + '/v1/chain/get_fio_names';
-        fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fio_public_key: publicKey,
-          }),
-        })
-          .then(response => response.json())
-          .then(json => addAddressesToAddressbook(json, actor, publicKey))
-          .catch(error =>
-            log({
-              description: 'loadAddressByAccount - fetch ' + endpoint,
-              cause: error,
-              location: 'AccountsScreen',
-            }),
-          );
-      } else {
-        log({
-          description:
-            'loadAddressByAccount - failed to load publicKey from account',
-          cause: account,
-          location: 'AccountsScreen',
-        });
-      }
-    } catch (err) {
-      log({
-        description:
-          'loadAddressByAccount - failed to load account permissions',
-        cause: err,
-        location: 'AccountsScreen',
-      });
-    }
-  };
-
-  const loadAccountByActorName = actor => {
-    const endpoint = fioEndpoint + '/v1/chain/get_account';
-    try {
-      fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          account_name: actor,
-        }),
-      })
-        .then(response => response.json())
-        .then(json => loadAddressByAccount(json, actor))
-        .catch(error =>
-          log({
-            description: 'loadAccountByActorName - fetch ' + endpoint,
-            cause: error,
-            location: 'AccountsScreen',
-          }),
-        );
-    } catch (err) {
-      log({
-        description: 'loadAccountByActorName',
-        cause: err,
-        location: 'AccountsScreen',
-      });
-      return;
-    }
-  };
-
-  const processIncomingAccount = recArr => {
-    for (var i in recArr) {
-      let newActor = recArr[i].from;
-      let found = false;
-      addresses.map((value, index, array) => {
-        if (value.actor == newActor) {
-          found = true;
-        }
-      });
-      if (!found) {
-        loadAccountByActorName(newActor);
-      }
-    }
-  };
-
-  const loadIncomingMessages = fioAccount => {
-    const publicKey = Ecc.privateToPublic(fioAccount.privateKey);
-    const actor = Fio.accountHash(publicKey);
-    let baseUrl = chatEndpoint.replace('messages', 'incoming_messages');
-    let endpoint = baseUrl + '/' + actor + '/counts';
-    try {
-      fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(response => response.json())
-        .then(json => processIncomingAccount(json))
-        .catch(error =>
-          log({
-            description: 'loadIncomingMessages - fetch ' + endpoint,
-            cause: error,
-            location: 'AccountsScreen',
-          }),
-        );
-    } catch (err) {
-      log({
-        description: 'loadIncomingMessages',
-        cause: err,
-        location: 'AccountsScreen',
-      });
-      return;
-    }
-  };
 
   const telosAccounts = accounts.filter((value, index, array) => {
     return (value != null && value.chainName === 'Telos');
   });
 
   const fioAccounts = accounts.filter((value, index, array) => {
-    if (value != null && value.chainName === 'FIO') {
-      loadIncomingMessages(value);
-    }
     return (value != null && value.chainName === 'FIO');
   });
 

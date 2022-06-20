@@ -604,18 +604,6 @@ const ViewFIORequestScreen = props => {
     }
   };
 
-  const _handleContact = () => {
-    let index = 0;
-    if (payerRole) {
-      let fioAddress = fioRequest.payee_fio_address;
-      let fromFioAddress = fioRequest.payer_fio_address;
-      navigate('FIOChat', { fioAddress, index, fromFioAddress });
-    } else {
-      let fioAddress = fioRequest.payer_fio_address;
-      let fromFioAddress = fioRequest.payee_fio_address;
-      navigate('FIOChat', { fioAddress, index, fromFioAddress });
-    }
-  };
 
   if (
     decryptedContent != null &&
@@ -665,14 +653,6 @@ const ViewFIORequestScreen = props => {
             icon={'check'}
             isLoading={loading}
             onPress={_handleReject}
-          />
-          <KButton
-            title={'FIO Chat'}
-            theme={'blue'}
-            style={styles.button}
-            icon={'check'}
-            isLoading={loading}
-            onPress={_handleContact}
           />
         </View>
       </SafeAreaView>

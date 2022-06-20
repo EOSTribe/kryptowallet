@@ -49,11 +49,6 @@ const AddressBookScreen = props => {
     fromActor = Fio.accountHash(fromPublicKey);
   }
 
-  const _handlePressAddress = index => {
-    let fioAddress = addresses[index];
-    navigate('FIOChat', { fioAddress, index });
-  };
-
   const _handleEditAddress = index => {
     let fioAddress = addresses[index];
     navigate('EditAddress', { fioAddress, index });
@@ -104,8 +99,7 @@ const AddressBookScreen = props => {
               <AddressListItem
                 address={item}
                 fromactor={fromActor}
-                style={styles.listItem}
-                onPress={() => _handlePressAddress(index)}
+                style={styles.listItem}}
                 onEdit={() => _handleEditAddress(index)}
               />
             )}

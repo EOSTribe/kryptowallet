@@ -46,8 +46,6 @@ import {
   FIOSendScreen,
   FIOSendDirectScreen,
   FIOStakeScreen,
-  FIOChatScreen,
-  GroupChatScreen,
   AlgoAccountScreen,
   StellarAccountScreen,
   EthereumAccountScreen,
@@ -169,8 +167,6 @@ const AccountsStackScreen = () => {
       <AccountsStack.Screen name="BinanceAccount" component={BinanceAccountScreen} />
       <AccountsStack.Screen name="PolygonAccount" component={PolygonAccountScreen} />
       <AccountsStack.Screen name="AuroraAccount" component={AuroraAccountScreen} />
-      <AccountsStack.Screen name="FIOChat" component={FIOChatScreen} />
-      <AccountsStack.Screen name="GroupChat" component={GroupChatScreen} />
       <AccountsStack.Screen name="KeyList" component={KeyListScreen} />
       <AccountsStack.Screen name="NFTListScreen" component={NFTListScreen} />
     </AccountsStack.Navigator>
@@ -182,9 +178,7 @@ const TransferStackScreen = () => {
     <TransferStack.Navigator headerMode={'none'}>
       <TransferStack.Screen name="Transfer" component={TransferScreen} />
       <TransferStack.Screen name="ResendTransfer" component={ResendTransferScreen} />
-      <TransferStack.Screen
-        name="Transactions"
-        component={TransactionsScreen}
+      <TransferStack.Screen name="Transactions" component={TransactionsScreen}
       />
     </TransferStack.Navigator>
   );
@@ -196,7 +190,6 @@ const AddressStackScreen = () => {
       <AddressStack.Screen name="AddressBook" component={AddressBookScreen} />
       <AddressStack.Screen name="AddAddress" component={AddAddressScreen} />
       <AddressStack.Screen name="EditAddress" component={EditAddressScreen} />
-      <AddressStack.Screen name="FIOChat" component={FIOChatScreen} />
     </AddressStack.Navigator>
   );
 };
@@ -217,8 +210,8 @@ const tabScreenOptions = ({ route }) => ({
       icon = require('./assets/icons/accounts.png');
     } else if (route.name === 'Transfer') {
       icon = require('./assets/icons/transfer.png');
-    } else if (route.name === 'Chat') {
-      icon = require('./assets/icons/chat.png');
+    } else if (route.name === 'Address') {
+      icon = require('./assets/icons/swap.png');
     } else if (route.name === 'NFT') {
       icon = require('./assets/icons/nft.png');
     }
@@ -235,7 +228,7 @@ const MainTabScreen = () => {
       }}>
       <MainTab.Screen name={'Accounts'} component={AccountsStackScreen} />
       <MainTab.Screen name={'Transfer'} component={TransferStackScreen} />
-      <MainTab.Screen name={'Chat'} component={AddressStackScreen} />
+      <MainTab.Screen name={'Address'} component={AddressStackScreen} />
       <MainTab.Screen name={'NFT'} component={NFTStackScreen} />
     </MainTab.Navigator>
   );
