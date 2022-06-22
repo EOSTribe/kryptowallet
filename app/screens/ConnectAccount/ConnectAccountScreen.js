@@ -214,7 +214,7 @@ const ConnectAccountScreen = props => {
         });
       }
     } catch (error) {
-      Alert.alert(error);
+      Alert.alert('Error: ' + error.message);
       return;
     }
     goBack();
