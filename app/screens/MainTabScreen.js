@@ -11,7 +11,6 @@ import { Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { connectAccounts } from '../redux';
-import web3CustomModule, { web3NFTModule } from '../ethereum/ethereum';
 
 import {
   AccountsScreen,
@@ -68,7 +67,6 @@ import {
   AuroraWithdrawScreen,
 } from './index.js';
 
-const tokenABI = require('../ethereum/abi.json');
 const AccountsStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 const TransferStack = createStackNavigator();
@@ -81,14 +79,14 @@ const AccountsStackScreen = () => {
       <AccountsStack.Screen name="Accounts" component={AccountsScreen} />
       <AccountsStack.Screen name="Tokens" component={TokensScreen} />
       <AccountsStack.Screen name="Admin" component={AdminScreen} />
-      <AccountsStack.Screen 
-        name="RecoverPrivateKey" 
-        component={RecoverPrivateKeyScreen} 
+      <AccountsStack.Screen
+        name="RecoverPrivateKey"
+        component={RecoverPrivateKeyScreen}
       />
       <AddressStack.Screen name="AddressBook" component={AddressBookScreen} />
       <AddressStack.Screen name="AddAddress" component={AddAddressScreen} />
       <AddressStack.Screen name="EditAddress" component={EditAddressScreen} />
-      
+
       <AccountsStack.Screen
         name="AccountDetails"
         component={AccountDetailsScreen}
@@ -127,7 +125,7 @@ const AccountsStackScreen = () => {
         name="PrivateKeyDelegate"
         component={PrivateKeyDelegateScreen}
       />
-      
+
       <AccountsStack.Screen
         name="FIOAddressActions"
         component={FIOAddressActionsScreen}
@@ -260,61 +258,9 @@ const MainTabScreen = props => {
     updateNFTShowStatus,
   } = props;
 
-  const [checkFlag, setCheckFlag] = useState(false);
-  const { getNFTPrice } = web3NFTModule();
-  const { getBalanceOfAccount } = web3CustomModule({
-    tokenABI,
-    tokenAddress: null,
-    decimals: 18
-  });
-
-  const checkEthBalance = async () => {
-    const parseInfo = async (ethList) => {
-      if (nftTokens && nftTokens.length > 0) { //if has any nft token
-        updateNFTShowStatus(true);
-      }
-      else { //to get eth balance and nft price
-        try {
-          const nftPrice = await getNFTPrice("ETH");
-          let flag = false;
-
-          await Promise.all(ethList.map(async (cell) => {
-            const ethBalanceInGwei = await getBalanceOfAccount("ETH", cell.address);
-            if (ethBalanceInGwei > nftPrice) {
-              flag = true;
-            }
-          }));
-          updateNFTShowStatus(flag);
-        } catch (error) {
-          console.log("error:", error);
-        }
-      }
-    }
-
-    if (accounts && accounts.length > 0) {
-      const ethList = accounts.filter((cell) => cell.chainName === 'ETH');
-      if (ethList.length > 0) {
-        await parseInfo(ethList);
-      }
-      else {
-        updateNFTShowStatus(false);
-      }
-    }
-    else {
-      updateNFTShowStatus(false);
-    }
-  }
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCheckFlag(prev => !prev);
-    }, 10000);
-    return () => clearInterval(interval);
+    updateNFTShowStatus(true);
   }, [])
-
-  useEffect(() => {
-    checkEthBalance();
-  }, [accounts, nftTokens, checkFlag])
 
   return (
     <MainTab.Navigator
@@ -326,11 +272,7 @@ const MainTabScreen = props => {
       <MainTab.Screen name={'NewAccount'} component={NewAccountStackScreen} />
       <MainTab.Screen name={'Transfer'} component={TransferStackScreen} />
       <MainTab.Screen name={'Swap'} component={SwapStackScreen} />
-      {nftShowStatus ?
-        <MainTab.Screen name={'NFT'} component={NFTStackScreen} />
-        :
-        <MainTab.Screen name={'TabMenu'} component={TabMenuScreen} />
-      }
+      <MainTab.Screen name={'NFT'} component={NFTStackScreen} />
     </MainTab.Navigator>
   );
 };
