@@ -14,9 +14,10 @@ const AccountButtons = ({
   onExportPress,
   nftShowStatus,
 }) => {
+
   return (
     <View style={styles.rowContainer}>
-      {nftShowStatus ?
+      {/* {nftShowStatus ? */}
         <TouchableOpacity onPress={onMenuPress}>
           <LinearGradient
             start={{ x: 0, y: 0 }}
@@ -26,9 +27,9 @@ const AccountButtons = ({
             <View style={styles.icon}>{menuIcon()}</View>
           </LinearGradient>
         </TouchableOpacity>
-        :
+        {/* :
         null
-      }
+      } */}
       <TouchableOpacity onPress={onExportPress}>
         <LinearGradient
           start={{ x: 0, y: 0 }}
