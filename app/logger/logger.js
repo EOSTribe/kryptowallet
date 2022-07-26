@@ -15,19 +15,19 @@ let deviceInfo = {
 };
 
 const log = async error => {
-  //console.log(error);
-  fetch('https://wallet.eostribe.io/logger', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      device: deviceInfo,
-      wallet: 'TRIBE',
-      error: error,
-    }),
-  });
+  console.log(error);
+  // fetch('https://wallet.eostribe.io/logger', {
+  //   method: 'POST',
+  //   headers: {
+  //     Accept: 'application/json',
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     device: deviceInfo,
+  //     wallet: 'TRIBE',
+  //     error: error,
+  //   }),
+  // });
 };
 
 const report = async message => {
