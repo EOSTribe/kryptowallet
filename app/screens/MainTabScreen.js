@@ -247,53 +247,57 @@ const MainTabScreen = props => {
     decimals: 18
   });
 
-  const checkEthBalance = async () => {
-    const parseInfo = async (ethList) => {
-      if (nftTokens && nftTokens.length > 0) { //if has any nft token
-        updateNFTShowStatus(true);
-      }
-      else { //to get eth balance and nft price
-        try {
-          const nftPrice = await getNFTPrice("ETH");
-          let flag = false;
-
-          await Promise.all(ethList.map(async (cell) => {
-            const ethBalanceInGwei = await getBalanceOfAccount("ETH", cell.address);
-            if (ethBalanceInGwei > nftPrice) {
-              flag = true;
-            }
-          }));
-          updateNFTShowStatus(flag);
-        } catch (error) {
-          console.log("error:", error);
-        }
-      }
-    }
-
-    if (accounts && accounts.length > 0) {
-      const ethList = accounts.filter((cell) => cell.chainName === 'ETH');
-      if (ethList.length > 0) {
-        await parseInfo(ethList);
-      }
-      else {
-        updateNFTShowStatus(false);
-      }
-    }
-    else {
-      updateNFTShowStatus(false);
-    }
-  }
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCheckFlag(prev => !prev);
-    }, 10000);
-    return () => clearInterval(interval);
+    updateNFTShowStatus(true);
   }, [])
 
-  useEffect(() => {
-    checkEthBalance();
-  }, [accounts, nftTokens, checkFlag])
+  // const checkEthBalance = async () => {
+  //   const parseInfo = async (ethList) => {
+  //     if (nftTokens && nftTokens.length > 0) { //if has any nft token
+  //       updateNFTShowStatus(true);
+  //     }
+  //     else { //to get eth balance and nft price
+  //       try {
+  //         const nftPrice = await getNFTPrice("ETH");
+  //         let flag = false;
+
+  //         await Promise.all(ethList.map(async (cell) => {
+  //           const ethBalanceInGwei = await getBalanceOfAccount("ETH", cell.address);
+  //           if (ethBalanceInGwei > nftPrice) {
+  //             flag = true;
+  //           }
+  //         }));
+  //         updateNFTShowStatus(flag);
+  //       } catch (error) {
+  //         console.log("error:", error);
+  //       }
+  //     }
+  //   }
+
+  //   if (accounts && accounts.length > 0) {
+  //     const ethList = accounts.filter((cell) => cell.chainName === 'ETH');
+  //     if (ethList.length > 0) {
+  //       await parseInfo(ethList);
+  //     }
+  //     else {
+  //       updateNFTShowStatus(false);
+  //     }
+  //   }
+  //   else {
+  //     updateNFTShowStatus(false);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCheckFlag(prev => !prev);
+  //   }, 10000);
+  //   return () => clearInterval(interval);
+  // }, [])
+
+  // useEffect(() => {
+  //   checkEthBalance();
+  // }, [accounts, nftTokens, checkFlag])
 
   return (
     <MainTab.Navigator
@@ -304,11 +308,11 @@ const MainTabScreen = props => {
       <MainTab.Screen name={'Accounts'} component={AccountsStackScreen} />
       <MainTab.Screen name={'Transfer'} component={TransferStackScreen} />
       <MainTab.Screen name={'Chat'} component={AddressStackScreen} />
-      {nftShowStatus ?
+      {/* {nftShowStatus ? */}
         <MainTab.Screen name={'NFT'} component={NFTStackScreen} />
-        :
+        {/* :
         <MainTab.Screen name={'TabMenu'} component={TabMenuScreen} />
-      }
+      } */}
     </MainTab.Navigator>
   );
 };
