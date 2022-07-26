@@ -65,7 +65,7 @@ const AccountsScreen = props => {
     setListChainsVisible(!isListChainsVisible);
   };
 
-  
+
   useEffect(() => {
     const valids = accounts.filter((value, index, array) => {
       return (value != null);
@@ -79,7 +79,7 @@ const AccountsScreen = props => {
         deleteAccount(index);
       }
     });
-    
+
   }, [accounts])
 
 
@@ -478,7 +478,7 @@ if(showAccounts) {
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.mainContainer}>
         <SafeAreaView style={styles.accountContainer}>
-          {nftShowStatus ?
+          {/* {nftShowStatus ? */}
             <TouchableOpacity onPress={_handleAvatarPress}>
               <View style={styles.logoContainer}>
                 <Image
@@ -493,7 +493,7 @@ if(showAccounts) {
                 />
               </View>
             </TouchableOpacity>
-            :
+            {/* :
             <View style={styles.logoContainer}>
               <Image
                 style={styles.logo}
@@ -501,7 +501,7 @@ if(showAccounts) {
                 resizeMode="contain"
               />
             </View>
-          }
+          } */}
           {showUsdTotal()}
           <FlatList
             data={validAccounts}
