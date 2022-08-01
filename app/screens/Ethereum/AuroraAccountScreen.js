@@ -54,6 +54,7 @@ const AuroraAccountScreen = props => {
   } = props;
 
   const [showFlag, setShowFlag] = useState(MAIN_PAGE);
+  const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
   const [gasPrice, setGasPrice] = useState(70000000);
   const [gasApproveLimit, setGasApproveLimit] = useState(0);
@@ -151,6 +152,8 @@ const AuroraAccountScreen = props => {
 
       const allowanceAmount = await getAllowance("AURORA", account.address, AURORA_STAKING_ADDRESS);
       setAllowance(allowanceAmount);
+
+      setLoading(false);
     } catch (err) {
       log({
         description: 'loadEthereumAccountBalance',
@@ -162,6 +165,16 @@ const AuroraAccountScreen = props => {
   };
 
   const _handleApprove = async () => {
+    if(loading) {
+      Alert.alert(`Loading...`);
+      return;
+    }
+
+    if (parseFloat(accountBalance) === 0) {
+      Alert.alert(`Please charge ETH to approve Your wallet!`);
+      return;
+    }
+
     setShowFlag(SECOND_PAGE);
     const gasValue = await getCurrentGasPrice("AURORA");
     setGasPrice(gasValue);

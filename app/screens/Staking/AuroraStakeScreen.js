@@ -51,6 +51,7 @@ const AuroraStakeScreen = props => {
   } = props;
 
   const [showFlag, setShowFlag] = useState(MAIN_PAGE);
+  const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
   const [gasPrice, setGasPrice] = useState(70000000);
   const [gasStakeLimit, setGasStakeLimit] = useState(6721975);
@@ -151,6 +152,8 @@ const AuroraStakeScreen = props => {
 
       const claims = await getPendingRewards(account);
       setPendings(claims);
+
+      setLoading(false);
     } catch (err) {
       log({
         description: 'loadEthereumAccountBalance',
@@ -162,6 +165,11 @@ const AuroraStakeScreen = props => {
   };
 
   const _handleStake = async () => {
+    if(loading) {
+      Alert.alert(`Loading...`);
+      return;
+    }
+
     if (stakeAmount === '') {
       Alert.alert(`Please enter the amount to stake!`);
       return;
@@ -182,6 +190,11 @@ const AuroraStakeScreen = props => {
   };
 
   const _handleClaim = async () => {
+    if(loading) {
+      Alert.alert(`Loading...`);
+      return;
+    }
+    
     if (pendings[0] === 0) {
       Alert.alert(`You haven't any claimable tokens. Please stake firstly.`);
       return;

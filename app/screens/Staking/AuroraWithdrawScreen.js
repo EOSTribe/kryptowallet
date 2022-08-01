@@ -49,6 +49,7 @@ const AuroraWithdrawScreen = props => {
   } = props;
 
   const [showFlag, setShowFlag] = useState(MAIN_PAGE);
+  const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
   const [gasPrice, setGasPrice] = useState(70000000);
   const [gasLimit, setGasLimit] = useState(6721975);
@@ -147,6 +148,8 @@ const AuroraWithdrawScreen = props => {
 
       const withdrawals = await getWithdrawals(account);
       setPendings(withdrawals);
+
+      setLoading(false);
     } catch (err) {
       log({
         description: 'loadEthereumAccountBalance',
@@ -158,6 +161,11 @@ const AuroraWithdrawScreen = props => {
   };
 
   const _handleWithdrawAll = async () => {
+    if(loading) {
+      Alert.alert(`Loading...`);
+      return;
+    }
+    
     if (unlockedTime > 0) {
       Alert.alert(`The withdrawals is locked for ${Math.ceil(unlockedTime / 3600 / 24)} days!`);
       return;
