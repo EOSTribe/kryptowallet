@@ -268,7 +268,7 @@ export const web3AuroraStakingModule = () => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(`0x${account.privateKey}`);
+        const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
         const nounce = await web3.eth.getTransactionCount(account.address);
 
         const stakeAmount = ethers.utils.parseUnits(amount, 18);
@@ -335,7 +335,7 @@ export const web3AuroraStakingModule = () => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(`0x${account.privateKey}`);
+        const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
         const nounce = await web3.eth.getTransactionCount(account.address);
 
         const unstakeAmount = ethers.utils.parseUnits(amount, 18);
@@ -401,7 +401,7 @@ export const web3AuroraStakingModule = () => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(`0x${account.privateKey}`);
+        const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
         const nounce = await web3.eth.getTransactionCount(account.address);
 
         const transactionData = contract.methods.unstakeAll().encodeABI();
@@ -464,7 +464,7 @@ export const web3AuroraStakingModule = () => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(`0x${account.privateKey}`);
+        const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
         const nounce = await web3.eth.getTransactionCount(account.address);
 
         const transactionData = contract.methods.moveAllRewardsToPending().encodeABI();
@@ -527,7 +527,7 @@ export const web3AuroraStakingModule = () => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(`0x${account.privateKey}`);
+        const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
         const nounce = await web3.eth.getTransactionCount(account.address);
 
         const transactionData = contract.methods.withdrawAll().encodeABI();
@@ -720,7 +720,7 @@ export const web3NFTModule = () => {
         'istanbul',
       );
 
-      const privateKey = toBuffer(`0x${account.privateKey}`);
+      const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
       const nounce = await web3.eth.getTransactionCount(account.address);
 
       const transactionData = contract.methods.buy(count).encodeABI();
@@ -877,7 +877,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
         'istanbul',
       );
 
-      const privateKey = toBuffer(`0x${account.privateKey}`);
+      const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
       const count = await web3.eth.getTransactionCount(account.address);
 
       const rawTransaction = {
@@ -974,7 +974,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(`0x${account.privateKey}`);
+        const privateKey = (account.privateKey.startsWith("0x")) ? toBuffer(`${account.privateKey}`) : toBuffer(`0x${account.privateKey}`);
         const nounce = await web3.eth.getTransactionCount(account.address);
 
         const transactionData = contract.methods.approve(approveAddress, wad).encodeABI();
