@@ -216,13 +216,23 @@ const AuroraStakeScreen = props => {
       Alert.alert(`Waiting for pending Aurora staking`);
       return;
     }
+    console.log("stakeAurora: ", account, stakeAmount, gasStakeLimit, gasPrice);
 
     setPending(true);
     try {
-      if (pendings[0] > 0)
-        await claimAll(account, gasClaimLimit, gasPrice);
+      if (pendings[0] > 0) {
+        let claimret = await claimAll(account, gasClaimLimit, gasPrice);
+        if(claimret.match(/error/i)) {
+          throw new Error(claimret);
+        }
+        console.log(claimret);
+      }
 
       let ret = await stake(account, stakeAmount, gasStakeLimit, gasPrice);
+      console.log(ret);
+      if(ret.match(/error/i)) {
+          throw new Error(ret);
+      }
       if (ret !== []) {
         setTimeout(() => loadEthereumAccountBalance(account), 1000)
         Alert.alert(`${stakeAmount} AURORA staked!`);
