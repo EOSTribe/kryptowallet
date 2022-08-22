@@ -220,85 +220,6 @@ const transfer = (toAccountName, amount, memo, fromAccount, chain) => {
   );
 };
 
-const newdexTransfer = (amount, fromAccount, toAccount) => {
-  const fromChain = getChain(fromAccount.chainName);
-  const toChain = getChain(toAccount.chainName);
-
-  const fromEndpoint = getEndpoint(fromChain.name);
-  const rpc = new JsonRpc(fromEndpoint);
-  const signatureProvider = new JsSignatureProvider([fromAccount.privateKey]);
-
-  const api = new Api({
-    rpc,
-    signatureProvider,
-    textDecoder: new TextDecoder(),
-    textEncoder: new TextEncoder(),
-  });
-
-  const newdexAmount = amount * 0.99;
-  const feeAmount = amount * 0.01;
-  const symbol = getNewdexSymbol(fromChain, toChain);
-  const orderType = fromChain.name === 'EOS' ? 'buy-market' : 'sell-market';
-  const newdexMemo = JSON.stringify({
-    type: orderType,
-    symbol,
-    price: '0.000000',
-    channel: 'web',
-    receiver: toAccount.accountName,
-  });
-  const feeMemo = JSON.stringify({
-    type: orderType,
-    symbol,
-    amount: newdexAmount.toFixed(4),
-    fee: feeAmount.toFixed(4),
-    channel: 'web',
-    sender: fromAccount.accountName,
-    receiver: toAccount.accountName,
-  });
-
-  return api.transact(
-    {
-      actions: [
-        {
-          account: 'eosio.token',
-          name: 'transfer',
-          authorization: [
-            {
-              actor: fromAccount.accountName,
-              permission: 'active',
-            },
-          ],
-          data: {
-            from: fromAccount.accountName,
-            to: fromChain.newdexAccount,
-            quantity: `${newdexAmount.toFixed(4)} ${fromChain.symbol}`,
-            memo: newdexMemo,
-          },
-        },
-        {
-          account: 'eosio.token',
-          name: 'transfer',
-          authorization: [
-            {
-              actor: fromAccount.accountName,
-              permission: 'active',
-            },
-          ],
-          data: {
-            from: fromAccount.accountName,
-            to: 'eostribeprod',
-            quantity: `${feeAmount.toFixed(4)} ${fromChain.symbol}`,
-            memo: feeMemo,
-          },
-        },
-      ],
-    },
-    {
-      blocksBehind: 3,
-      expireSeconds: 30,
-    },
-  );
-};
 
 const voteProducers = (producers, fromAccount, chain) => {
   const endpoint = getEndpoint(chain.name);
@@ -355,7 +276,6 @@ export {
   buyram,
   sellram,
   transfer,
-  newdexTransfer,
   voteProducers,
   sumAmount,
 };

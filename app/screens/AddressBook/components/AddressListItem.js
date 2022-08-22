@@ -10,7 +10,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { KText } from '../../../components';
 import { log } from '../../../logger/logger';
-import { getFioChatEndpoint } from '../../../eos/fio';
 import {
   PRIMARY_GRAY,
   PRIMARY_BLACK,
@@ -22,65 +21,16 @@ var textWidth = width - 120;
 var buttonWidth = 40;
 
 const AddressListItem = ({ address, fromactor, onPress, onEdit, ...props }) => {
-  const [msgCount, setMsgCount] = useState(0);
-  const [runCount, setRunCount] = useState(0);
-
-  const chatEndpoint = getFioChatEndpoint();
-
-  const updateCount = json => {
-    setMsgCount(json.count);
-    address.msgCount = json.count;
-  };
-
-  const loadMessageCount = (from, to) => {
-    let endpoint = chatEndpoint + '/' + from + '/' + to + '/count';
-    try {
-      fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(response => response.json())
-        .then(json => updateCount(json))
-        .catch(error =>
-          log({
-            description: 'loadMessageCount - fetch ' + endpoint,
-            cause: error,
-            location: 'AddressListItem',
-          }),
-        );
-    } catch (err) {
-      log({
-        description: 'loadMessages',
-        cause: err,
-        location: 'FIOChatScreen',
-      });
-      return;
-    }
-  };
-
-  if (runCount < 1 && fromactor) {
-    setRunCount(1);
-    loadMessageCount(fromactor, address.actor);
-  }
 
   const getItemText = () => {
-    if (msgCount > 0) {
-      return (
-        address.name + ' <' + address.address + '> [' + msgCount + ' msgs]'
-      );
-    } else {
-      return address.name + ' <' + address.address + '>';
-    }
+    return address.name + ' <' + address.address + '>';
   };
 
   return (
     <TouchableOpacity>
       <View style={[styles.container, props.style]}>
         <View style={styles.rowContainer}>
-          <Text onPress={onPress} style={styles.address}>
+          <Text style={styles.address}>
             {getItemText()}
           </Text>
         </View>

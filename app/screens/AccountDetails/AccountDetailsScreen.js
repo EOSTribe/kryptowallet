@@ -35,6 +35,7 @@ const AccountDetailsScreen = props => {
   const [cpuUsagePct, setCpuUsagePct] = useState(0);
   const [ramUsagePct, setRamUsagePct] = useState(0);
   const [resourcesWarning, setResourcesWarning] = useState('');
+  const [tabBalanceResource, setBalanceResource] = useState(1);
 
 
   const {
@@ -285,90 +286,162 @@ const AccountDetailsScreen = props => {
 
   loadAccount();
 
+if (tabBalanceResource === 1) {
+
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAwareScrollView
-        contentContainerStyle={styles.scrollContentContainer}
-        enableOnAndroid>
-        <View style={styles.inner}>
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <MaterialIcon
-              name={'keyboard-backspace'}
-              size={35}
-              color={PRIMARY_BLUE}
+      <SafeAreaView style={styles.container}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.scrollContentContainer}
+          enableOnAndroid>
+          <View style={styles.inner}>
+            <TouchableOpacity style={styles.backButton} onPress={goBack}>
+              <MaterialIcon
+                name={'keyboard-backspace'}
+                size={35}
+                color={PRIMARY_BLUE}
+              />
+            </TouchableOpacity>
+            <View style={styles.spacer} />
+            {getChainIcon(account.chainName)}
+            <View style={styles.spacer} />
+            <KText>Available: {liquidBalance}</KText>
+            <KText>USD Value: ${usdValue}</KText>
+            <KText>Total balance: {totalBalance}</KText>
+            <KText>Refunding balance: {refundBalance}</KText>
+            <KText>CPU Staked: {cpuStaked}</KText>
+            <KText>NET Staked: {netStaked}</KText>
+            <KText>
+              RAM Used/Quota: {ramUsed}/{ramQuota} bytes
+            </KText>
+            <FourIconsButtons
+              onIcon1Press={_handleManageResources}
+              onIcon2Press={_handleVoteBP}
+              onIcon3Press={_handleBackupKey}
+              onIcon4Press={_handleRemoveAccount}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/manage_resources.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/icons/vote.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/icons/save_key.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/icons/delete.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
             />
-          </TouchableOpacity>
-          <View style={styles.spacer} />
-          {getChainIcon(account.chainName)}
-          <View style={styles.spacer} />
-          <KText>Available: {liquidBalance}</KText>
-          <KText>USD Value: ${usdValue}</KText>
-          <KText>Total balance: {totalBalance}</KText>
-          <KText>Refunding balance: {refundBalance}</KText>
-          <KText>CPU Staked: {cpuStaked}</KText>
-          <KText>NET Staked: {netStaked}</KText>
-          <KText>
-            RAM Used/Quota: {ramUsed}/{ramQuota} bytes
-          </KText>
-          <View style={styles.spacer} />
-          <KText>Staked vs liquid balances: </KText>
-          <PieChart
-            data={stakeData}
-            width={screenWidth}
-            height={220}
-            chartConfig={chartConfig}
-            accessor="balance"
-            backgroundColor="transparent"
-            absolute
-          />
-          <View style={styles.spacer} />
-          <KText>Resources usage: </KText>
-          <ProgressChart
-            data={resourceData}
-            width={screenWidth}
-            height={220}
-            strokeWidth={16}
-            radius={32}
-            chartConfig={chartConfig}
-            hideLegend={false}
-          />
-          <KText style={styles.alert}>{resourcesWarning}</KText>
+            <KText>Staked vs liquid balances: </KText>
+            <PieChart
+              data={stakeData}
+              width={screenWidth}
+              height={220}
+              chartConfig={chartConfig}
+              accessor="balance"
+              backgroundColor="transparent"
+              absolute
+            />
+            <KButton
+              title={'View resources usage'}
+              style={styles.button}
+              onPress={() => setBalanceResource(2)}
+            />
+          </View>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
+    );
+} else {
+  return (
+      <SafeAreaView style={styles.container}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.scrollContentContainer}
+          enableOnAndroid>
+          <View style={styles.inner}>
+            <TouchableOpacity style={styles.backButton} onPress={goBack}>
+              <MaterialIcon
+                name={'keyboard-backspace'}
+                size={35}
+                color={PRIMARY_BLUE}
+              />
+            </TouchableOpacity>
+            <View style={styles.spacer} />
+            {getChainIcon(account.chainName)}
+            <View style={styles.spacer} />
+            <KText>Available: {liquidBalance}</KText>
+            <KText>USD Value: ${usdValue}</KText>
+            <KText>Total balance: {totalBalance}</KText>
+            <KText>Refunding balance: {refundBalance}</KText>
+            <KText>CPU Staked: {cpuStaked}</KText>
+            <KText>NET Staked: {netStaked}</KText>
+            <KText>
+              RAM Used/Quota: {ramUsed}/{ramQuota} bytes
+            </KText>
+            <FourIconsButtons
+              onIcon1Press={_handleManageResources}
+              onIcon2Press={_handleVoteBP}
+              onIcon3Press={_handleBackupKey}
+              onIcon4Press={_handleRemoveAccount}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/manage_resources.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/icons/vote.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/icons/save_key.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/icons/delete.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+            />
+            <KText>Resources usage: </KText>
+            <ProgressChart
+              data={resourceData}
+              width={screenWidth}
+              height={220}
+              strokeWidth={16}
+              radius={32}
+              chartConfig={chartConfig}
+              hideLegend={false}
+            />
+            <KText style={styles.alert}>{resourcesWarning}</KText>
+            <KButton
+              title={'View staked/liquid balances'}
+              style={styles.button}
+              onPress={() => setBalanceResource(1)}
+            />
+          </View>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
+    );
+}
 
-          <FourIconsButtons
-            onIcon1Press={_handleManageResources}
-            onIcon2Press={_handleVoteBP}
-            onIcon3Press={_handleBackupKey}
-            onIcon4Press={_handleRemoveAccount}
-            icon1={() => (
-              <Image
-                source={require('../../../assets/icons/manage_resources.png')}
-                style={styles.buttonIcon}
-              />
-            )}
-            icon2={() => (
-              <Image
-                source={require('../../../assets/icons/vote.png')}
-                style={styles.buttonIcon}
-              />
-            )}
-            icon3={() => (
-              <Image
-                source={require('../../../assets/icons/save_key.png')}
-                style={styles.buttonIcon}
-              />
-            )}
-            icon4={() => (
-              <Image
-                source={require('../../../assets/icons/delete.png')}
-                style={styles.buttonIcon}
-              />
-            )}
-          />
 
-        </View>
-      </KeyboardAwareScrollView>
-    </SafeAreaView>
-  );
-};
+}
+
 
 export default connectAccounts()(AccountDetailsScreen);

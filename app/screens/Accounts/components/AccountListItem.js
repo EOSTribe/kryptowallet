@@ -97,7 +97,7 @@ const loadAccountBalance = async (account, updateAccountBalance) => {
 const loadFioAccountBalance = async (account, updateAccountBalance) => {
   try {
     const pubkey = Ecc.privateToPublic(account.privateKey);
-    console.log(fioEndpoint + '/v1/chain/get_fio_balance');
+    //console.log(fioEndpoint + '/v1/chain/get_fio_balance');
     fetch(fioEndpoint + '/v1/chain/get_fio_balance', {
       method: 'POST',
       headers: {

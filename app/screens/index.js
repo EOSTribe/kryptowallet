@@ -47,8 +47,6 @@ export {
 export { default as FIOSendScreen } from './FIO/FIOSendScreen';
 export { default as FIOSendDirectScreen } from './FIO/FIOSendDirectScreen';
 export { default as FIOStakeScreen } from './FIO/FIOStakeScreen';
-export { default as FIOChatScreen } from './FIO/FIOChatScreen';
-export { default as GroupChatScreen } from './FIO/GroupChatScreen';
 export { default as ListFIORequestsScreen } from './FIO/ListFIORequestsScreen';
 export { default as ViewFIORequestScreen } from './FIO/ViewFIORequestScreen';
 export { default as AlgoAccountScreen } from './Algo/AlgoAccountScreen';
@@ -78,7 +76,7 @@ export { default as NFTMintScreen } from './NFT/NFTMintScreen';
 export { default as NFTListScreen } from './NFT/NFTListScreen';
 export { default as MenuScreen } from './Menu/MenuScreen';
 export { default as TabMenuScreen } from './Menu/TabMenuScreen';
-export { default as ExchangeScreen } from './Exchange/ExchangeScreen';
 export { default as AddressBookScreen } from './AddressBook/AddressBookScreen';
 export { default as AddAddressScreen } from './AddressBook/AddAddressScreen';
 export { default as EditAddressScreen } from './AddressBook/EditAddressScreen';
+export { default as SwapScreen } from './Swap/SwapScreen';

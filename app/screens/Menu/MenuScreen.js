@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, View, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, TouchableOpacity, Alert, } from 'react-native';
 import styles from './MenuScreen.style';
 import { KHeader, KButton } from '../../components';
 import { connectAccounts } from '../../redux';
@@ -10,50 +10,58 @@ const MenuScreen = props => {
   const {
     connectAccount,
     navigation: { navigate, goBack },
+    deleteAccount,
+    deleteAddress,
+    deleteKey,
     accountsState: { accounts, addresses, keys, totals, history, config },
   } = props;
-
-  const telosAccounts = accounts.filter((value, index, array) => {
-    return (value != null && value.chainName === 'Telos');
-  });
-
-  const algoAccounts = accounts.filter((value, index, array) => {
-    return (value != null && value.chainName === 'ALGO');
-  });
-
-  const xlmAccounts = accounts.filter((value, index, array) => {
-    return (value != null && value.chainName === 'XLM');
-  });
 
   const adminAccount = accounts.filter((value, index, array) => {
     return (value != null && value.chainName === 'FIO' && value.address === 'admin@tribe');
   });
 
-
-  var displayExchange = false;
-  if (accounts.length > 1) {
-    var eosPresent = false;
-    var anotherValidChain = false;
-    accounts.map(function (account) {
-      if (account.chainName === 'EOS') {
-        eosPresent = true;
-      } else if (account.chainName === 'Telos' || account.chainName === 'TLOS') {
-        anotherValidChain = true;
-      }
+  const deleteAllAccounts = () => {
+    accounts.map((value, index, array) => {
+      console.log("Delete account #" + index);
+      deleteAccount(index);
     });
-    displayExchange = eosPresent && anotherValidChain;
   }
 
-  var exchangeButton = <View style={styles.spacer} />;
-  if (displayExchange) {
-    exchangeButton = (
-      <KButton
-        title={'EOSIO NewDex Exchange'}
-        style={styles.button}
-        onPress={() => navigate('Exchange')}
-      />
-    );
+  const deleteAllAddresses = () => {
+    addresses.map((value, index, array) => {
+      console.log("Delete address #" + index);
+      deleteAddress(index);
+    });
   }
+
+  const deleteAllKeys = () => {
+    keys.map((value, index, array) => {
+      console.log("Delete key #" + index);
+      deleteKey(index);
+    });
+  }
+
+  const deleteAllData = () => {
+    deleteAllAccounts();
+    deleteAllAddresses();
+    deleteAllKeys();
+  }
+
+  const purgeWallet = () => {
+    Alert.alert(
+      'Delete all wallet data and reset wallet',
+      'Are you sure you want to purge wallet?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Purge wallet cancelled'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => deleteAllData() },
+      ],
+      { cancelable: false },
+    );
+  };
 
   var adminButton = <View style={styles.spacer} />;
   if (adminAccount.length > 0) {
@@ -79,6 +87,11 @@ const MenuScreen = props => {
         <KHeader title={'Menu actions'} style={styles.header} />
         <View style={styles.spacer} />
         <KButton
+          title={'Address book'}
+          style={styles.button}
+          onPress={() => navigate('AddressBook')}
+        />
+        <KButton
           title={'Recover Private Key'}
           style={styles.button}
           onPress={() => navigate('RecoverPrivateKey')}
@@ -88,7 +101,11 @@ const MenuScreen = props => {
           style={styles.button}
           onPress={() => navigate('KeyList')}
         />
-        {exchangeButton}
+        <KButton
+          title={'Purge wallet'}
+          style={styles.button}
+          onPress={() => purgeWallet()}
+        />
         {adminButton}
       </View>
     </SafeAreaView>

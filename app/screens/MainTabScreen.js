@@ -36,8 +36,7 @@ import {
   FIOSendScreen,
   FIOSendDirectScreen,
   FIOStakeScreen,
-  FIOChatScreen,
-  GroupChatScreen,
+  SwapScreen,
   AlgoAccountScreen,
   StellarAccountScreen,
   EthereumAccountScreen,
@@ -62,7 +61,6 @@ import {
   AdminScreen,
   RecoverPrivateKeyScreen,
   KeyListScreen,
-  ExchangeScreen,
   AuroraStakeScreen,
   AuroraUnstakeScreen,
   AuroraWithdrawScreen,
@@ -81,7 +79,13 @@ const AccountsStackScreen = () => {
       <AccountsStack.Screen name="Accounts" component={AccountsScreen} />
       <AccountsStack.Screen name="Tokens" component={TokensScreen} />
       <AccountsStack.Screen name="Admin" component={AdminScreen} />
-      <AccountsStack.Screen name="RecoverPrivateKey" component={RecoverPrivateKeyScreen} />
+      <AccountsStack.Screen 
+        name="RecoverPrivateKey" 
+        component={RecoverPrivateKeyScreen} 
+      />
+      <AddressStack.Screen name="AddressBook" component={AddressBookScreen} />
+      <AddressStack.Screen name="AddAddress" component={AddAddressScreen} />
+      <AddressStack.Screen name="EditAddress" component={EditAddressScreen} />
       <AccountsStack.Screen
         name="ConnectAccount"
         component={ConnectAccountScreen}
@@ -111,7 +115,6 @@ const AccountsStackScreen = () => {
         component={ResourceManagementScreen}
       />
       <AccountsStack.Screen name="Vote" component={VoteScreen} />
-      <AccountsStack.Screen name="Exchange" component={ExchangeScreen} />
       <AccountsStack.Screen name="Menu" component={MenuScreen} />
       <AccountsStack.Screen
         name="BackupAllKeys"
@@ -171,8 +174,7 @@ const AccountsStackScreen = () => {
       <AccountsStack.Screen name="PolygonAccount" component={PolygonAccountScreen} />
       <AccountsStack.Screen name="TelosEVMAccount" component={TelosEVMAccountScreen} />
       <AccountsStack.Screen name="AuroraAccount" component={AuroraAccountScreen} />
-      <AccountsStack.Screen name="FIOChat" component={FIOChatScreen} />
-      <AccountsStack.Screen name="GroupChat" component={GroupChatScreen} />
+      <AccountsStack.Screen name="Swap" component={SwapScreen} />
       <AccountsStack.Screen name="KeyList" component={KeyListScreen} />
       <AccountsStack.Screen name="NFTListScreen" component={NFTListScreen} />
       <AccountsStack.Screen name="AuroraStake" component={AuroraStakeScreen} />
@@ -195,13 +197,10 @@ const TransferStackScreen = () => {
   );
 };
 
-const AddressStackScreen = () => {
+const SwapStackScreen = () => {
   return (
     <AddressStack.Navigator headerMode={'none'}>
-      <AddressStack.Screen name="AddressBook" component={AddressBookScreen} />
-      <AddressStack.Screen name="AddAddress" component={AddAddressScreen} />
-      <AddressStack.Screen name="EditAddress" component={EditAddressScreen} />
-      <AddressStack.Screen name="FIOChat" component={FIOChatScreen} />
+      <AddressStack.Screen name="Swap" component={SwapScreen} />
     </AddressStack.Navigator>
   );
 };
@@ -222,8 +221,8 @@ const tabScreenOptions = ({ route }) => ({
       icon = require('../../assets/icons/accounts.png');
     } else if (route.name === 'Transfer') {
       icon = require('../../assets/icons/transfer.png');
-    } else if (route.name === 'Chat') {
-      icon = require('../../assets/icons/chat.png');
+    } else if (route.name === 'Swap') {
+      icon = require('../../assets/icons/swap.png');
     } else if (route.name === 'TabMenu') {
       icon = require('../../assets/icons/menu.png');
     } else if (route.name === 'NFT') {
@@ -307,7 +306,7 @@ const MainTabScreen = props => {
       }}>
       <MainTab.Screen name={'Accounts'} component={AccountsStackScreen} />
       <MainTab.Screen name={'Transfer'} component={TransferStackScreen} />
-      <MainTab.Screen name={'Chat'} component={AddressStackScreen} />
+      <MainTab.Screen name={'Swap'} component={SwapStackScreen} />
       {/* {nftShowStatus ? */}
         <MainTab.Screen name={'NFT'} component={NFTStackScreen} />
         {/* :

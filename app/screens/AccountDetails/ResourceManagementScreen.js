@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { KHeader, KButton, KText, KInput } from '../../components';
+import { KHeader, KButton, KText, KInput, FourIconsButtons } from '../../components';
 import styles from './AccountDetailsScreen.style';
 import { connectAccounts } from '../../redux';
 import { getAccount, stake, unstake, buyram, sellram } from '../../eos/eos';
@@ -28,6 +28,7 @@ const ResourceManagementScreen = props => {
   const [sellRamBytes, setSellRamBytes] = useState(0);
   const [loadingStake, setLoadingStake] = useState(false);
   const [loadingRAM, setLoadingRAM] = useState(false);
+  const [tabStakeUnstakeRAM, setTabStakeUnstakeRAM] = useState(1);
 
   const {
     navigation: { navigate, goBack },
@@ -234,6 +235,8 @@ const ResourceManagementScreen = props => {
     );
   }
 
+if(tabStakeUnstakeRAM === 1) {
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -256,6 +259,7 @@ const ResourceManagementScreen = props => {
           <KText>
             Staked CPU/NET: {params.cpuStaked} / {params.netStaked}
           </KText>
+          {eosPowerupButton}
           <View style={styles.spacer} />
           <KInput
             label={'Stake for CPU'}
@@ -283,7 +287,65 @@ const ResourceManagementScreen = props => {
             isLoading={loadingStake}
             onPress={_handleCpuNetStake}
           />
-          {eosPowerupButton}
+          <FourIconsButtons
+              onIcon1Press={()=>setTabStakeUnstakeRAM(1)}
+              onIcon2Press={()=>setTabStakeUnstakeRAM(2)}
+              onIcon3Press={()=>setTabStakeUnstakeRAM(3)}
+              onIcon4Press={()=>setTabStakeUnstakeRAM(4)}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/stake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/icons/unstake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/icons/buy_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/icons/sell_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+            />
+        </View>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
+  );
+
+} else if(tabStakeUnstakeRAM === 2) {
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContentContainer}
+        enableOnAndroid>
+        <View style={styles.inner}>
+          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+            <MaterialIcon
+              name={'keyboard-backspace'}
+              size={24}
+              color={PRIMARY_BLUE}
+            />
+          </TouchableOpacity>
+          <KHeader
+            title={'Resource management'}
+            subTitle={account.accountName}
+            style={styles.header}
+          />
+          <KText>Available balance: {params.liquidBalance}</KText>
+          <KText>
+            Staked CPU/NET: {params.cpuStaked} / {params.netStaked}
+          </KText>
           <View style={styles.spacer} />
           <KInput
             label={'Unstake from CPU'}
@@ -311,7 +373,62 @@ const ResourceManagementScreen = props => {
             isLoading={loadingStake}
             onPress={_handleCpuNetUnstake}
           />
-          <View style={styles.spacer} />
+          <FourIconsButtons
+              onIcon1Press={()=>setTabStakeUnstakeRAM(1)}
+              onIcon2Press={()=>setTabStakeUnstakeRAM(2)}
+              onIcon3Press={()=>setTabStakeUnstakeRAM(3)}
+              onIcon4Press={()=>setTabStakeUnstakeRAM(4)}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/stake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/icons/unstake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/icons/buy_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/icons/sell_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+            />
+        </View>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
+  );
+
+} else if(tabStakeUnstakeRAM === 3) {
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContentContainer}
+        enableOnAndroid>
+        <View style={styles.inner}>
+          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+            <MaterialIcon
+              name={'keyboard-backspace'}
+              size={24}
+              color={PRIMARY_BLUE}
+            />
+          </TouchableOpacity>
+          <KHeader
+            title={'Resource management'}
+            subTitle={account.accountName}
+            style={styles.header}
+          />
+          <KText>Available balance: {params.liquidBalance}</KText>
           <KText>
             RAM Used/Quota: {params.ramUsed}/{params.ramQuota} bytes
           </KText>
@@ -332,7 +449,65 @@ const ResourceManagementScreen = props => {
             isLoading={loadingRAM}
             onPress={_handleBuyRam}
           />
-          <View style={styles.spacer} />
+          <FourIconsButtons
+              onIcon1Press={()=>setTabStakeUnstakeRAM(1)}
+              onIcon2Press={()=>setTabStakeUnstakeRAM(2)}
+              onIcon3Press={()=>setTabStakeUnstakeRAM(3)}
+              onIcon4Press={()=>setTabStakeUnstakeRAM(4)}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/stake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/icons/unstake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/icons/buy_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/icons/sell_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+            />
+        </View>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
+  );
+
+} else {
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContentContainer}
+        enableOnAndroid>
+        <View style={styles.inner}>
+          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+            <MaterialIcon
+              name={'keyboard-backspace'}
+              size={24}
+              color={PRIMARY_BLUE}
+            />
+          </TouchableOpacity>
+          <KHeader
+            title={'Resource management'}
+            subTitle={account.accountName}
+            style={styles.header}
+          />
+          <KText>Available balance: {params.liquidBalance}</KText>
+          <KText>
+            RAM Used/Quota: {params.ramUsed}/{params.ramQuota} bytes
+          </KText>
           <KInput
             label={'Sell RAM (in bytes)'}
             placeholder={'Enter bytes of RAM to sell'}
@@ -350,10 +525,44 @@ const ResourceManagementScreen = props => {
             isLoading={loadingRAM}
             onPress={_handleSellRam}
           />
+          <FourIconsButtons
+              onIcon1Press={()=>setTabStakeUnstakeRAM(1)}
+              onIcon2Press={()=>setTabStakeUnstakeRAM(2)}
+              onIcon3Press={()=>setTabStakeUnstakeRAM(3)}
+              onIcon4Press={()=>setTabStakeUnstakeRAM(4)}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/stake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/icons/unstake.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/icons/buy_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/icons/sell_ram.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+            />
         </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
+
+}
+
+
 };
 
 export default connectAccounts()(ResourceManagementScreen);
