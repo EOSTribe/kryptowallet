@@ -9550,10 +9550,10 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-react-native-udp@^3.1.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-udp/-/react-native-udp-3.3.0.tgz#76d1fdaaf34732dbbb74611c49eefbaf8f7edad8"
-  integrity sha512-ZRBppivrerM47cugR6oiGmzFGmJCU17tBfWv3p9FqV5AFbuQeMMahO/J4kDB/lvpghsvmHazXybJ9gSY0yKFZQ==
+react-native-udp@^4.1.3:
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-udp/-/react-native-udp-4.1.5.tgz#bd164fa6280fd61c3b19f89e0aff2d2d058c262b"
+  integrity sha512-+4Jt0sbuq7lozbiUY6YtEE7KQIcp/xEnTsU44YaIUHE84wKP5STDBe0Vac6sKDdn/gKVV44RUBobzXnOLKcqFA==
   dependencies:
     buffer "^5.6.0"
     events "^3.1.0"
