@@ -2,7 +2,6 @@ import { JsonRpc, Api } from 'eosjs-rn';
 import { JsSignatureProvider } from 'eosjs-rn/dist/eosjs-jssig';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import { getChain, getEndpoint } from './chains';
-import { getNewdexSymbol } from './exchange';
 
 const getAccount = (accountName, chain) => {
   const endpoint = getEndpoint(chain.name);
