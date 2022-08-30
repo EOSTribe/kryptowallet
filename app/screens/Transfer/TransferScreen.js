@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Fio } from '@fioprotocol/fiojs';
 import { SafeAreaView, View, Image, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './TransferScreen.style';
-import { KHeader, KButton, KInput, KSelect, KText, OneIconButton, TwoIconsButtons } from '../../components';
+import { KHeader, KButton, KInput, KUnstoppabledDomainInput, KSelect, KText, OneIconButton, TwoIconsButtons } from '../../components';
 import { connectAccounts } from '../../redux';
 import { getAccount, transfer } from '../../eos/eos';
 import { sendFioTransfer } from '../../eos/fio';
@@ -15,7 +15,10 @@ import { getNativeTokenName } from '../../external/blockchains';
 
 import { log } from '../../logger/logger';
 
+
 const TransferScreen = props => {
+  const [UDAddress, setUDAddress] = useState('');
+  const [toAddress, setToAddress] = useState()
   const [fromAccount, setFromAccount] = useState();
   const [toAccountName, setToAccountName] = useState('');
   const [isLiveStellarAccount, setIsLiveStellarAccount] = useState(false);
@@ -63,6 +66,11 @@ const TransferScreen = props => {
   } = props;
 
   const fioEndpoint = getEndpoint('FIO');
+
+  useEffect(() => {
+    if (UDAddress)
+      setToAddress(UDAddress);
+  }, [UDAddress])
 
   const isValidXLMAddress = address => {
     return (address != null && address.startsWith('G') && address.length == 56);
@@ -230,11 +238,13 @@ const TransferScreen = props => {
     }
   };
 
-  const _handleToAccountChange = value => {
+  const _handleToAccountChange = async (value) => {
     if (!fromAccount) {
       Alert.alert('Select from account first!');
       return;
     }
+
+    setToAddress(value);
     // trim white space if present:
     if (value.indexOf(' ') >= 0) {
       value = value.trim();
@@ -319,7 +329,7 @@ const TransferScreen = props => {
       setEthFloatAmount(amount);
 
       if (amount < ethBalanceInEth) {
-        const gasLimitation = await getCurrentETHGasLimit(from.chainName, fromAccount, amount.toString(), toAccountName);
+        const gasLimitation = await getCurrentETHGasLimit(from.chainName, fromAccount, amount.toString(), toAddress);
         setEthGasLimit(gasLimitation);
         const estimatedFee = parseFloat((gasPrice * gasLimitation) / ethDivider).toFixed(4);
         setEthEstimatedFee(estimatedFee);
@@ -336,6 +346,8 @@ const TransferScreen = props => {
       }
     } catch (error) {
       console.log("error:", error);
+      if (error.toString().includes('Provided address'))
+        Alert.alert('The Provided sending to Address is invalid!');
     }
   }
 
@@ -373,7 +385,7 @@ const TransferScreen = props => {
   const _handleTransfer = async () => {
     setLoading(true);
 
-    if (!fromAccount || !toAccountName || !amount) {
+    if (!fromAccount || !toAddress || !amount) {
       Alert.alert(
         'Please select from and to account as well as amount for transfer',
       );
@@ -395,14 +407,14 @@ const TransferScreen = props => {
     // If to account is FIO address:
     if (isFioAddress) {
       if (!toPubkey) {
-        await _validateAddress(toAccountName);
+        await _validateAddress(toAddress);
       }
       if (!toPubkey) {
         Alert.alert(
           'Could not determine receiver public key for ' +
           fromAccount.chainName +
           ' registered to ' +
-          toAccountName,
+          toAddress,
         );
         setLoading(false);
         return;
@@ -412,7 +424,7 @@ const TransferScreen = props => {
     }
 
     // EOSIO to actor name validation:
-    let actorName = isFioAddress ? toActor : toAccountName;
+    let actorName = isFioAddress ? toActor : toAddress;
     if (chain && chain.name !== 'FIO') {
       try {
         let toAccount = await getAccount(actorName, chain);
@@ -432,7 +444,7 @@ const TransferScreen = props => {
     try {
       setLoading(true);
       if (fromAccount.chainName === 'ALGO') {
-        let receiver = toPubkey ? toPubkey : toAccountName;
+        let receiver = toPubkey ? toPubkey : toAddress;
         await submitAlgoTransaction(
           fromAccount,
           receiver,
@@ -441,7 +453,7 @@ const TransferScreen = props => {
           addTransactionToHistory,
         );
       } else if (fromAccount.chainName === 'XLM') {
-        let receiver = toPubkey ? toPubkey : toAccountName;
+        let receiver = toPubkey ? toPubkey : toAddress;
         if (isValidXLMAddress(receiver)) {
           if (isLiveStellarAccount) {
             await submitStellarPayment(
@@ -489,7 +501,7 @@ const TransferScreen = props => {
           addTransactionToHistory,
         );
       } else if (fromAccount.chainName === 'ETH' || fromAccount.chainName === 'BNB' || fromAccount.chainName === 'MATIC' || fromAccount.chainName === 'AURORA' || fromAccount.chainName === 'TELOSEVM') {
-        let receiver = toPubkey ? toPubkey : toAccountName;
+        let receiver = toPubkey ? toPubkey : toAddress;
         prepareETHTransfer(fromAccount, receiver, floatAmount, null);
       } else if (chain) {
         // Any of supported EOSIO chains:
@@ -605,10 +617,12 @@ const TransferScreen = props => {
               onValueChange={_handleFromAccountChange}
               containerStyle={styles.inputContainer}
             />
-            <KInput
+            <KUnstoppabledDomainInput
               label={'Sending to'}
-              placeholder={'Enter either direct or FIO address'}
+              placeholder={'Enter address or domain name (UD/FIO)'}
               value={toAccountName}
+              chainName={fromAccount?.chainName}
+              setUDAddress={setUDAddress}
               onChangeText={_handleToAccountChange}
               containerStyle={styles.inputContainer}
               onPasteHandler={_handleToAccountChange}

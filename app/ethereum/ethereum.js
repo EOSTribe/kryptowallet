@@ -12,11 +12,14 @@ import Common from 'ethereumjs-common';
 import { BigNumber, ethers } from 'ethers';
 import { getAuroraStakingLatestPrices } from '../pricing/coinmarketcap'
 import { AURORA_STAKING_ADDRESS } from '../constant/address';
+import { isEVMNetwork } from '../external/blockchains';
 
 const tokenABI = require('./abi.json');
 const nftABI = require('./nftAbi.json');
 const multiCallABI = require('./multiCallAbi.json');
 const auroraStakingABI = require('./auroraStakingAbi.json');
+
+const alchemyKey = 'YSn_BqGmQWnZy6O4GRtbFQpD11z121GN';
 
 const nftAddress = '0xe5af1c8813a80d34a960e019b7eab7e0b4b1ead5';
 
@@ -133,6 +136,40 @@ const getMulitCallAddress = (chainName) => {
 
 export const AURORA_STREAM_NUM = 5;
 
+/**
+ * Unstoppabled Domain Module
+ */
+export const unstoppabledDomanModule = () => {
+  const getAlchemyAPIKey = (chainName) => {
+    if (isEVMNetwork(chainName))
+      return alchemyKey;
+    
+    return ''
+  }
+
+  return {
+    getAddress: async (chainName, domain) => {
+      const options = {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${getAlchemyAPIKey(chainName)}`
+        }
+      };
+
+      try {
+        const res = await fetch(`https://unstoppabledomains.g.alchemy.com/domains/${domain}`, options);
+        const jsonData = await res.json();
+        const firstKey = Object.keys(jsonData.records)[0];
+
+        return jsonData.records[firstKey];
+      } catch (err) {
+        console.log(endpoint, err);
+        return undefined;
+      }
+    }
+  }
+}
 
 /**
  * Web3 Aurora Staking Module
