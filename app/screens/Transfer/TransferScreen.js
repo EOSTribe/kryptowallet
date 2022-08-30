@@ -619,7 +619,7 @@ const TransferScreen = props => {
             />
             <KUnstoppabledDomainInput
               label={'Sending to'}
-              placeholder={'Enter either direct or FIO address'}
+              placeholder={'Enter address or domain name (UD/FIO)'}
               value={toAccountName}
               chainName={fromAccount?.chainName}
               setUDAddress={setUDAddress}
