@@ -258,9 +258,9 @@ PODS:
     - React
   - react-native-spinkit (1.4.1):
     - React
-  - react-native-udp (3.3.0):
+  - react-native-udp (4.1.5):
     - CocoaAsyncSocket
-    - React
+    - React-Core
   - React-RCTActionSheet (0.63.4):
     - React-Core/RCTActionSheetHeaders (= 0.63.4)
   - React-RCTAnimation (0.63.4):
@@ -553,7 +553,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   react-native-sensitive-info: 400c6e3d27945e15c8cddb5b4b92233c85ee06f8
   react-native-spinkit: da294fd828216ad211fe36a5c14c1e09f09e62db
-  react-native-udp: 5b0fa7cb4c102ba63988a2436c4d3087f73d81ef
+  react-native-udp: 8864b1211857e9d8224ae5cbaf8580970fb99de1
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
   React-RCTBlob: a97d378b527740cc667e03ebfa183a75231ab0f0
@@ -580,4 +580,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: ab20f6cf7c7c1e269f1f1f3984c9568e9b884db6
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2
