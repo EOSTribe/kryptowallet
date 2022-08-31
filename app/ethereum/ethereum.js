@@ -143,16 +143,17 @@ export const domanAddressModule = () => {
   const getAlchemyAPIKey = (chainName) => {
     if (isEVMNetwork(chainName))
       return alchemyKey;
-    
+
     return ''
   }
 
   return {
     getAddress: async (chainName, domain) => {
-      if(domain === '')
+      if (domain === '')
         return undefined;
+
       try {
-        if(domain.slice(-4) === '.eth') { //ENS
+        if (domain.slice(-4) === '.eth') { //ENS
           const options = {
             method: 'GET',
             headers: {
@@ -173,9 +174,7 @@ export const domanAddressModule = () => {
         };
         const res = await fetch(`https://unstoppabledomains.g.alchemy.com/domains/${domain}`, options);
         const jsonData = await res.json();
-        const firstKey = Object.keys(jsonData.records)[0];
-
-        return jsonData.records[firstKey];
+        return jsonData.records["crypto.ETH.address"];
       } catch (err) {
         console.log(endpoint, err);
         return undefined;
