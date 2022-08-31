@@ -5,7 +5,6 @@ import { createAction } from 'redux-actions';
 /**
  * Action Types
  */
-
 export const FETCH_ACCOUNTS = 'accounts/FETCH_ACCOUNTS';
 export const CONNECT_ACCOUNT = 'accounts/CONNECT_ACCOUNT';
 export const DELETE_ACCOUNT = 'accounts/DELETE_ACCOUNT';
@@ -38,6 +37,8 @@ export const DELETE_NFT_TOKEN = 'accounts/DELETE_NFT_TOKEN';
 
 export const UPDATE_NFT_SHOW_STATUS = 'accounts/UPDATE_NFT_SHOW_STATUS';
 
+export const RESET_WALLET = 'accounts/RESET_WALLET';
+
 /**
  * Action Creators
  */
@@ -65,4 +66,5 @@ export const accountsActionCreators = {
   deleteNFTsByAccount: createAction(DELETE_NFTS_BY_ACCOUNT),
   deleteNFTToken: createAction(DELETE_NFT_TOKEN),
   updateNFTShowStatus: createAction(UPDATE_NFT_SHOW_STATUS),
+  resetWallet: createAction(RESET_WALLET),
 };

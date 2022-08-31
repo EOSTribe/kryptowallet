@@ -9,10 +9,8 @@ import { PRIMARY_BLUE } from '../../theme/colors';
 const MenuScreen = props => {
   const {
     connectAccount,
+    resetWallet,
     navigation: { navigate, goBack },
-    deleteAccount,
-    deleteAddress,
-    deleteKey,
     accountsState: { accounts, addresses, keys, totals, history, config },
   } = props;
 
@@ -20,32 +18,6 @@ const MenuScreen = props => {
     return (value != null && value.chainName === 'FIO' && value.address === 'admin@tribe');
   });
 
-  const deleteAllAccounts = () => {
-    accounts.map((value, index, array) => {
-      console.log("Delete account #" + index);
-      deleteAccount(index);
-    });
-  }
-
-  const deleteAllAddresses = () => {
-    addresses.map((value, index, array) => {
-      console.log("Delete address #" + index);
-      deleteAddress(index);
-    });
-  }
-
-  const deleteAllKeys = () => {
-    keys.map((value, index, array) => {
-      console.log("Delete key #" + index);
-      deleteKey(index);
-    });
-  }
-
-  const deleteAllData = () => {
-    deleteAllAccounts();
-    deleteAllAddresses();
-    deleteAllKeys();
-  }
 
   const purgeWallet = () => {
     Alert.alert(
@@ -57,7 +29,7 @@ const MenuScreen = props => {
           onPress: () => console.log('Purge wallet cancelled'),
           style: 'cancel',
         },
-        { text: 'OK', onPress: () => deleteAllData() },
+        { text: 'OK', onPress: () => resetWallet() },
       ],
       { cancelable: false },
     );

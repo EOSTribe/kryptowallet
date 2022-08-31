@@ -3,7 +3,7 @@ export { default as KButton } from './KButton';
 export { default as KHeader } from './KHeader';
 export { default as KLabel } from './KLabel';
 export { default as KInput } from './KInput';
-export { default as KUnstoppabledDomainInput } from './KUnstoppabledDomainInput';
+export { default as KDomainAddressInput } from './KDomainAddressInput';
 export { default as KSelect } from './KSelect';
 export { default as RequestSendButtons } from './RequestSendButtons';
 export { default as AccountButtons } from './AccountButtons';

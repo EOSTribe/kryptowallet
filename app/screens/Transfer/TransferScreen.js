@@ -3,7 +3,7 @@ import { Fio } from '@fioprotocol/fiojs';
 import { SafeAreaView, View, Image, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './TransferScreen.style';
-import { KHeader, KButton, KInput, KUnstoppabledDomainInput, KSelect, KText, OneIconButton, TwoIconsButtons } from '../../components';
+import { KHeader, KButton, KInput, KDomainAddressInput, KSelect, KText, OneIconButton, TwoIconsButtons } from '../../components';
 import { connectAccounts } from '../../redux';
 import { getAccount, transfer } from '../../eos/eos';
 import { sendFioTransfer } from '../../eos/fio';
@@ -617,9 +617,9 @@ const TransferScreen = props => {
               onValueChange={_handleFromAccountChange}
               containerStyle={styles.inputContainer}
             />
-            <KUnstoppabledDomainInput
+            <KDomainAddressInput
               label={'Sending to'}
-              placeholder={'Enter address or domain name (UD/FIO)'}
+              placeholder={'Enter address or domain name (ENS/UD/FIO)'}
               value={toAccountName}
               chainName={fromAccount?.chainName}
               setUDAddress={setUDAddress}

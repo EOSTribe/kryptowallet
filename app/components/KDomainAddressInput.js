@@ -11,13 +11,13 @@ import {
 // import  Clipboard  from '@react-native-community/clipboard';
 import KText from './KText';
 import { PRIMARY_BLUE } from '../theme/colors';
-import { unstoppabledDomanModule } from '../ethereum/ethereum';
+import { domanAddressModule } from '../ethereum/ethereum';
 
-const KUnstoppabledDomainInput = ({ label, chainName, setUDAddress, secureTextEntry, containerStyle, ...props }) => {
-  const { getAddress } = unstoppabledDomanModule();
+const KDomainAddressInput = ({ label, chainName, setUDAddress, secureTextEntry, containerStyle, ...props }) => {
+  const { getAddress } = domanAddressModule();
   const [showText, setShowText] = useState(false);
   const [address, setAddress] = useState(undefined);
-  const waitTime = 1000;
+  const waitTime = 500;
   const timer = useRef(null);
 
   const handlePressLabel = async () => {
@@ -101,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default KUnstoppabledDomainInput;
+export default KDomainAddressInput;
