@@ -22,6 +22,7 @@ import {
   DELETE_NFTS_BY_ACCOUNT,
   DELETE_NFT_TOKEN,
   UPDATE_NFT_SHOW_STATUS,
+  RESET_WALLET,
 } from './actions';
 import { defaultReducers } from '../defaultReducers';
 
@@ -153,6 +154,20 @@ export default function accountsState(state = DEFAULT, action = {}) {
         nftTokens: state.nftTokens,
         nftShowStatus: payload,
       };
+    case RESET_WALLET:
+      return {
+        accounts: [],
+        addresses: [],
+        keys: [],
+        totals: [],
+        history: [],
+        config: {
+          showAllTokens: true,
+        },
+        tokens: [],
+        nftTokens: [],
+        nftShowStatus: false,
+      };  
     default:
       return state;
   }
