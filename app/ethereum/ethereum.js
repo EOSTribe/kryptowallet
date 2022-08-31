@@ -139,7 +139,7 @@ export const AURORA_STREAM_NUM = 5;
 /**
  * Unstoppabled Domain Module
  */
-export const unstoppabledDomanModule = () => {
+export const domanAddressModule = () => {
   const getAlchemyAPIKey = (chainName) => {
     if (isEVMNetwork(chainName))
       return alchemyKey;
@@ -149,15 +149,28 @@ export const unstoppabledDomanModule = () => {
 
   return {
     getAddress: async (chainName, domain) => {
-      const options = {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${getAlchemyAPIKey(chainName)}`
-        }
-      };
-
+      if(domain === '')
+        return undefined;
       try {
+        if(domain.slice(-4) === '.eth') { //ENS
+          const options = {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+            }
+          };
+          const res = await fetch(`https://api.ensideas.com/ens/resolve/${domain}`, options);
+          const jsonData = await res.json();
+          return jsonData.address;
+        }
+
+        const options = {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${getAlchemyAPIKey(chainName)}`
+          }
+        };
         const res = await fetch(`https://unstoppabledomains.g.alchemy.com/domains/${domain}`, options);
         const jsonData = await res.json();
         const firstKey = Object.keys(jsonData.records)[0];
