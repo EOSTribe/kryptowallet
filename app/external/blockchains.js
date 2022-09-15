@@ -54,7 +54,7 @@ const getNativeTokenName = chainName => {
 
 const isEVMNetwork = chainName => {
   let ret = false;
-  if (chainName == "ETH" || chainName == "BNB" || chainName == "MATIC" || chainName == "AURORA" || chainName == "TELOSEVM") {
+  if (chainName == "ETH" || chainName == "BNB" || chainName == "MATIC" || chainName == "AURORA" || chainName == "TELOSEVM" || chainName == "MULTICHAIN") {
     ret = true;
   }
   return ret;

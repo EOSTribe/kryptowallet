@@ -30,6 +30,7 @@ const ResendTransferScreen = props => {
   const [ethFloatAmount, setEthFloatAmount] = useState(0.0);
   const [ethEstimatedFee, setEthEstimatedFee] = useState(0.0);
   const [ethTotalAmount, setEthTotalAmount] = useState(0.0);
+
   const ethDivider = 1000000000000000000;
   const tokenABI = require('../../ethereum/abi.json');
   const tokenAddress = "";
@@ -58,11 +59,9 @@ const ResendTransferScreen = props => {
   let fromAccount = null;
   if(fromAccount == null) {
     accounts.map((value, index, array) => {
-      if(value.chainName == transaction.chain) {
-        let valName = (value.address) ? value.address : value.accountName;
-        if(valName && valName == transaction.sender) {
-          fromAccount = value;
-        }
+      let valName = (value.address) ? value.address : value.accountName;
+      if(valName && valName == transaction.sender) {
+        fromAccount = value;
       }
     });
   }
@@ -101,9 +100,9 @@ const ResendTransferScreen = props => {
   };
 
   const prepareETHTransfer = async (from, to, amount) => {
-      const gasPrice = await getCurrentGasPrice(from.chainName);
+      const gasPrice = await getCurrentGasPrice(transaction.chain);
       setEthGasPrice(gasPrice);
-      const ethBalanceInWei = await getBalanceOfAccount(from.chainName, from.address);
+      const ethBalanceInWei = await getBalanceOfAccount(transaction.chain, from.address);
       const ethBalanceInEth = parseFloat(ethBalanceInWei/ethDivider).toFixed(4);
       setEthBalance(ethBalanceInEth);
       setEthFromAddress(from.address);
@@ -123,15 +122,15 @@ const ResendTransferScreen = props => {
 
   const sendETHTransfer = async () => {
     if(pendingEthTransfer) {
-      Alert.alert(`Waiting for pending ${fromAccount.chainName} transfer!`);
+      Alert.alert(`Waiting for pending ${transaction.chain} transfer!`);
     }
     setPendingEthTransfer(true);
-    const keypair = await createKeyPair(fromAccount.chainName, ethFromPrivateKey);
-    const result = await transferETH(fromAccount.chainName, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
+    const keypair = await createKeyPair(transaction.chain, ethFromPrivateKey);
+    const result = await transferETH(ftransaction.chain, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
     setPendingEthTransfer(false);
     // Save transaction to History:
     const txRecord = {
-      "chain": fromAccount.chainName,
+      "chain": transaction.chain,
       "sender": ethFromAddress,
       "receiver": ethToAddress,
       "amount": ethFloatAmount,
@@ -141,7 +140,7 @@ const ResendTransferScreen = props => {
       "date": new Date(),
     };
     addTransactionToHistory(txRecord);
-    Alert.alert(`${fromAccount.chainName} Transfer submitted!`);
+    Alert.alert(`${transaction.chain} Transfer submitted!`);
     setPreviewEthTransfer(false);
   }
 
@@ -246,10 +245,10 @@ if (previewEthTransfer) {
           />
           <KText>From: {ethFromAddress}</KText>
           <KText>To: {ethToAddress}</KText>
-          <KText>Amount: {ethFloatAmount} {fromAccount.chainName}</KText>
-          <KText>Gas fee: {ethEstimatedFee} {fromAccount.chainName} (Estimated)</KText>
-          <KText>Total: {ethTotalAmount} {fromAccount.chainName}</KText>
-          <KText>Balance: {ethBalance} {fromAccount.chainName}</KText>
+          <KText>Amount: {ethFloatAmount} {transaction.chain}</KText>
+          <KText>Gas fee: {ethEstimatedFee} {transaction.chain} (Estimated)</KText>
+          <KText>Total: {ethTotalAmount} {transaction.chain}</KText>
+          <KText>Balance: {ethBalance} {transaction.chain}</KText>
           <View style={styles.spacer} />
           <TwoIconsButtons
             onIcon1Press={sendETHTransfer}

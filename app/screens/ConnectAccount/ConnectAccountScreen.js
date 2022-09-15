@@ -229,8 +229,8 @@ const ConnectAccountScreen = props => {
           enableOnAndroid>
           <View style={styles.content}>
             <KHeader
-              title={'Account'}
-              subTitle={'Connect your account'}
+              title={'Import Account'}
+              subTitle={'Import Algorand account'}
               style={styles.header}
             />
             <KSelect
@@ -283,8 +283,8 @@ const ConnectAccountScreen = props => {
           enableOnAndroid>
           <View style={styles.content}>
             <KHeader
-              title={'Account'}
-              subTitle={'Connect your account'}
+              title={'Import Account'}
+              subTitle={'Import Stellar account'}
               style={styles.header}
             />
             <KSelect
@@ -337,8 +337,8 @@ const ConnectAccountScreen = props => {
           enableOnAndroid>
           <View style={styles.content}>
             <KHeader
-              title={'Account'}
-              subTitle={'Connect your account'}
+              title={'Import Account'}
+              subTitle={'Import account'}
               style={styles.header}
             />
             <KSelect
@@ -391,8 +391,8 @@ const ConnectAccountScreen = props => {
           enableOnAndroid>
           <View style={styles.content}>
             <KHeader
-              title={'Account'}
-              subTitle={'Connect your account'}
+              title={'Import Account'}
+              subTitle={'Import FIO account'}
               style={styles.header}
             />
             <KSelect
@@ -445,8 +445,8 @@ const ConnectAccountScreen = props => {
           enableOnAndroid>
           <View style={styles.content}>
             <KHeader
-              title={'Account'}
-              subTitle={'Connect your account'}
+              title={'Import Account'}
+              subTitle={'Import account by private key'}
               style={styles.header}
             />
             <KSelect

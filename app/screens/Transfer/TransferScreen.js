@@ -20,6 +20,7 @@ const TransferScreen = props => {
   const [UDAddress, setUDAddress] = useState('');
   const [toAddress, setToAddress] = useState()
   const [fromAccount, setFromAccount] = useState();
+  const [chainName, setChainName] = useState();
   const [toAccountName, setToAccountName] = useState('');
   const [isLiveStellarAccount, setIsLiveStellarAccount] = useState(false);
   const [amount, setAmount] = useState('');
@@ -224,8 +225,11 @@ const TransferScreen = props => {
   };
 
   const _handleFromAccountChange = value => {
+    if(!chainName) {
+      setChainName(value.chainName);
+    }
     const parseInfo = async () => {
-      const ethBalanceInWei = await getBalanceOfAccount(value.chainName, value.address);
+      const ethBalanceInWei = await getBalanceOfAccount(chainName, value.address);
       const ethBalanceInEth = parseFloat(ethBalanceInWei / ethDivider).toFixed(4);
       setEthBalance(ethBalanceInEth);
     }
@@ -237,6 +241,18 @@ const TransferScreen = props => {
       }
     }
   };
+
+  const isEVMAccount = () => {
+    if ( fromAccount && 
+        (fromAccount.chainName === 'ETH' || 
+        fromAccount.chainName === 'BNB' || 
+        fromAccount.chainName === 'MATIC' || 
+        fromAccount.chainName === 'AURORA' || 
+        fromAccount.chainName === 'TELOSEVM') ) {
+      return true;
+    }
+    return false;
+  }
 
   const _handleToAccountChange = async (value) => {
     if (!fromAccount) {
@@ -318,9 +334,10 @@ const TransferScreen = props => {
 
   const prepareETHTransfer = async (from, to, amount) => {
     try {
-      const gasPrice = await getCurrentGasPrice(from.chainName);
+      const chain = (chainName) ? chainName : from.chainName;
+      const gasPrice = await getCurrentGasPrice(chain);
       setEthGasPrice(gasPrice);
-      const ethBalanceInWei = await getBalanceOfAccount(from.chainName, from.address);
+      const ethBalanceInWei = await getBalanceOfAccount(chain, from.address);
       const ethBalanceInEth = parseFloat(ethBalanceInWei / ethDivider).toFixed(4);
       setEthBalance(ethBalanceInEth);
       setEthFromAddress(from.address);
@@ -329,7 +346,7 @@ const TransferScreen = props => {
       setEthFloatAmount(amount);
 
       if (amount < ethBalanceInEth) {
-        const gasLimitation = await getCurrentETHGasLimit(from.chainName, fromAccount, amount.toString(), toAddress);
+        const gasLimitation = await getCurrentETHGasLimit(chain, fromAccount, amount.toString(), toAddress);
         setEthGasLimit(gasLimitation);
         const estimatedFee = parseFloat((gasPrice * gasLimitation) / ethDivider).toFixed(4);
         setEthEstimatedFee(estimatedFee);
@@ -352,17 +369,18 @@ const TransferScreen = props => {
   }
 
   const sendETHTransfer = async () => {
+    const chain = (chainName) ? chainName : from.chainName;
     if (pendingEthTransfer) {
-      Alert.alert(`Waiting for pending ${fromAccount.chainName} transfer!`);
+      Alert.alert(`Waiting for pending ${chain} transfer!`);
       return;
     }
     setPendingEthTransfer(true);
-    const keypair = await createKeyPair(fromAccount.chainName, ethFromPrivateKey);
+    const keypair = await createKeyPair(chain, ethFromPrivateKey);
     const result = await transferETH(fromAccount.chainName, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
     setPendingEthTransfer(false);
     // Save transaction to History:
     const txRecord = {
-      "chain": fromAccount.chainName,
+      "chain": chain,
       "sender": ethFromAddress,
       "receiver": ethToAddress,
       "amount": ethFloatAmount,
@@ -373,7 +391,7 @@ const TransferScreen = props => {
       "date": new Date(),
     };
     addTransactionToHistory(txRecord);
-    Alert.alert(`${fromAccount.chainName} Transfer submitted!`);
+    Alert.alert(`${chain} Transfer submitted!`);
     setPreviewEthTransfer(false);
   }
 
@@ -540,6 +558,20 @@ const TransferScreen = props => {
     navigate('Transactions');
   }
 
+  const getAccountLabel = (item) => {
+    if(item.chainName === 'ETH' || item.chainName === 'BNB' || item.chainName === 'MATIC' || item.chainName === 'AURORA' || item.chainName === 'TELOSEVM') {
+      return item.address;
+    } else if(item.chainName === 'FIO' || item.chainName === 'XLM') {
+      return `${item.chainName}: ${item.address}`;
+    } else {
+      return `${item.chainName}: ${item.accountName}`;
+    }
+  }
+
+  const getEVMNetworks = () => {
+    return ['ETH','BNB','MATIC','AURORA','TELOSEVM'];
+  }
+
   if (accounts.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
@@ -610,13 +642,23 @@ const TransferScreen = props => {
             <KSelect
               label={'From account'}
               items={accounts.map(item => ({
-                label: `${item.chainName}: ${(item.chainName === 'FIO' || item.chainName === 'XLM' || item.chainName === 'ETH' || item.chainName === 'BNB' || item.chainName === 'MATIC' || item.chainName === 'AURORA' || item.chainName === 'TELOSEVM') ? item.address : item.accountName
-                  }`,
+                label: getAccountLabel(item),
                 value: item,
               }))}
               onValueChange={_handleFromAccountChange}
               containerStyle={styles.inputContainer}
             />
+            {isEVMAccount() &&
+              <KSelect
+                label={'Pick network'}
+                items={getEVMNetworks().map(item => ({
+                  label: item,
+                  value: item,
+                }))}
+                onValueChange={setChainName}
+                containerStyle={styles.inputContainer}
+              />
+            }
             <KDomainAddressInput
               label={'Sending to'}
               placeholder={'Enter address or domain name (ENS/UD/FIO)'}

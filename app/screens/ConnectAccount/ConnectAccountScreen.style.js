@@ -27,6 +27,10 @@ const styles = StyleSheet.create({
     height: 18,
     tintColor: '#FFF',
   },
+  chainIcon: {
+    width: 24,
+    height: 24,
+  },
   inputContainer: {
     marginTop: 20,
   },
@@ -64,9 +68,15 @@ const styles = StyleSheet.create({
   },
   message: {
     padding: 5,
-    color: '#088B00',
+    color: '#000000',
     fontFamily: 'Nunito-Bold',
     fontSize: 16,
+  },
+  chainName: {
+    padding: 0,
+    color: '#6A63EE',
+    fontFamily: 'Nunito-Bold',
+    fontSize: 20,
   },
   spacer: {
     flex: 1,

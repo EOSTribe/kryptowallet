@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { KHeader, KText, KButton, TwoIconsButtons } from '../../components';
+import { KHeader, KText, KButton, TwoIconsButtons, FiveIconsButtons } from '../../components';
 import styles from './EthereumAccountScreen.style';
 import { connectAccounts } from '../../redux';
 import { PRIMARY_BLUE } from '../../theme/colors';
@@ -20,6 +20,7 @@ import { getEndpoint } from '../../eos/chains';
 import web3Module from '../../ethereum/ethereum';
 import Wallet from 'ethereumjs-wallet';
 import { log } from '../../logger/logger';
+import { getEVMTokenByName } from '../../ethereum/tokens';
 
 const ethMultiplier = 1000000000000000000;
 const tokenABI = require('../../ethereum/abi.json');
@@ -39,6 +40,10 @@ const TelosEVMAccountScreen = props => {
   const [connectedAddress, setConnectedAddress] = useState('');
   const [loaded, setLoaded] = useState(false);
 
+  const [totalUsdValue, setTotalUsdValue] = useState(0.0);
+  const [usdtBalance, setUsdtBalance] = useState(0.0);
+  const [usdcBalance, setUsdcBalance] = useState(0.0);
+
   const {
     navigation: { navigate, goBack },
     route: {
@@ -50,15 +55,39 @@ const TelosEVMAccountScreen = props => {
 
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
-  // var runOnce = 0;
-  const name =  "TELOSEVM:" + account.accountName;
-  var usdValue = 0;
-  for (const elem of totals) {
-    if(elem.account===name) {
-      usdValue = elem.total;
-      break;
+  
+  const refreshTotalUsdValue = async () => {
+    var usdValue = 0.0;
+    const name =  "TELOSEVM:" + account.address;
+    for (const elem of totals) {
+      if(elem.account === name) {
+        usdValue = elem.total;
+        break;
+      }
     }
+    const totalUsd = ( parseFloat(usdValue) + parseFloat(usdtBalance) + parseFloat(usdcBalance)).toFixed(2);
+    setTotalUsdValue(totalUsd);
   }
+
+  const loadTokenBalance = async (token, setTokenBalance) => {
+    if(!token) return;
+    const { getBalanceOfTokenOfAccount } = web3Module({
+          tokenABI,
+          tokenAddress: token.address,
+          decimals: token.decimals
+        });
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    setTokenBalance(tokenBalance);
+    refreshTotalUsdValue();
+  }
+
+  // Load USDT Balance:
+  const usdtToken = getEVMTokenByName('TELOSEVM', 'USDT');
+  loadTokenBalance(usdtToken, setUsdtBalance);
+
+  // Load USDC Balance:
+  const usdcToken = getEVMTokenByName('TELOSEVM', 'USDC');
+  loadTokenBalance(usdcToken, setUsdcBalance);
 
   const copyToClipboard = () => {
     Clipboard.setString(account.address);
@@ -133,6 +162,7 @@ const TelosEVMAccountScreen = props => {
       });
       return;
     } finally {
+      refreshTotalUsdValue();
       setLoaded(true);
     }
   };
@@ -190,22 +220,68 @@ const TelosEVMAccountScreen = props => {
           />
         </TouchableOpacity>
         <View style={styles.spacer} />
+        <View style={styles.column}>
         <Image
           source={require('../../../assets/chains/bsc.png')}
           style={styles.buttonIcon}
         />
-        <View style={styles.spacer} />
-        <KText>Balance: {accountBalance} TLOS</KText>
-        <KText>USD Value: ${usdValue}</KText>
-        <Text style={styles.link} onPress={copyToClipboard}>
+        <Text style={styles.addressLink} onPress={copyToClipboard}>
           {account.address}
         </Text>
+        </View>
+        <View style={styles.spacer} />
+        <KText>TLOS Balance: {accountBalance} TLOS</KText>
+        { usdtBalance > 0 &&
+          <KText>USDT Balance: {usdtBalance}</KText>
+        }
+        { usdcBalance > 0 &&
+          <KText>USDC Balance: {usdcBalance}</KText>
+        }
+        <KText>Total USD Value: ${totalUsdValue}</KText>
         <View style={styles.spacer} />
         <View style={styles.qrcode}>
-          <QRCode value={account.address} size={200} />
+          <QRCode value={account.address} size={150} />
         </View>
         <KText>{connectedHeader}</KText>
         <KText>{connectedAddress}</KText>
+        <KText>Switch network:</KText>
+        <FiveIconsButtons
+          onIcon1Press={()=>navigate('EthereumAccount', { account })}
+          onIcon2Press={()=>navigate('PolygonAccount', { account })}
+          onIcon3Press={()=>navigate('AuroraAccount', { account })}
+          onIcon4Press={()=>navigate('BinanceAccount', { account })}
+          onIcon5Press={()=>navigate('TelosEVMAccount', { account })}
+          icon1={() => (
+            <Image
+              source={require('../../../assets/chains/eth.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+          icon2={() => (
+            <Image
+              source={require('../../../assets/chains/polygon.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+          icon3={() => (
+            <Image
+              source={require('../../../assets/chains/aurora.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+          icon4={() => (
+            <Image
+              source={require('../../../assets/chains/bsc.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+          icon5={() => (
+            <Image
+              source={require('../../../assets/chains/telosevm.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+        />
         <FlatList />
         <TwoIconsButtons
           onIcon1Press={_handleBackupKey}

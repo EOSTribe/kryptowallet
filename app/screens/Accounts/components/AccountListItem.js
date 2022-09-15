@@ -35,7 +35,7 @@ const algoDivider = 1000000;
 const fioEndpoint = getEndpoint('FIO');
 
 const { height, width } = Dimensions.get('window');
-var chainWidth = width - 150;
+var chainWidth = width - 90;
 
 const loadAccountBalance = async (account, updateAccountBalance) => {
   const chain = getChain(account.chainName);
@@ -83,7 +83,7 @@ const loadAccountBalance = async (account, updateAccountBalance) => {
       selfNetStaked +
       totRefund
     ).toFixed(4);
-    updateAccountBalance(totalBalance);
+    updateAccountBalance(account, totalBalance, account.chainName);
   } catch (err) {
     log({
       description: 'loadAccountBalance',
@@ -112,7 +112,7 @@ const loadFioAccountBalance = async (account, updateAccountBalance) => {
       .then(json => {
         //console.log("loadFioAccountBalance", json);
         const balance = (json.balance !== undefined) ? (parseFloat(json.balance) / fioDivider).toFixed(4) : 0;
-        updateAccountBalance(balance);
+        updateAccountBalance(account, balance, account.chainName);
       }
       )
       .catch(error =>
@@ -140,7 +140,7 @@ const loadAlgoAccountBalance = async (account, updateAccountBalance) => {
     const addr = account.account.addr;
     const info = await getAlgoAccountInfo(addr);
     const algoBalance = (parseFloat(info.amount) / algoDivider).toFixed(4);
-    updateAccountBalance(algoBalance);
+    updateAccountBalance(account, algoBalance, account.chainName);
   } catch (err) {
     log({
       description: 'loadAlgoAccountBalance',
@@ -164,7 +164,9 @@ const loadStellarAccountBalance = async (account, updateAccountBalance) => {
           }
         });
       }
-      updateAccountBalance(parseFloat(nativeBalance).toFixed(4));
+      updateAccountBalance(account, 
+        parseFloat(nativeBalance).toFixed(4),
+        account.chainName);
     };
     loadAccount(account.address, processStellarAccount); // 'GAI3GJ2Q3B35AOZJ36C4ANE3HSS4NK7WI6DNO4ZSHRAX6NG7BMX6VJER'
   } catch (err) {
@@ -177,11 +179,13 @@ const loadStellarAccountBalance = async (account, updateAccountBalance) => {
   }
 };
 
-const loadEthereumAccountBalance = async (account, updateAccountBalance) => {
-  const ethBalanceInGwei = await getBalanceOfAccount(account.chainName, account.address);
+const loadEVMAccountBalance = async (account, updateAccountBalance, chainName) => {
+  const ethBalanceInGwei = await getBalanceOfAccount(chainName, account.address);
   const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
   if (updateAccountBalance) {
-    updateAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
+    updateAccountBalance(account, 
+      parseFloat(ethBalanceInEth).toFixed(4), 
+      chainName);
   }
 };
 
@@ -189,10 +193,12 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
   const [accountBalance, setAccountBalance] = useState();
   const [count, setCount] = useState(0);
 
-  const updateAccountBalance = (balance) => {
-    let balText = balance + ' ' + getNativeTokenName(account.chainName);
-    setAccountBalance(balText);
-    onBalanceUpdate(account, balance);
+  const updateAccountBalance = (account, balance, chainName) => {
+    let balText = balance + ' ' + getNativeTokenName(chainName);
+    if(account.chainName === chainName) {
+      setAccountBalance(balText);
+    }
+    onBalanceUpdate(account, balance, chainName);
   };
 
   const refreshBalances = async () => {
@@ -203,7 +209,11 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
     } else if (account.chainName === 'XLM') {
       loadStellarAccountBalance(account, updateAccountBalance);
     } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
-      loadEthereumAccountBalance(account, updateAccountBalance);
+      loadEVMAccountBalance(account, updateAccountBalance, 'ETH');
+      loadEVMAccountBalance(account, updateAccountBalance, 'BNB');
+      loadEVMAccountBalance(account, updateAccountBalance, 'MATIC');
+      loadEVMAccountBalance(account, updateAccountBalance, 'AURORA');
+      loadEVMAccountBalance(account, updateAccountBalance, 'TELOSEVM');
     } else {
       loadAccountBalance(account, updateAccountBalance);
     }
@@ -353,7 +363,7 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
       );
     } else {
       return (
-        <View onFocus={refreshBalances} style={styles.rowContainer}>
+         <View onFocus={refreshBalances} style={styles.rowContainer}>
           <View style={[styles.container, props.style]}>
             <Image source={getChainIcon(account.chainName)} style={styles.chainIcon} />
             <TouchableOpacity onPress={handleOnPress}>
@@ -365,7 +375,7 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
               <Icon name={'refresh'} size={25} color="#000000" />
             </TouchableOpacity>
           </View>
-        </View>
+         </View>
       );
     }
   }

@@ -74,6 +74,11 @@ const MenuScreen = props => {
           onPress={() => navigate('KeyList')}
         />
         <KButton
+          title={'Backup all accounts'}
+          style={styles.button}
+          onPress={() => navigate('BackupAllKeys')}
+        />
+        <KButton
           title={'Purge wallet'}
           style={styles.button}
           onPress={() => purgeWallet()}

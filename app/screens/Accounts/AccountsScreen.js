@@ -18,7 +18,14 @@ import ecc from 'eosjs-ecc-rn';
 import algosdk from 'algosdk';
 import { createKeyPair } from '../../stellar/stellar';
 import Wallet from 'ethereumjs-wallet';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AccountListItem from './components/AccountListItem';
+import EVMTokenListItem from './components/EVMTokenListItem';
+import EVMTokenBalanceItem from './components/EVMTokenBalanceItem';
+import EVMCoinBalanceItem from './components/EVMCoinBalanceItem';
+import EOSIOCoinBalanceItem from './components/EOSIOCoinBalanceItem';
+import AlgoCoinBalanceItem from './components/AlgoCoinBalanceItem';
+import StellarCoinBalanceItem from './components/StellarCoinBalanceItem';
 import { getEndpoint } from '../../eos/chains';
 import { getNativeTokenLatestPrices } from '../../pricing/coinmarketcap';
 import { log } from '../../logger/logger';
@@ -51,6 +58,7 @@ const AccountsScreen = props => {
   const [usdTotal, setUsdTotal] = useState(0.0);
 
   const [isListChainsVisible, setListChainsVisible] = useState(false);
+  const [showAccounts, setShowAccounts] = useState(1);
 
   const toggleListChains = () => {
     setListChainsVisible(!isListChainsVisible);
@@ -117,20 +125,75 @@ const AccountsScreen = props => {
     navigate('Tokens', { account });
   };
 
+  const _handlePressERC20Token = tokenName => {
+    navigate("EVMTokenAccountList", { tokenName })
+  };
+
+  const _handlePressEVMCoin = name => {
+    const chainAccount = validAccounts.filter((value, index, array) => {  
+      return (value.chainName === name);
+    });
+    const evmAccounts = validAccounts.filter((value, index, array) => {  
+      return (value.chainName === 'ETH' || value.chainName === 'BNB' || value.chainName === 'MATIC' || value.chainName === 'AURORA' || value.chainName === 'TELOSEVM');
+    });
+    const account = (chainAccount.length > 0) ? chainAccount[0] : evmAccounts[0];
+    if (name === 'ETH') {
+      navigate('EthereumAccount', { account });
+    } else if (name === 'BNB') {
+      navigate('BinanceAccount', { account });
+    } else if (name === 'MATIC') {
+      navigate('PolygonAccount', { account });
+    } else if (name === 'AURORA') {
+      navigate('AuroraAccount', { account });
+    } else if (name === 'TELOSEVM') {
+      navigate('TelosEVMAccount', { account });
+    } else {
+      Alert.alert("Unknown token " + name);
+    }
+  };
+
+  const _handlePressEOSIOCoin = name => {
+    const chainAccount = validAccounts.filter((value, index, array) => {  
+      return (value.chainName === name);
+    });
+    if(chainAccount.length > 0) {
+      const account = chainAccount[0];
+      navigate('AccountDetails', { account });
+    } else {
+      Alert.alert(name + " Account not found!");
+    }
+  };
+
+  const _handlePressAlgoCoin = () => {
+    const chainAccount = validAccounts.filter((value, index, array) => {  
+      return (value.chainName === 'ALGO');
+    });
+    if(chainAccount.length > 0) {
+      const account = chainAccount[0];
+      navigate('AlgoAccount', { account });
+    } else {
+      Alert.alert(name + " Account not found!");
+    }
+  };
+
   const updateTotal = () => {
     var newTotal = 0;
     for (const elem of totals) {
       if (elem.account && elem.account.indexOf(":") > 0) {
         let chainAccount = elem.account.split(":");
-        const matchingAccounts = validAccounts.filter((value, index, array) => {
-          let accName = (value.address) ? value.address : value.accountName;
-          return (value.chainName === chainAccount[0] && accName === chainAccount[1]);
-        });
-        if (matchingAccounts.length > 0) {
-          try {
-            newTotal += parseFloat(elem.total)
-          } catch (err) {
-            console.log(err);
+        if(chainAccount[0] === "usd") {
+          newTotal += parseFloat(elem.total);
+        } else {
+          const matchingAccounts = validAccounts.filter((value, index, array) => {
+            let accName = (value.address) ? value.address : value.accountName;
+            return (value.chainName === chainAccount[0] && accName === chainAccount[1]);
+          });
+          if (matchingAccounts.length > 0) {
+            try {
+              newTotal += parseFloat(elem.total)
+            } catch (err) {
+              console.log(err);
+            }
           }
         }
       }
@@ -138,14 +201,26 @@ const AccountsScreen = props => {
     setUsdTotal(newTotal.toFixed(2));
   };
 
-  const _handleBalanceUpdate = async (account, balance) => {
+  const _handleBalanceUpdate = async (account, balance, chainName) => {
     var prices = await getNativeTokenLatestPrices();
-    let chain = (account.chainName === "Telos") ? "TLOS" : account.chainName;
+    let chain = (chainName) ? chainName : account.chainName;
+    if (chain === "Telos") { chain = "TLOS"; }
     let price = prices[chain];
     let usdval = (price !== null) ? (price * balance).toFixed(2) : 0.0;
     let name = (chain === 'FIO' || chain === 'XLM' || chain === 'ETH' || chain === 'BNB' || chain === 'MATIC' || chain === 'AURORA' || chain === 'TELOSEVM') ? account.address : account.accountName;
     let record = {
       "account": chain + ":" + name,
+      "total": usdval
+    };
+    console.log(record);
+    setTotal(record);
+    updateTotal();
+  };
+
+  const _handleUSDBalanceUpdate = async (usdName, usdBalance) => {
+    let usdval = usdBalance.toFixed(2);
+    let record = {
+      "account": "usd:" + usdName,
       "total": usdval
     };
     setTotal(record);
@@ -350,88 +425,6 @@ const AccountsScreen = props => {
     });
   };
 
-  const _handleMenu = () => {
-    navigate('Menu');
-  }
-
-  const _handleImportAccount = () => {
-    navigate('ConnectAccount');
-  };
-
-  const _handleExportAllKeys = () => {
-    navigate('BackupAllKeys');
-  };
-
-  const _handleCreateAlgorandAccount = () => {
-    try {
-      var account = algosdk.generateAccount();
-      var address = account.addr;
-      var accountName =
-        address.substring(0, 4) +
-        '..' +
-        address.substring(address.length - 4, address.length);
-      var mnemonic = algosdk.secretKeyToMnemonic(account.sk);
-      var algoAccount = {
-        accountName,
-        mnemonic,
-        chainName: 'ALGO',
-        account: account,
-      };
-      connectAccount(algoAccount);
-      addKey({ private: mnemonic, public: address });
-    } catch (err) {
-      log({
-        description: 'Error create/add Algorand account',
-        cause: err,
-        location: 'MenuScreen',
-      });
-    }
-  };
-
-  const _handleCreateStellarAccount = () => {
-    try {
-      const stellarKeys = createKeyPair();
-      const privateKey = stellarKeys.secret();
-      const address = stellarKeys.publicKey();
-      var xlmAccount = {
-        address: address,
-        privateKey: privateKey,
-        chainName: 'XLM',
-      };
-      connectAccount(xlmAccount);
-      addKey({ private: privateKey, public: address });
-    } catch (err) {
-      log({
-        description: 'Error create/add Stellar account',
-        cause: err,
-        location: 'MenuScreen',
-      });
-    }
-  };
-
-  const _handleCreateEthereumAccount = (name) => {
-    let privateKey = '';
-    let publicKey = '';
-    let address = '';
-
-    let evmAccounts = accounts.filter(cell => isEVMNetwork(cell.chainName));
-    let sameNetworkAccounts = evmAccounts.filter(cell => cell.chainName === name);
-    if (evmAccounts.length > 0 && sameNetworkAccounts.length === 0) {
-      privateKey = evmAccounts[0].privateKey;
-      publicKey = evmAccounts[0].publicKey;
-      address = evmAccounts[0].address;
-    }
-    else {
-      const newEth = Wallet.generate(false);
-      privateKey = newEth.getPrivateKeyString();
-      publicKey = newEth.getPublicKeyString();
-      address = newEth.getAddressString();
-    }
-
-    const account = { address: address, privateKey: privateKey, publicKey: publicKey, chainName: name };
-    connectAccount(account);
-    addKey({ private: privateKey, public: publicKey });
-  };
 
   if (runCount == 0 && validAccounts.length > 0) {
     setRunCount(1);
@@ -439,28 +432,6 @@ const AccountsScreen = props => {
     addKeysIfMissing();
   }
 
-
-  const _handleNewChainPress = (name) => {
-    try {
-
-      if (isEVMNetwork(name)) {
-        _handleCreateEthereumAccount(name);
-      } else if (name == "TLOS") {
-        navigate('CreateTelosAccount');
-      } else if (name == "FIO") {
-        navigate('RegisterFIOAddress');
-      } else if (name == "ALGO") {
-        _handleCreateAlgorandAccount();
-      } else if (name == "XLM") {
-        _handleCreateStellarAccount();
-      } else {
-        Alert.alert("Unknown " + name + " chain!");
-      }
-    } catch (error) {
-      console.log(">>>>>>error:", error)
-    }
-
-  }
 
   const _handleAvatarPress = () => {
     navigate('NFTListScreen');
@@ -473,109 +444,10 @@ const AccountsScreen = props => {
     return null;
   }
 
+if(showAccounts) {
   return (
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.mainContainer}>
-        <SafeAreaView style={styles.networkContainer}>
-          {isListChainsVisible ?
-            <ChainButtons
-              onChainPress={_handleNewChainPress}
-              onClosePress={toggleListChains}
-              closeIcon={() => (
-                <Image
-                  source={require('../../../assets/icons/minus.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              telosevmIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/telosevm.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              auroraIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/aurora.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              polygonIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/polygon.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              bscIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/bsc.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              ethIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/eth.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              fioIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/fio.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              telosIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/telos.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              algoIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/algo.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              xlmIcon={() => (
-                <Image
-                  source={require('../../../assets/chains/xlm.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-            />
-            :
-            <AccountButtons
-              onMenuPress={_handleMenu}
-              onAddPress={toggleListChains}
-              onImportPress={_handleImportAccount}
-              onExportPress={_handleExportAllKeys}
-              menuIcon={() => (
-                <Image
-                  source={require('../../../assets/icons/menu1.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              addIcon={() => (
-                <Image
-                  source={require('../../../assets/icons/add.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              importIcon={() => (
-                <Image
-                  source={require('../../../assets/icons/import_key.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              exportIcon={() => (
-                <Image
-                  source={require('../../../assets/icons/export_key.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-              nftShowStatus={nftShowStatus}
-            />
-          }
-        </SafeAreaView>
         <SafeAreaView style={styles.accountContainer}>
           {nftShowStatus ?
             <TouchableOpacity onPress={_handleAvatarPress}>
@@ -615,11 +487,161 @@ const AccountsScreen = props => {
               />
             )}
           />
+          <KButton
+            title={'Balances'}
+            style={styles.button}
+            onPress={() => setShowAccounts(0)}
+          />
         </SafeAreaView>
       </SafeAreaView>
       <Text style={styles.version}>{getAppVersion()}</Text>
     </SafeAreaView>
   );
+} else {
+  return (
+    <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.mainContainer}>
+        <SafeAreaView style={styles.accountContainer}>
+          {nftShowStatus ?
+            <TouchableOpacity onPress={_handleAvatarPress}>
+              <View style={styles.logoContainer}>
+                <Image
+                  style={styles.noAvatar}
+                  source={nonNFTURL}
+                  resizeMode="contain"
+                />
+                <Image
+                  style={styles.nftAvatar}
+                  source={nftAvatar}
+                  resizeMode="contain"
+                />
+              </View>
+            </TouchableOpacity>
+            :
+            <View style={styles.logoContainer}>
+              <Image
+                style={styles.logo}
+                source={tribeLogoURL}
+                resizeMode="contain"
+              />
+            </View>
+          }
+          {showUsdTotal()}
+          <KeyboardAwareScrollView
+          contentContainerStyle={styles.scrollContentContainer}
+          enableOnAndroid>
+          <EVMTokenBalanceItem
+                accounts={validAccounts}
+                tokenName={'USDT'}
+                showIfZero={true}
+                tokenIcon={require("../../../assets/tokens/tether-icon.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressERC20Token('USDT')}
+                onBalanceUpdate={_handleUSDBalanceUpdate}
+              />
+          <EVMTokenBalanceItem
+                accounts={validAccounts}
+                tokenName={'USDC'}
+                showIfZero={false}
+                tokenIcon={require("../../../assets/tokens/usdc-icon.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressERC20Token('USDC')}
+                onBalanceUpdate={_handleUSDBalanceUpdate}
+              /> 
+          <EVMTokenBalanceItem
+                accounts={validAccounts}
+                tokenName={'BUSD'}
+                showIfZero={false}
+                tokenIcon={require("../../../assets/tokens/busd-icon.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressERC20Token('BUSD')}
+                onBalanceUpdate={_handleUSDBalanceUpdate}
+              />
+          <EVMCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'ETH'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/eth.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEVMCoin('ETH')}
+              />   
+          <EVMCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'BNB'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/bsc.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEVMCoin('BNB')}
+              /> 
+          <EVMCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'MATIC'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/polygon.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEVMCoin('MATIC')}
+              />   
+          <EVMCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'AURORA'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/aurora.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEVMCoin('AURORA')}
+              /> 
+          <EVMCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'TELOSEVM'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/telosevm.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEVMCoin('TELOSEVM')}
+              />    
+          <EOSIOCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'EOS'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/eos.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEOSIOCoin('EOS')}
+              />      
+          <EOSIOCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'Telos'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/telos.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEOSIOCoin('Telos')}
+              /> 
+          <AlgoCoinBalanceItem
+                accounts={validAccounts}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/algo.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressAlgoCoin()}
+              />   
+          <StellarCoinBalanceItem
+                accounts={validAccounts}
+                showIfZero={true}
+                coinIcon={require("../../../assets/chains/xlm.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressStellarCoin()}
+              />     
+          </KeyboardAwareScrollView>              
+          <FlatList/>
+          <KButton
+            title={'Accounts'}
+            style={styles.button}
+            onPress={() => setShowAccounts(1)}
+          />
+        </SafeAreaView>
+      </SafeAreaView>
+      <Text style={styles.version}>{getAppVersion()}</Text>
+    </SafeAreaView>
+  );
+}
+
+
 };
 
 export default connectAccounts()(AccountsScreen);

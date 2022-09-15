@@ -47,7 +47,7 @@ const ERC20TokenDetailsScreen = props => {
   const {
     navigation: { navigate, goBack },
     route: {
-      params: { account: account, token: token },
+      params: { account: account, token: token, chainName: chainName },
     },
     accountsState: { accounts, addresses, keys, totals, history, config },
   } = props;
@@ -74,7 +74,7 @@ const ERC20TokenDetailsScreen = props => {
   };
 
   const refreshBalances = async () => {
-    const balance = await getBalanceOfTokenOfAccount(account.chainName, account.address);
+    const balance = await getBalanceOfTokenOfAccount(chainName, account.address);
     setTokenBalance(balance);
     setShowTransfer(true);
   };
@@ -84,7 +84,7 @@ const ERC20TokenDetailsScreen = props => {
   };
 
   const getSubtitle = () => {
-    return token.name + ' on ' + getNativeTokenName(account.chainName);
+    return token.name + ' on ' + getNativeTokenName(chainName);
   };
 
   const _handleTransfer = async () => {
@@ -115,12 +115,12 @@ const ERC20TokenDetailsScreen = props => {
       if (tokenBalance < floatAmount) {
         Alert.alert('Insufficient balance to send transfer!');
       } else {
-        const gasLimitation = await getCurrentTokenGasLimit(from.chainName, account, floatAmount.toString(), toAccountName);
+        const gasLimitation = await getCurrentTokenGasLimit(chainName, account, floatAmount.toString(), toAccountName);
         setGasLimit(gasLimitation);
 
-        const gasValue = await getCurrentGasPrice(from.chainName);
+        const gasValue = await getCurrentGasPrice(chainName);
         setGasPrice(gasValue);
-        const nativeBalanceInWei = await getBalanceOfAccount(from.chainName, from.address);
+        const nativeBalanceInWei = await getBalanceOfAccount(chainName, from.address);
         const nativeBalanceInEth = parseFloat(nativeBalanceInWei / nativeDivider).toFixed(4);
         const estimatedFee = parseFloat((gasValue * gasLimitation) / nativeDivider).toFixed(4);
         setEstimatedFee(estimatedFee);
@@ -144,7 +144,7 @@ const ERC20TokenDetailsScreen = props => {
 
     setPendingTransfer(true);
     try {
-      await transterERC20(account.chainName, account, toAccountName, amount, gasLimit, gasPrice);
+      await transterERC20(chainName, account, toAccountName, amount, gasLimit, gasPrice);
       Alert.alert(`${token.name} Transfer submitted!`);
     } catch (error) {
       Alert.alert(`${token.name} Transfer error!`);
@@ -185,8 +185,8 @@ const ERC20TokenDetailsScreen = props => {
               />
               <KText>From: {account.address}</KText>
               <KText>To: {toAccountName}</KText>
-              <KText>Amount: {amount} {token.name} on {getNativeTokenName(account.chainName)}</KText>
-              <KText>Gas fee: {estimatedFee} {getNativeTokenName(account.chainName)} (Estimated)</KText>
+              <KText>Amount: {amount} {token.name} on {getNativeTokenName(chainName)}</KText>
+              <KText>Gas fee: {estimatedFee} {getNativeTokenName(chainName)} (Estimated)</KText>
               <KText>Balance: {tokenBalance} {token.name}</KText>
               {/* <View style={styles.gasOption}>
                 <KText style={styles.label}> Gas option: </KText>

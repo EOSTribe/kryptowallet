@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { KText, KButton, TwoIconsButtons } from '../../components';
+import { KText, KButton, TwoIconsButtons, FiveIconsButtons } from '../../components';
 import styles from './EthereumAccountScreen.style';
 import { connectAccounts } from '../../redux';
 import { PRIMARY_BLUE } from '../../theme/colors';
@@ -23,6 +23,7 @@ import web3Module, { web3AuroraStakingModule, AURORA_STREAM_NUM } from '../../et
 import { log } from '../../logger/logger';
 import { MAIN_PAGE, SECOND_PAGE } from '../../constant/page'
 
+import { getEVMTokenByName } from '../../ethereum/tokens';
 const ethMultiplier = 1000000000000000000;
 const tokenABI = require('../../ethereum/abi.json');
 const tokenAddress = "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79";
@@ -64,6 +65,9 @@ const AuroraAccountScreen = props => {
   const [accountBalance, setAccountBalance] = useState();
   const [availableBalance, setAvailableBalance] = useState();
   const [allowance, setAllowance] = useState(0);
+
+  const [usdtBalance, setUsdtBalance] = useState(0.0);
+  const [usdcBalance, setUsdcBalance] = useState(0.0);
 
   const [aprTotal, setAprTotal] = useState(0);
   const [stakingAprs, setStakingAprs] = useState([0, 0, 0, 0, 0]);
@@ -125,6 +129,27 @@ const AuroraAccountScreen = props => {
     },
   };
 
+
+  const loadTokenBalance = async (token, setTokenBalance) => {
+    if(!token) return;
+    const { getBalanceOfTokenOfAccount } = web3Module({
+          tokenABI,
+          tokenAddress: token.address,
+          decimals: token.decimals
+        });
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    console.log(tokenBalance, token.symbol);
+    setTokenBalance(tokenBalance);
+  }
+
+  // Load USDT Balance:
+  const usdtToken = getEVMTokenByName('AURORA', 'USDT');
+  loadTokenBalance(usdtToken, setUsdtBalance);
+
+  // Load USDC Balance:
+  const usdcToken = getEVMTokenByName('AURORA', 'USDC');
+  loadTokenBalance(usdcToken, setUsdcBalance);
+
   useEffect(() => {
     loadEthereumAccountBalance(account);
   }, [account])
@@ -153,6 +178,7 @@ const AuroraAccountScreen = props => {
       const allowanceAmount = await getAllowance("AURORA", account.address, AURORA_STAKING_ADDRESS);
       setAllowance(allowanceAmount);
 
+      refreshTotalUsdValue();
       setLoading(false);
     } catch (err) {
       log({
@@ -279,6 +305,12 @@ const AuroraAccountScreen = props => {
         <View style={styles.spacer} />
         <KText>Balance: {accountBalance} ETH</KText>
         <KText>Available: {availableBalance} AURORA</KText>
+        { usdtBalance > 0 &&
+          <KText>USDT Balance: {usdtBalance}</KText>
+        }
+        { usdcBalance > 0 &&
+          <KText>USDC Balance: {usdcBalance}</KText>
+        }
         <KText>Total APR: {aprTotal} %</KText>
         {showFlag === SECOND_PAGE &&
           <KText>Estimated Gas Fee: {estimatedFee} ETH</KText>
@@ -326,6 +358,43 @@ const AuroraAccountScreen = props => {
                 onPress={_handleApprove}
               />
             }
+            <FiveIconsButtons
+              onIcon1Press={()=>navigate('EthereumAccount', { account })}
+              onIcon2Press={()=>navigate('PolygonAccount', { account })}
+              onIcon3Press={()=>navigate('AuroraAccount', { account })}
+              onIcon4Press={()=>navigate('BinanceAccount', { account })}
+              onIcon5Press={()=>navigate('TelosEVMAccount', { account })}
+              icon1={() => (
+                <Image
+                  source={require('../../../assets/chains/eth.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
+                <Image
+                  source={require('../../../assets/chains/polygon.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon3={() => (
+                <Image
+                  source={require('../../../assets/chains/aurora.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon4={() => (
+                <Image
+                  source={require('../../../assets/chains/bsc.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon5={() => (
+                <Image
+                  source={require('../../../assets/chains/telosevm.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+            />
             <TwoIconsButtons
               onIcon1Press={_handleBackupKey}
               onIcon2Press={_handleRemoveAccount}

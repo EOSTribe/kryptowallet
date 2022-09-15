@@ -28,8 +28,8 @@ const getEVMTokens = chainName => {
   return chainTokens;
 };
 
-const getTokenByName = tokenName => {
-  return tokens.find(item => item.symbol === tokenName);
+const getEVMTokenByName = (chainName, tokenName) => {
+  return getEVMTokens(chainName).find(item => item.symbol === tokenName);
 };
 
-export { getEVMTokens, getTokenByName };
+export { getEVMTokens, getEVMTokenByName };
