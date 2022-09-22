@@ -1,0 +1,89 @@
+{
+  "name": "Umbria Token List",
+  "timestamp": "2021-04-29T08:22:42.675Z",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 55
+  },
+  "tags": {},
+  "logoURI": "ipfs://QmQfq8HaAUBkomKFTeqkwedHyvCnsVMQDNwCc1e9cRQvop",
+  "keywords": [
+    "uniswap",
+    "default"
+  ],
+  "tokens": [
+    {
+      "name": "Aurora",
+      "address": "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79",
+      "symbol": "AURORA",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+    },
+    {
+      "name": "Aurigami Token",
+      "address": "0x09c9d464b58d96837f8d8b6f4d9fe4ad408d3a4f",
+      "symbol": "PLY",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://aurorascan.dev/token/images/aurigamifinance_32.png"
+    },
+    {
+      "name": "Trisolaris",
+      "address": "0xfa94348467f64d5a457f75f8bc40495d33c65abb",
+      "symbol": "TRI",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://aurorascan.dev/token/images/trisolaris_32.png"
+    },
+    {
+      "name": "Bastion",
+      "address": "0x9f1f933c660a1dc856f0e0fe058435879c5ccef0",
+      "symbol": "BSTN",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://aurorascan.dev/token/images/bastionprotocol_32.png"
+    },
+    {
+      "name": "USN",
+      "address": "0x5183e1b1091804bc2602586919e6880ac1cf2896",
+      "symbol": "USN",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://aurorascan.dev/token/images/usn_32.png"
+    },
+    {
+      "name": "Dai Stablecoin",
+      "address": "0xe3520349f477a5f6eb06107066048508498a291b",
+      "symbol": "DAI",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+    },
+    {
+      "name": "binance-usd",
+      "symbol": "abBUSD",
+      "address": "0x5C92A4A7f59A9484AFD79DbE251AD2380E589783",
+      "decimals": 18,
+      "chainId": 1313161554,
+      "logoURI": "https://thesphynx.co/images/tokens/56/0xe9e7cea3dedca5984780bafc599bd69add087d56.png"
+    },
+    {
+      "name": "Tether USD",
+      "address": "0x4988a896b1227218e4a686fde5eabdcabd91571f",
+      "symbol": "USDT",
+      "decimals": 6,
+      "chainId": 1313161554,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+    },
+    {
+      "name": "USDCoin",
+      "address": "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+      "symbol": "USDC",
+      "decimals": 6,
+      "chainId": 1313161554,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+    }
+  ]
+}

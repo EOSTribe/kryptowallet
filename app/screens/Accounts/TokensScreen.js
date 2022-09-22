@@ -59,7 +59,8 @@ const TokensScreen = props => {
 
   const _handlePressERC20Token = index => {
     let token = tokenList[index];
-    navigate('ERC20TokenDetails', { account, token });
+    let chainName = account.chainName;
+    navigate('ERC20TokenDetails', { account, token, chainName });
   };
 
   const getTitle = () => {

@@ -15,6 +15,9 @@ export {
   default as ERC20TokenDetailsScreen,
 } from './AccountDetails/ERC20TokenDetailsScreen';
 export {
+  default as EVMTokenAccountListScreen,
+} from './AccountDetails/EVMTokenAccountListScreen';
+export {
   default as TokenImportScreen,
 } from './AccountDetails/TokenImportScreen';
 export {
@@ -59,6 +62,9 @@ export { default as AuroraAccountScreen } from './Ethereum/AuroraAccountScreen';
 export { default as AuroraStakeScreen } from './Staking/AuroraStakeScreen';
 export { default as AuroraUnstakeScreen } from './Staking/AuroraUnstakeScreen';
 export { default as AuroraWithdrawScreen } from './Staking/AuroraWithdrawScreen';
+export {
+  default as NewAccountScreen,
+} from './ConnectAccount/NewAccountScreen';
 export {
   default as ConnectAccountScreen,
 } from './ConnectAccount/ConnectAccountScreen';

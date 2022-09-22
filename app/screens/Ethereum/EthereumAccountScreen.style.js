@@ -84,6 +84,16 @@ const styles = StyleSheet.create({
     width: width / 2 - 40,
     alignSelf: 'center',
   },
+  chainIcon: {
+    width: 24,
+    height: 24,
+  },
+  chainName: {
+    padding: 0,
+    color: '#6A63EE',
+    fontFamily: 'Nunito-Bold',
+    fontSize: 20,
+  },
 });
 
 export default styles;

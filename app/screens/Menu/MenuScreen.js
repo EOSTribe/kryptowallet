@@ -18,6 +18,7 @@ const MenuScreen = props => {
     return (value != null && value.chainName === 'FIO' && value.address === 'admin@tribe');
   });
 
+
   const purgeWallet = () => {
     Alert.alert(
       'Delete all wallet data and reset wallet',
@@ -71,6 +72,11 @@ const MenuScreen = props => {
           title={'List all keys in wallet'}
           style={styles.button}
           onPress={() => navigate('KeyList')}
+        />
+        <KButton
+          title={'Backup all accounts'}
+          style={styles.button}
+          onPress={() => navigate('BackupAllKeys')}
         />
         <KButton
           title={'Purge wallet'}

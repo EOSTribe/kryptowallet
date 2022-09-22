@@ -604,19 +604,6 @@ const ViewFIORequestScreen = props => {
     }
   };
 
-  const _handleContact = () => {
-    let index = 0;
-    if (payerRole) {
-      let fioAddress = fioRequest.payee_fio_address;
-      let fromFioAddress = fioRequest.payer_fio_address;
-      navigate('FIOChat', { fioAddress, index, fromFioAddress });
-    } else {
-      let fioAddress = fioRequest.payer_fio_address;
-      let fromFioAddress = fioRequest.payee_fio_address;
-      navigate('FIOChat', { fioAddress, index, fromFioAddress });
-    }
-  };
-
   if (
     decryptedContent != null &&
     payerRole &&
@@ -665,14 +652,6 @@ const ViewFIORequestScreen = props => {
             icon={'check'}
             isLoading={loading}
             onPress={_handleReject}
-          />
-          <KButton
-            title={'FIO Chat'}
-            theme={'blue'}
-            style={styles.button}
-            icon={'check'}
-            isLoading={loading}
-            onPress={_handleContact}
           />
         </View>
       </SafeAreaView>
@@ -724,14 +703,6 @@ const ViewFIORequestScreen = props => {
             style={styles.button}
             icon={'check'}
             onPress={_handleReject}
-          />
-          <KButton
-            title={'FIO Chat'}
-            theme={'blue'}
-            style={styles.button}
-            icon={'check'}
-            isLoading={loading}
-            onPress={_handleContact}
           />
         </View>
       </SafeAreaView>
@@ -797,14 +768,6 @@ const ViewFIORequestScreen = props => {
             icon={'check'}
             onPress={_handleReject}
           />
-          <KButton
-            title={'FIO Chat'}
-            theme={'blue'}
-            style={styles.button}
-            icon={'check'}
-            isLoading={loading}
-            onPress={_handleContact}
-          />
         </View>
       </SafeAreaView>
     );
@@ -836,14 +799,6 @@ const ViewFIORequestScreen = props => {
           <KText>Timestamp: {fioRequest.time_stamp}</KText>
           <KText>Status: {fioRequest.status}</KText>
           <KText>Address: {decryptedContent.payee_public_address}</KText>
-          <KButton
-            title={'FIO Chat'}
-            theme={'blue'}
-            style={styles.button}
-            icon={'check'}
-            isLoading={loading}
-            onPress={_handleContact}
-          />
         </View>
       </SafeAreaView>
     );
@@ -875,14 +830,6 @@ const ViewFIORequestScreen = props => {
           <KText>Timestamp: {fioRequest.time_stamp}</KText>
           <KText>Status: {fioRequest.status}</KText>
           <KText>Address: {decryptedContent.payee_public_address}</KText>
-          <KButton
-            title={'FIO Chat'}
-            theme={'blue'}
-            style={styles.button}
-            icon={'check'}
-            isLoading={loading}
-            onPress={_handleContact}
-          />
         </View>
       </SafeAreaView>
     );
