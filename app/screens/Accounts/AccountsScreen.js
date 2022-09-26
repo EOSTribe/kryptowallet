@@ -24,6 +24,7 @@ import EVMTokenListItem from './components/EVMTokenListItem';
 import EVMTokenBalanceItem from './components/EVMTokenBalanceItem';
 import EVMCoinBalanceItem from './components/EVMCoinBalanceItem';
 import EOSIOCoinBalanceItem from './components/EOSIOCoinBalanceItem';
+import FIOCoinBalanceItem from './components/FIOCoinBalanceItem';
 import AlgoCoinBalanceItem from './components/AlgoCoinBalanceItem';
 import StellarCoinBalanceItem from './components/StellarCoinBalanceItem';
 import { getEndpoint } from '../../eos/chains';
@@ -163,6 +164,18 @@ const AccountsScreen = props => {
       Alert.alert(name + " Account not found!");
     }
   };
+
+  const _handlePressFIOCoin = () => {
+    const chainAccount = validAccounts.filter((value, index, array) => {  
+      return (value.chainName === 'FIO');
+    });
+    if(chainAccount.length > 0) {
+      const account = chainAccount[0];
+      navigate('FIOAddressActions', { account });
+    } else {
+      Alert.alert(name + " Account not found!");
+    }
+  }; 
 
   const _handlePressAlgoCoin = () => {
     const chainAccount = validAccounts.filter((value, index, array) => {  
@@ -596,7 +609,15 @@ if(showAccounts) {
                 coinIcon={require("../../../assets/chains/telosevm.png")}
                 style={styles.listItem}
                 onPress={() => _handlePressEVMCoin('TELOSEVM')}
-              />    
+              />  
+          <FIOCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'FIO'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/fio.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressFIOCoin()}
+              />  
           <EOSIOCoinBalanceItem
                 accounts={validAccounts}
                 coinName={'EOS'}
@@ -622,7 +643,7 @@ if(showAccounts) {
               />   
           <StellarCoinBalanceItem
                 accounts={validAccounts}
-                showIfZero={true}
+                showIfZero={false}
                 coinIcon={require("../../../assets/chains/xlm.png")}
                 style={styles.listItem}
                 onPress={() => _handlePressStellarCoin()}
