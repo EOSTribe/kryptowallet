@@ -16,7 +16,7 @@ let deviceInfo = {
 
 const log = async error => {
   //console.log(error);
-  fetch('http://wallet.eostribe.io/logger', {
+  fetch('https://wallet.eostribe.io/logger', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -32,7 +32,7 @@ const log = async error => {
 
 const report = async message => {
   //console.log(message);
-  fetch('http://wallet.eostribe.io/logger', {
+  fetch('https://wallet.eostribe.io/logger', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

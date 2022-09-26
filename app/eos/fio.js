@@ -12,7 +12,7 @@ const deviceId = DeviceInfo.getUniqueId();
 
 const expirationPeriod = 100000; // 100 secs from now
 
-const keystoreEndpoint = 'http://keystore.eostribe.io/secrets';
+const keystoreEndpoint = 'https://keystore.eostribe.io/secrets';
 
 
 const sendFioTransfer = async (
