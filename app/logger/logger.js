@@ -15,7 +15,7 @@ let deviceInfo = {
 };
 
 const log = async error => {
-  //console.log(error);
+  console.log(error);
   fetch('https://wallet.eostribe.io/logger', {
     method: 'POST',
     headers: {

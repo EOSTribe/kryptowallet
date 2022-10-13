@@ -58,6 +58,7 @@ export { default as EthereumAccountScreen } from './Ethereum/EthereumAccountScre
 export { default as BinanceAccountScreen } from './Ethereum/BinanceAccountScreen';
 export { default as PolygonAccountScreen } from './Ethereum/PolygonAccountScreen';
 export { default as TelosEVMAccountScreen } from './Ethereum/TelosEVMAccountScreen';
+export { default as TelosEVMTransferScreen } from './Ethereum/TelosEVMTransferScreen';
 export { default as AuroraAccountScreen } from './Ethereum/AuroraAccountScreen';
 export { default as AuroraStakeScreen } from './Staking/AuroraStakeScreen';
 export { default as AuroraUnstakeScreen } from './Staking/AuroraUnstakeScreen';
