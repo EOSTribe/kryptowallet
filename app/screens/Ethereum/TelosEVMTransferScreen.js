@@ -21,6 +21,7 @@ import web3Module from '../../ethereum/ethereum';
 import Wallet from 'ethereumjs-wallet';
 import { log } from '../../logger/logger';
 import { getAccount } from '../../eos/eos';
+import { transferTelosToEVM } from '../../eos/telosevm';
 
 
 const ethMultiplier = 1000000000000000000;
@@ -120,15 +121,21 @@ const TelosEVMTransferScreen = props => {
   };
 
   const validateAmount = amt => {
-  	if(amt < 0) {
-  		Alert.alert("Enter non negative amount");
-  		return;
+  	try {
+  		let amount = parseFloat(amt);
+  		let balance = parseFloat(nativeAccountBalance);
+  		if(amount < 0) {
+  			Alert.alert("Enter non negative amount");
+  			return;
+  		}
+  		if(amount > balance) {
+  			Alert.alert("Transfer amount can't exceed available native balance");
+  			return;
+  		}
+  		setAmount(amt);
+  	} catch(err) {
+  		Alert.alert("Bad amount "+amt);
   	}
-  	if(amt > nativeAccountBalance) {
-  		Alert.alert("Transfer amount can't exceed available native balance");
-  		return;
-  	}
-  	setAmount(amt);
   };
 
   const _handleTransfer = () => {
