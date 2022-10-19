@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,6 +6,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import Modal from 'react-native-modal';
 
@@ -16,14 +17,24 @@ const TokenSelectModal = ({
   onClose,
   visible,
   onChange,
+  handleSearch,
   tokenItems,
   stableCoins,
 }) => {
-  const [text, onChangeText] = React.useState('');
+  const [text, setText] = React.useState('');
   const handleTokenSelect = tokenItem => () => {
     onChange(tokenItem);
     onClose();
   };
+
+  const onChangeText = val => {
+    setText(val);
+    handleSearch(val);
+  };
+
+  useEffect(() => {
+    visible && setText('');
+  }, [visible]);
 
   return (
     <Modal isVisible={visible} style={styles.modal}>
@@ -39,7 +50,9 @@ const TokenSelectModal = ({
             <MaterialIcon name="search" size={24} color="#99A1BD" />
             <TextInput
               style={styles.searchInput}
-              onChangeText={onChangeText}
+              onChangeText={value => {
+                onChangeText(value);
+              }}
               value={text}
               placeholder="Search name or paste address"
             />
@@ -70,11 +83,9 @@ const TokenSelectModal = ({
                 onPress={handleTokenSelect(tokenItem)}>
                 <View style={styles.tokenListItem}>
                   {tokenItem.logoURI ? (
-                    <SvgUri
-                      width={40}
-                      height={40}
+                    <Image
                       style={styles.tokenListImg}
-                      uri={tokenItem.logoURI}
+                      source={{ uri: tokenItem.logoURI }}
                     />
                   ) : (
                     <Text style={styles.tokenListImg} />

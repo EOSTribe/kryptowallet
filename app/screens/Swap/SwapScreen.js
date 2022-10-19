@@ -3,162 +3,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, View } from 'react-native';
 
 import styles from './SwapScreen.style';
-import { KButton, KInput, KSelect } from '../../components';
+import { KButton, KHeader, KInput, KSelect } from '../../components';
 import { connectAccounts } from '../../redux';
 
 import TokenSelectModal from './components/TokenSelectModal';
+import ethereumTokens from '../../ethereum/ethereum-tokens.json';
+import KIconButton from '../../components/KIconButton';
 
-const tokenItems = [
-  {
-    chainId: 1,
-    address: '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
-    name: '0x Protocol Token',
-    symbol: 'ZRX',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_ZRX.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
-    name: 'Compound USD Coin',
-    symbol: 'cUSDC',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_usdc.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
-    name: 'Compound Dai',
-    symbol: 'cDAI',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_dai.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    name: 'Dai Stablecoin',
-    symbol: 'DAI',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_DAI.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
-    name: 'Sai Stablecoin v1.0',
-    symbol: 'SAI',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_SAI.svg',
-  },
-  {
-    chainId: 1,
-    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-    name: 'Tether USD',
-    symbol: 'USDT',
-    decimals: 6,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg',
-  },
-  {
-    chainId: 1,
-    address: '0xc00e94Cb662C3520282E6f5717214004A7f26888',
-    name: 'Compound',
-    symbol: 'COMP',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_COMP.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x70e36f6BF80a52b3B46b3aF8e106CC0ed743E8e4',
-    name: 'Compound Collateral',
-    symbol: 'cCOMP',
-    decimals: 8,
-  },
-  {
-    chainId: 1,
-    address: '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9',
-    name: 'Compound USDT',
-    symbol: 'cUSDT',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_usdt.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E',
-    name: 'Compound Basic Attention Token',
-    symbol: 'cBAT',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_bat.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
-    name: 'Basic Attention Token',
-    symbol: 'BAT',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_BAT.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5',
-    name: 'Compound Ether',
-    symbol: 'cETH',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_eth.svg',
-  },
-  {
-    chainId: 1,
-    address: '0xF5DCe57282A584D2746FaF1593d3121Fcac444dC',
-    name: 'Compound Sai',
-    symbol: 'cSAI',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_sai.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x158079Ee67Fce2f58472A96584A73C7Ab9AC95c1',
-    name: 'Compound Augur',
-    symbol: 'cREP',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_rep.svg',
-  },
-  {
-    chainId: 1,
-    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    name: 'Wrapped BTC',
-    symbol: 'WBTC',
-    decimals: 8,
-  },
-  {
-    chainId: 1,
-    address: '0x1985365e9f78359a9B6AD760e32412f4a445E862',
-    name: 'Reputation',
-    symbol: 'REP',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_REP.svg',
-  },
-  {
-    chainId: 1,
-    address: '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407',
-    name: 'Compound 0x',
-    symbol: 'cZRX',
-    decimals: 8,
-    logoURI:
-      'https://raw.githubusercontent.com/compound-finance/token-list/master/assets/ctoken_zrx.svg',
-  },
-];
+const tokenItems = ethereumTokens.tokens;
 
 const stableCoins = [
   {
@@ -210,9 +62,9 @@ const SwapScreen = props => {
     wallet: '',
     slipping: '',
     fromAmount: 0,
-    fromToken: 'Select Token',
+    fromToken: 'ETH',
     toAmount: 0,
-    toToken: 'Select Token',
+    toToken: 'ETH',
   });
 
   const [networks, setNetworks] = useState([]);
@@ -220,7 +72,7 @@ const SwapScreen = props => {
 
   const [selectedTokenType, setSelectedTokenType] = useState('from');
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [searchTokens, setSearchTokens] = useState(tokenItems);
   useEffect(() => {
     let networkArray = [];
     let walletArray = [];
@@ -235,6 +87,10 @@ const SwapScreen = props => {
     setNetworks(networkArray);
     setWallets(walletArray);
   }, [accounts]);
+
+  useEffect(() => {
+    setSearchTokens(tokenItems);
+  }, [modalVisible]);
 
   const handleNetWorkChange = useCallback(itemValue => {
     setState(prev => ({ ...prev, network: itemValue }));
@@ -274,6 +130,10 @@ const SwapScreen = props => {
     setModalVisible(false);
   }, []);
 
+  const handleSwitch = useCallback(() => {
+    console.log('ok');
+  }, []);
+
   const handleTokenSelect = useCallback(
     tokenItem => {
       setState(prev => {
@@ -288,23 +148,37 @@ const SwapScreen = props => {
     },
     [selectedTokenType],
   );
+  const handleSearch = term => {
+    if (term === '') return setSearchTokens(tokenItems);
+    const searchResult = tokenItems.filter(item => {
+      return item.name.toLowerCase().includes(term.toLowerCase());
+    });
+    setSearchTokens(searchResult);
+    if (searchResult.length === 0 && term !== '') {
+      const searchAddressResult = tokenItems.filter(item => {
+        return item.address.toLowerCase() === term.toAmount();
+      });
+      setSearchTokens(searchAddressResult);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
+        <KHeader title={'Swap'} style={styles.header} />
         <KSelect
-          label={'NetWork'}
+          label={'Blockchain'}
           items={networks}
           onValueChange={handleNetWorkChange}
-          containerStyle={styles.inputContainer}
-          style={styles.Kinput}
+          containerStyle={styles.kInputContainer}
+          // style={styles.Kinput}
         />
         <KSelect
           label={'Wallet'}
           items={wallets}
           onValueChange={handleWalletChange}
-          containerStyle={styles.inputContainer}
-          style={styles.Kinput}
+          containerStyle={styles.kInputContainer}
+          // style={styles.Kinput}
         />
         <View style={styles.slippingContainer}>
           <KInput
@@ -335,6 +209,10 @@ const SwapScreen = props => {
             style={styles.button}
           />
         </View>
+        <View style={styles.switchIconContainer}>
+          <KIconButton style={styles.switchButton} onChange={handleSwitch} />
+        </View>
+
         <View style={styles.tokenContainer}>
           <KInput
             label={''}
@@ -355,7 +233,12 @@ const SwapScreen = props => {
       </View>
 
       <View style={styles.footer}>
-        <KButton title="Approve" onPress={handleSwap} />
+        <KButton
+          title="Approve"
+          onPress={handleSwap}
+          style={styles.swapButton}
+        />
+        <KButton title="Swap" onPress={handleSwap} style={styles.swapButton} />
       </View>
 
       <TokenSelectModal
@@ -363,7 +246,8 @@ const SwapScreen = props => {
         onClose={handleClose}
         onChange={handleTokenSelect}
         stableCoins={stableCoins}
-        tokenItems={tokenItems}
+        tokenItems={searchTokens}
+        handleSearch={handleSearch}
       />
     </SafeAreaView>
   );
