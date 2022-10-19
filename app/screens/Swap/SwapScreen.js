@@ -1,19 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import {
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Text,
-} from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 
 import styles from './SwapScreen.style';
-import { KButton } from '../../components';
+import { KButton, KInput, KSelect } from '../../components';
 import { connectAccounts } from '../../redux';
 
-import AdvancedSelect from './components/AdvancedSelect';
-import SlippingInput from './components/SlippingInput';
 import TokenSelectModal from './components/TokenSelectModal';
 
 const tokenItems = [
@@ -212,7 +204,7 @@ const SwapScreen = props => {
     accountsState: { accounts, addresses, keys, totals, history, config },
   } = props;
 
-  console.log(">>>>>>>>>>>>>>>accounts:", accounts)
+  console.log('>>>>>>>>>>>>>>>accounts:', accounts);
   const [state, setState] = useState({
     network: '',
     wallet: '',
@@ -233,14 +225,16 @@ const SwapScreen = props => {
     let networkArray = [];
     let walletArray = [];
 
-    accounts.filter(cell => cell.chainName === 'ETH').map((cell) => {
-      networkArray.push({ label: cell.chainName, value: cell.chainName });
-      walletArray.push({ label: cell.address, value: cell.address })
-    });
+    accounts
+      .filter(cell => cell.chainName === 'ETH')
+      .map(cell => {
+        networkArray.push({ label: cell.chainName, value: cell.chainName });
+        walletArray.push({ label: cell.address, value: cell.address });
+      });
 
     setNetworks(networkArray);
     setWallets(walletArray);
-  }, [accounts])
+  }, [accounts]);
 
   const handleNetWorkChange = useCallback(itemValue => {
     setState(prev => ({ ...prev, network: itemValue }));
@@ -298,58 +292,65 @@ const SwapScreen = props => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
-        <View style={styles.netWorkContainer}>
-          <AdvancedSelect
-            label={'NetWork'}
-            value={state.network}
-            items={networks}
-            onChange={handleNetWorkChange}
-            containerStyle={styles.inputContainer}
-          />
-        </View>
-        <View style={styles.walletContainer}>
-          <AdvancedSelect
-            label={'Wallet'}
-            value={state.wallet}
-            items={wallets}
-            onChange={handleWalletChange}
-            containerStyle={styles.inputContainer}
-          />
-        </View>
+        <KSelect
+          label={'NetWork'}
+          items={networks}
+          onValueChange={handleNetWorkChange}
+          containerStyle={styles.inputContainer}
+          style={styles.Kinput}
+        />
+        <KSelect
+          label={'Wallet'}
+          items={wallets}
+          onValueChange={handleWalletChange}
+          containerStyle={styles.inputContainer}
+          style={styles.Kinput}
+        />
         <View style={styles.slippingContainer}>
-          <SlippingInput
-            value={state.slipping}
-            onChange={handleSlippingChange}
+          <KInput
             label={'Slipping'}
-          />
-        </View>
-        <View style={styles.fromContainer}>
-          <TextInput
-            placeholder="From Amount"
-            value={state.fromAmount}
-            onChange={handleFromAmountChange}
-            style={styles.input}
+            placeholder={'Enter slipping value'}
+            value={state.slipping}
+            onChangeText={handleSlippingChange}
+            containerStyle={styles.inputContainer}
+            style={styles.Kinput}
             autoCapitalize={'none'}
             keyboardType={'numeric'}
           />
-          <TouchableOpacity
+        </View>
+        <View style={styles.tokenContainer}>
+          <KInput
+            label={''}
+            placeholder={'From'}
+            value={state.slipping}
+            onChangeText={handleFromAmountChange}
+            containerStyle={styles.inputContainer}
+            style={styles.Kinput}
+            autoCapitalize={'none'}
+            keyboardType={'numeric'}
+          />
+          <KButton
+            title={state.fromToken}
+            onPress={handleFromTokenSelect}
             style={styles.button}
-            onPress={handleFromTokenSelect}>
-            <Text style={styles.text}>{state.fromToken}</Text>
-          </TouchableOpacity>
+          />
         </View>
-        <View style={styles.toContainer}>
-          <TextInput
-            placeholder="To Amount"
-            value={state.toAmount}
-            onChange={handleToAmountChange}
-            style={styles.input}
+        <View style={styles.tokenContainer}>
+          <KInput
+            label={''}
+            placeholder={'To'}
+            value={state.slipping}
+            onChangeText={handleToAmountChange}
+            containerStyle={styles.inputContainer}
+            style={styles.Kinput}
             autoCapitalize={'none'}
             keyboardType={'numeric'}
           />
-          <TouchableOpacity style={styles.button} onPress={handleToTokenSelect}>
-            <Text style={styles.text}>{state.toToken}</Text>
-          </TouchableOpacity>
+          <KButton
+            title={state.toToken}
+            onPress={handleToTokenSelect}
+            style={styles.button}
+          />
         </View>
       </View>
 

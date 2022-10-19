@@ -19,25 +19,20 @@ const styles = StyleSheet.create({
     borderBottomColor: '#c1c1c1',
     paddingTop: 30,
   },
-  netWorkContainer: {},
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 20,
+    borderBottomWidth: 0,
+  },
   slippingContainer: {
     marginBottom: 30,
   },
-  fromContainer: {
-    display: 'flex',
+  tokenContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
-    marginTop: 30,
-    marginRight: 20,
-    marginLeft: 20,
-  },
-  toContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginTop: 30,
     marginRight: 20,
     marginLeft: 20,
   },
@@ -47,6 +42,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 40,
     padding: 20,
+  },
+  Kinput: {
+    borderColor: '#E5E5EE',
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    width: 200,
   },
   input: {
     height: 40,
@@ -58,10 +59,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   button: {
-    alignItems: 'center',
-    backgroundColor: '#3aacff',
-    padding: 10,
-    borderRadius: 10,
     marginLeft: 10,
     width: 120,
   },
