@@ -69,7 +69,7 @@ const SwapScreen = props => {
     fromAmount: '0',
     fromToken: 'ETH',
     toAmount: '0',
-    toToken: 'ETH',
+    toToken: '',
   });
   const [inputedAmount, setInputedAmount] = useState('0');
 
@@ -163,8 +163,14 @@ const SwapScreen = props => {
       setState(prev => {
         let newState = { ...prev };
         if (selectedTokenType === 'from') {
+          if (prev.toToken === tokenItem.symbol) {
+            newState.toToken = prev.fromToken;
+          }
           newState.fromToken = tokenItem.symbol;
         } else {
+          if (prev.fromToken === tokenItem.symbol) {
+            newState.fromToken = prev.toToken;
+          }
           newState.toToken = tokenItem.symbol;
         }
         return newState;
@@ -247,9 +253,10 @@ const SwapScreen = props => {
             keyboardType={'numeric'}
           />
           <KButton
-            title={state.fromToken}
+            title={state.fromToken || 'Select Token'}
             onPress={handleFromTokenSelect}
-            style={styles.button}
+            style={[styles.button]}
+            textStyle={state.fromToken ? {} : styles.placeholder}
           />
         </View>
         <View style={styles.switchIconContainer}>
@@ -274,9 +281,10 @@ const SwapScreen = props => {
             keyboardType={'numeric'}
           />
           <KButton
-            title={state.toToken}
+            title={state.toToken || 'Select Token'}
             onPress={handleToTokenSelect}
             style={styles.button}
+            textStyle={state.toToken ? {} : styles.placeholder}
           />
         </View>
       </View>

@@ -64,14 +64,12 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     padding: 20,
   },
-
   swapButton: { width: 100, height: 10 },
   Kinput: {
     borderColor: '#E5E5EE',
     borderBottomWidth: 1,
     borderStyle: 'solid',
     width: 100,
-    marginLeft: 50,
   },
   slipInput: {
     borderColor: '#E5E5EE',
@@ -90,8 +88,10 @@ const styles = StyleSheet.create({
     borderColor: '#DDDDDD',
     borderRadius: 10,
   },
+  placeholder: {
+    color: '#ddd',
+  },
   button: {
-    marginLeft: 50,
     width: 120,
   },
   switchButton: {
