@@ -26,7 +26,7 @@ import { log } from '../../logger/logger';
 import web3Module from '../../ethereum/ethereum';
 import { getNativeTokenName } from '../../external/blockchains';
 
-const tokenABI = require('../../ethereum/abi.json');
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 
 const ERC20TokenDetailsScreen = props => {
   const [tokenBalance, setTokenBalance] = useState(0);

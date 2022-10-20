@@ -21,7 +21,7 @@ import { log } from '../../logger/logger';
 import { MAIN_PAGE, SECOND_PAGE, THIRD_PAGE } from '../../constant/page'
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 const tokenAddress = "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79";
 const {
   getCurrentGasPrice,

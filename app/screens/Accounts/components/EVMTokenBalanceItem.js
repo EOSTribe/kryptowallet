@@ -11,7 +11,7 @@ import {
 const { height, width } = Dimensions.get('window');
 var tokenWidth = width - 90;
 
-const tokenABI = require('../../../ethereum/abi.json');
+const tokenABI = require('../../../ethereum/abi/tokenAbi.json');
 
 const EVMTokenBalanceItem = ({
   accounts,

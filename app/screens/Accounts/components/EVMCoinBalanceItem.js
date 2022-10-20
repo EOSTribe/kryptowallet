@@ -12,7 +12,7 @@ const { height, width } = Dimensions.get('window');
 var tokenWidth = width - 90;
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../../ethereum/abi.json');
+const tokenABI = require('../../../ethereum/abi/tokenAbi.json');
 const tokenAddress = "";
 const {
   getBalanceOfAccount,

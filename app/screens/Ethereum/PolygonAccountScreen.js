@@ -23,7 +23,7 @@ import { log } from '../../logger/logger';
 import { getEVMTokenByName } from '../../ethereum/tokens';
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 const tokenAddress = "";
 const {
   getBalanceOfAccount,

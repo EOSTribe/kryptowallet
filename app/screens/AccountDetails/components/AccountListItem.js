@@ -14,7 +14,7 @@ import {
 } from '../../../theme/colors';
 
 
-const tokenABI = require('../../../ethereum/abi.json');
+const tokenABI = require('../../../ethereum/abi/tokenAbi.json');
 
 const { height, width } = Dimensions.get('window');
 var chainWidth = width - 90;

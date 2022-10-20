@@ -10,7 +10,7 @@ import {
 const { height, width } = Dimensions.get('window');
 var tokenWidth = width - 60;
 
-const tokenABI = require('../../../ethereum/abi.json');
+const tokenABI = require('../../../ethereum/abi/tokenAbi.json');
 
 const EVMTokenListItem = ({
   account,
