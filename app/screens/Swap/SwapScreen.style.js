@@ -21,37 +21,41 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginVertical: 5,
-    marginHorizontal: 20,
+    marginLeft: 20,
+    marginRight: 5,
     borderBottomWidth: 0,
   },
   kInputContainer: {
     marginTop: 0,
-    marginBottom:10,
+    marginBottom: 10,
     marginHorizontal: 20,
   },
   slippingContainer: {
     marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   tokenContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginHorizontal: 5,
     backgroundColor: '#f5f6fc',
     borderRadius: 10,
     paddingVertical: 10,
     position: 'relative',
     marginVertical: 3,
-    marginHorizontal:20
+    marginHorizontal: 20,
   },
   switchIconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: -20,
+    zIndex: 20,
     position: 'relative',
-    zIndex:100
   },
   footer: {
     backgroundColor: 'white',
@@ -60,13 +64,20 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     padding: 20,
   },
-
   swapButton: { width: 100, height: 10 },
   Kinput: {
     borderColor: '#E5E5EE',
     borderBottomWidth: 1,
     borderStyle: 'solid',
     width: 100,
+  },
+  slipInput: {
+    borderColor: '#E5E5EE',
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    width: 100,
+    marginLeft: 30,
+    marginBottom: 0,
   },
   input: {
     height: 40,
@@ -77,15 +88,13 @@ const styles = StyleSheet.create({
     borderColor: '#DDDDDD',
     borderRadius: 10,
   },
+  placeholder: {
+    color: '#ddd',
+  },
   button: {
-    marginLeft: 50,
     width: 120,
   },
   switchButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    zIndex: 100,
     borderRadius: 50,
     borderWidth: 4,
     borderColor: 'white',

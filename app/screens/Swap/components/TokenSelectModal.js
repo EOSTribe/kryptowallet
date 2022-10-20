@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,13 +11,11 @@ import {
 import Modal from 'react-native-modal';
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { SvgUri } from 'react-native-svg';
 
 const TokenSelectModal = ({
   onClose,
   visible,
   onChange,
-  handleSearch,
   tokenItems,
   stableCoins,
 }) => {
@@ -27,10 +25,18 @@ const TokenSelectModal = ({
     onClose();
   };
 
-  const onChangeText = val => {
-    setText(val);
-    handleSearch(val);
-  };
+  const tokens = useMemo(() => {
+    if (text === '') {
+      return tokenItems;
+    }
+    return tokenItems.filter(item => {
+      return (
+        item.name.toLowerCase().includes(text.toLowerCase()) ||
+        item.symbol.toLowerCase().includes(text.toLowerCase()) ||
+        item.address === text
+      );
+    });
+  }, [tokenItems, text]);
 
   useEffect(() => {
     visible && setText('');
@@ -50,9 +56,7 @@ const TokenSelectModal = ({
             <MaterialIcon name="search" size={24} color="#99A1BD" />
             <TextInput
               style={styles.searchInput}
-              onChangeText={value => {
-                onChangeText(value);
-              }}
+              onChangeText={setText}
               value={text}
               placeholder="Search name or paste address"
             />
@@ -63,11 +67,15 @@ const TokenSelectModal = ({
                 key={index}
                 onPress={handleTokenSelect(tokenItem)}>
                 <View style={styles.tokenItem}>
-                  <SvgUri
+                  {/* <SvgUri
                     width={24}
                     height={24}
                     style={styles.tokenImg}
                     uri={tokenItem.logoURI}
+                  /> */}
+                  <Image
+                    style={styles.tokenImg}
+                    source={{ uri: tokenItem.logoURI }}
                   />
                   <Text style={styles.tokenSymbol}>{tokenItem.symbol}</Text>
                 </View>
@@ -77,7 +85,7 @@ const TokenSelectModal = ({
         </View>
         <View style={styles.body}>
           <ScrollView>
-            {tokenItems.map((tokenItem, index) => (
+            {tokens.map((tokenItem, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={handleTokenSelect(tokenItem)}>
@@ -179,6 +187,8 @@ const styles = StyleSheet.create({
   },
   tokenImg: {
     marginRight: 8,
+    width: 24,
+    height: 24,
   },
   tokenSymbol: {
     fontSize: 18,
