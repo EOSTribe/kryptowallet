@@ -12,7 +12,7 @@
   "tokens": [
     {
       "name": "Ether",
-      "address": "",
+      "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       "symbol": "ETH",
       "decimals": 18,
       "chainId": 1,

@@ -105,17 +105,17 @@ const SwapScreen = props => {
     setState(prev => ({ ...prev, ...updateState }));
   }, [accounts]);
 
-  const getRate = async (network, fromToken, toToken) => {
+  const getOutAmount = async (network, fromToken, toToken) => {
     // TODO: call contract using web3 to get the rate between fromToken and toToken
+    let _toToken = JSON.parse(JSON.stringify(toToken));
     if (fromToken?.symbol && toToken?.symbol) {
-      let _toToken = JSON.parse(JSON.stringify(toToken));
-      if (!isNaN(item.amount) && Number(item.amount) != 0) {
-        _toToken.amount = await getAmountOut(item.address, toToken?.address, item.amount, item.decimals, currentWallet);
+      if (!isNaN(fromToken.amount) && Number(fromToken.amount) != 0) {
+        _toToken.amount = await getAmountOut(network, fromToken, toToken);
       } else {
         _toToken.amount = 0;
       }
     }
-  
+
     return _toToken.amount;
   };
 
@@ -207,18 +207,20 @@ const SwapScreen = props => {
     if (amountInputtarget === '') {
       return;
     }
-    let fromToken, toToken;
+    let fromToken = { symbol: 'ETH', amount: 1, decimals: 18, address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' };
+    let toToken = { symbol: 'DAI', decimals: 18, address: '0x6B175474E89094C44Da98b954EedeAC495271d0F' };
     if (amountInputtarget === 'from') {
-      fromToken = state.fromToken;
-      toToken = state.toToken;
+      fromToken.symbol = state.fromToken;
+      toToken.symbol = state.toToken;
     } else if (amountInputtarget === 'to') {
-      fromToken = state.toToken;
-      toToken = state.fromToken;
+      fromToken.symbol = state.toToken;
+      toToken.symbol = state.fromToken;
     }
 
-    getRate(state.network, fromToken, toToken).then(rate => {
-      let toAmount = `${inputedAmount * rate}`;
-      console.log({ rate, inputedAmount });
+    fromToken.amount = inputedAmount;
+    getOutAmount(state.network, fromToken, toToken).then(outAmount => {
+      let toAmount = `${outAmount}`;
+      console.log({ outAmount, inputedAmount });
       if (amountInputtarget === 'from') {
         setState(prev => ({ ...prev, toAmount }));
       } else if (amountInputtarget === 'to') {

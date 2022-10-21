@@ -885,10 +885,11 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
     return contract;
   };
 
-  const getAmountsOut = (contract_address, pair, amount) => {
+  const getAmountsOut = (chainName, contract_address, pair, amount) => {
     return new Promise(async resolve => {
       try {
-        const contract = ContractInstance(web3, UniswapContract, contract_address)
+        const web3 = getWeb3(chainName);
+        const contract = ContractInstance(web3, uniswapABI, contract_address)
         const result = await contract.methods
           .getAmountsOut(amount, pair)
           .call()
@@ -1302,14 +1303,16 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
     /**
      * amountOut
      */
-    getAmountOut: async (_fromToken, _toToken) => {
+    getAmountOut: async (chainName, _fromToken, _toToken) => {
       let fromAddress = (_fromToken?.address == ETH_ADDRESS ? WETH_ADDRESS : _fromToken?.address);
       let toAddress = (_toToken?.address == ETH_ADDRESS ? WETH_ADDRESS : _toToken?.address);
       let amount = 0;
-      const result = await getAmountsOut(UNISWAP_ADDRESS, [fromAddress, toAddress], getBNValue(_fromToken?.amount, _fromToken.decimals))
+
+      const result = await getAmountsOut(chainName, UNISWAP_ADDRESS, [fromAddress, toAddress], getBNValue(_fromToken?.amount, _fromToken.decimals))
       if (result.status) {
         amount = getCorrectDecValue(result.data[1], _toToken.decimals, -1, false)
       }
+
       return amount;
     }
   };
