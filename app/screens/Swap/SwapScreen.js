@@ -63,8 +63,8 @@ const SwapScreen = props => {
 
   console.log('>>>>>>>>>>>>>>>accounts:', accounts);
   const [state, setState] = useState({
-    network: '',
-    wallet: '',
+    network: null,
+    wallet: null,
     slipping: '',
     fromAmount: '0',
     fromToken: 'ETH',
@@ -93,6 +93,14 @@ const SwapScreen = props => {
 
     setNetworks(networkArray);
     setWallets(walletArray);
+    let updateState = {};
+    if (networkArray.length > 0 && state.network === null) {
+      updateState.network = networkArray[0].value;
+    }
+    if (walletArray.length > 0 && state.wallet === null) {
+      updateState.wallet = walletArray[0].value;
+    }
+    setState(prev => ({ ...prev, ...updateState }));
   }, [accounts]);
 
   const handleNetWorkChange = useCallback(itemValue => {
@@ -218,12 +226,14 @@ const SwapScreen = props => {
           items={networks}
           onValueChange={handleNetWorkChange}
           containerStyle={styles.kInputContainer}
+          value={state.network}
         />
         <KSelect
           label={'Wallet'}
           items={wallets}
           onValueChange={handleWalletChange}
           containerStyle={styles.kInputContainer}
+          value={state.wallet}
         />
         <View style={styles.slippingContainer}>
           <KInput
