@@ -10,13 +10,10 @@ import TokenSelectModal from './components/TokenSelectModal';
 import ethereumTokens from '../../ethereum/ethereum-tokens.json';
 import KIconButton from '../../components/KIconButton';
 import KIcon from '../../components/KIcon';
+import web3CustomModule from '../ethereum/ethereum';
 
+const tokenABI = require('../ethereum/abi/tokenAbi.json');
 const tokenItems = ethereumTokens.tokens;
-
-const getRate = async (network, fromToken, toToken) => {
-  // TODO: call contract using web3 to get the rate between fromToken and toToken
-  return parseInt(`${Math.random() * 100}`, 10) + 1;
-};
 
 const stableCoins = [
   {
@@ -61,7 +58,12 @@ const SwapScreen = props => {
     accountsState: { accounts, addresses, keys, totals, history, config },
   } = props;
 
-  console.log('>>>>>>>>>>>>>>>accounts:', accounts);
+  const { swapToken, getAmountOut } = web3CustomModule({
+    tokenABI,
+    tokenAddress: null,
+    decimals: 18
+  });
+
   const [state, setState] = useState({
     network: '',
     wallet: '',
@@ -94,6 +96,20 @@ const SwapScreen = props => {
     setNetworks(networkArray);
     setWallets(walletArray);
   }, [accounts]);
+
+  const getRate = async (network, fromToken, toToken) => {
+    // TODO: call contract using web3 to get the rate between fromToken and toToken
+    if (fromToken?.symbol && toToken?.symbol) {
+      let _toToken = JSON.parse(JSON.stringify(toToken));
+      if (!isNaN(item.amount) && Number(item.amount) != 0) {
+        _toToken.amount = await getAmountOut(item.address, toToken?.address, item.amount, item.decimals, currentWallet);
+      } else {
+        _toToken.amount = 0;
+      }
+    }
+  
+    return _toToken.amount;
+  };
 
   const handleNetWorkChange = useCallback(itemValue => {
     setState(prev => ({ ...prev, network: itemValue }));

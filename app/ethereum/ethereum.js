@@ -812,6 +812,64 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
     return contract;
   };
 
+  const getAmountsOut = (contract_address, pair, amount) => {
+    return new Promise(async resolve => {
+      try {
+        const contract = ContractInstance(web3, UniswapContract, contract_address)
+        const result = await contract.methods
+          .getAmountsOut(amount, pair)
+          .call()
+        resolve({
+          status: true,
+          data: result
+        })
+      } catch (e) {
+        console.log(e)
+        resolve({
+          status: false,
+          error: e
+        });
+      }
+    });
+  }
+
+  const getBNValue = (balance, decimal) => {
+    return (balance * (10 ** decimal)).toString();
+  }
+
+  const getCorrectDecValue = (balance, decimal, float, showDecimal = true) => {
+    let result = 0;
+    let prefix = (balance < 0);
+    balance = Math.abs(balance);
+    if (float === -1) {
+      result = (balance / (10 ** decimal))
+    }
+    else {
+      result = parseFloat((balance / (10 ** decimal)).toFixed(float));
+    }
+    if (showDecimal) {
+      let str = result.toString();
+      let int_str = str.split('.')[0];
+      let float_str = str.split('.')[1];
+      let ret_str = '';
+  
+      let count = 0;
+      for (let i = int_str.length - 1; i >= 0; i--) {
+        count++;
+        ret_str = (int_str[i] + ret_str)
+        if (count % 3 === 0 && i !== 0)
+          ret_str = ',' + ret_str
+      }
+  
+      if (float_str) {
+        ret_str = ret_str + '.' + float_str
+      }
+      return prefix ? (`-` + ret_str) : ret_str;
+    } else {
+      return prefix ? (`-` + result) : result;
+    }
+  }
+
   return {
     /**
      * Get Keypair from privateKey
@@ -1057,7 +1115,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
     /**
      * swap
      */
-    swapToken: async (chainName, fromAddress, toAddress, address, inputAmount, outputAmount, outputMin, gas, gasLimit) => {
+     swapToken: async (chainName, fromAddress, toAddress, address, inputAmount, outputAmount, outputMin, gas, gasLimit) => {
       try {
         const web3 = getWeb3(chainName);
         let _hash = '';
@@ -1068,7 +1126,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
 
         const uniswap_contract = ContractInstance(web3, uniswapABI, UNISWAP_ADDRESS)
         if (fromAddress == ETH_ADDRESS) {
-          const method = uniswap_contract.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(outputMin, [WETH_ADDRESS, toAddress], CLUTCH_DEFI_ADDRESS, block.timestamp + 10000);
+          const method = uniswap_contract.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(outputMin, [WETH_ADDRESS, toAddress], DEFI_ADDRESS, block.timestamp + 10000);
           callData = method.encodeABI();
         } else if (toAddress == ETH_ADDRESS) {
           const method = uniswap_contract.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromAddress, WETH_ADDRESS], DEFI_ADDRESS, block.timestamp + 10000);
@@ -1124,6 +1182,19 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
         return [];
       }
     },
+    /**
+     * amountOut
+     */
+    getAmountOut: async (_fromToken, _toToken) => {
+      let fromAddress = (_fromToken?.address == ETH_ADDRESS ? WETH_ADDRESS : _fromToken?.address);
+      let toAddress = (_toToken?.address == ETH_ADDRESS ? WETH_ADDRESS : _toToken?.address);
+      let amount = 0;
+      const result = await getAmountsOut(UNISWAP_ADDRESS, [fromAddress, toAddress], getBNValue(_fromToken?.amount, _fromToken.decimals))
+      if (result.status) {
+        amount = getCorrectDecValue(result.data[1], _toToken.decimals, -1, false)
+      }
+      return amount;
+    }
   };
 };
 
