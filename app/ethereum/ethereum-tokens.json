@@ -124,7 +124,7 @@
     },
     {
       "chainId": 1,
-      "address": "0x41e5560054824eA6B0732E656E3Ad64E20e94E45",
+      "address": "getGenericImageUrlgetGenericImageUrlgetGenericImageUrlgetGenericImageUrlgetGenericImageUrl",
       "name": "Civic",
       "symbol": "CVC",
       "decimals": 8,
@@ -350,14 +350,6 @@
       "name": "0x Protocol Token",
       "address": "0xE41d2489571d322189246DaFA5ebDe1F4699F498",
       "symbol": "ZRX",
-      "decimals": 18,
-      "chainId": 1,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xE41d2489571d322189246DaFA5ebDe1F4699F498/logo.png"
-    },
-    {
-      "name": "Pay Bolt token",
-      "address": "0xe580074A10360404AF3ABfe2d524D5806D993ea3",
-      "symbol": "PayBolt",
       "decimals": 18,
       "chainId": 1,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xE41d2489571d322189246DaFA5ebDe1F4699F498/logo.png"

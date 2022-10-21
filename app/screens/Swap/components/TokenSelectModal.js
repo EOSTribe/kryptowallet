@@ -8,9 +8,22 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+
 import Modal from 'react-native-modal';
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { web3TokenInfoModule } from '../../../ethereum/ethereum';
+
+const { getName, getSymbol, getDecimals } = web3TokenInfoModule();
+
+const findToken = async (network, address) => {
+  const name = await getName(network, address);
+  const symbol = await getSymbol(network, address);
+  const decimals = await getDecimals(network, address);
+  const logoURI = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+  const chainId = 1;
+  return { name, symbol, decimals, logoURI, chainId, address };
+};
 
 const TokenSelectModal = ({
   onClose,
@@ -20,22 +33,32 @@ const TokenSelectModal = ({
   stableCoins,
 }) => {
   const [text, setText] = React.useState('');
+  const [tokens, setTokens] = React.useState([]);
   const handleTokenSelect = tokenItem => () => {
     onChange(tokenItem);
     onClose();
   };
 
-  const tokens = useMemo(() => {
+  useEffect(() => {
     if (text === '') {
-      return tokenItems;
+      setTokens(tokenItems);
+    } else {
+      const searchTokens = tokenItems.filter(item => {
+        return (
+          item.name.toLowerCase().includes(text.toLowerCase()) ||
+          item.symbol.toLowerCase().includes(text.toLowerCase()) ||
+          item.address === text
+        );
+      });
+
+      if (searchTokens.length > 0) {
+        setTokens(searchTokens);
+      } else if (text.startsWith('0x') && text.length === 42) {
+        findToken('ETH', text).then(token => {
+          setTokens([token]);
+        });
+      }
     }
-    return tokenItems.filter(item => {
-      return (
-        item.name.toLowerCase().includes(text.toLowerCase()) ||
-        item.symbol.toLowerCase().includes(text.toLowerCase()) ||
-        item.address === text
-      );
-    });
   }, [tokenItems, text]);
 
   useEffect(() => {
