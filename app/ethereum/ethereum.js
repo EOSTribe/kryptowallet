@@ -10,14 +10,16 @@ import { Interface } from '@ethersproject/abi';
 import { Transaction as EthereumTx } from 'ethereumjs-tx';
 import Common from 'ethereumjs-common';
 import { BigNumber, ethers } from 'ethers';
-import { getAuroraStakingLatestPrices } from '../pricing/coinmarketcap';
-import { AURORA_STAKING_ADDRESS } from '../constant/address';
+import { getAuroraStakingLatestPrices } from '../pricing/coinmarketcap'
+import { AURORA_STAKING_ADDRESS, WETH_ADDRESS, UNISWAP_ADDRESS, DEFI_ADDRESS, SIMPLE_CALLER_ADDRESS, ETH_ADDRESS, ZERO_ADDRESS } from '../constant/address';
 import { isEVMNetwork } from '../external/blockchains';
 
-const tokenABI = require('./abi.json');
-const nftABI = require('./nftAbi.json');
-const multiCallABI = require('./multiCallAbi.json');
-const auroraStakingABI = require('./auroraStakingAbi.json');
+const tokenABI = require('./abi/tokenAbi.json');
+const nftABI = require('./abi/nftAbi.json');
+const multiCallABI = require('./abi/multiCallAbi.json');
+const auroraStakingABI = require('./abi/auroraStakingAbi.json');
+const uniswapABI = require('./abi/uniswapAbi.json');
+const routerABI = require('./abi/routerAbi.json');
 
 const alchemyKey = 'YSn_BqGmQWnZy6O4GRtbFQpD11z121GN';
 
@@ -878,6 +880,70 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
     decimals = 18;
   }
 
+  const ContractInstance = (web3, abi, address) => {
+    const contract = new web3.eth.Contract(abi, address);
+    return contract;
+  };
+
+  const getAmountsOut = (chainName, contract_address, pair, amount) => {
+    return new Promise(async resolve => {
+      try {
+        const web3 = getWeb3(chainName);
+        const contract = ContractInstance(web3, uniswapABI, contract_address)
+        const result = await contract.methods
+          .getAmountsOut(amount, pair)
+          .call()
+        resolve({
+          status: true,
+          data: result
+        })
+      } catch (e) {
+        console.log(e)
+        resolve({
+          status: false,
+          error: e
+        });
+      }
+    });
+  }
+
+  const getBNValue = (balance, decimal) => {
+    return (balance * (10 ** decimal)).toString();
+  }
+
+  const getCorrectDecValue = (balance, decimal, float, showDecimal = true) => {
+    let result = 0;
+    let prefix = (balance < 0);
+    balance = Math.abs(balance);
+    if (float === -1) {
+      result = (balance / (10 ** decimal))
+    }
+    else {
+      result = parseFloat((balance / (10 ** decimal)).toFixed(float));
+    }
+    if (showDecimal) {
+      let str = result.toString();
+      let int_str = str.split('.')[0];
+      let float_str = str.split('.')[1];
+      let ret_str = '';
+  
+      let count = 0;
+      for (let i = int_str.length - 1; i >= 0; i--) {
+        count++;
+        ret_str = (int_str[i] + ret_str)
+        if (count % 3 === 0 && i !== 0)
+          ret_str = ',' + ret_str
+      }
+  
+      if (float_str) {
+        ret_str = ret_str + '.' + float_str
+      }
+      return prefix ? (`-` + ret_str) : ret_str;
+    } else {
+      return prefix ? (`-` + result) : result;
+    }
+  }
+
   return {
     /**
      * Get Keypair from privateKey
@@ -1164,6 +1230,91 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
         return [];
       }
     },
+    /**
+     * swap
+     */
+     swapToken: async (chainName, fromAddress, toAddress, address, inputAmount, outputAmount, outputMin, gas, gasLimit) => {
+      try {
+        const web3 = getWeb3(chainName);
+        let _hash = '';
+        let callData = ''
+        const block = await web3.eth.getBlock("latest")
+        // outputMin = Math.floor(outputMin * 0.9)
+        outputMin = 0;
+
+        const uniswap_contract = ContractInstance(web3, uniswapABI, UNISWAP_ADDRESS)
+        if (fromAddress == ETH_ADDRESS) {
+          const method = uniswap_contract.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(outputMin, [WETH_ADDRESS, toAddress], DEFI_ADDRESS, block.timestamp + 10000);
+          callData = method.encodeABI();
+        } else if (toAddress == ETH_ADDRESS) {
+          const method = uniswap_contract.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromAddress, WETH_ADDRESS], DEFI_ADDRESS, block.timestamp + 10000);
+          callData = method.encodeABI();
+        } else {
+          const method = uniswap_contract.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromAddress, toAddress], DEFI_ADDRESS, block.timestamp + 10000);
+          callData = method.encodeABI();
+        }
+
+        let callerCallData = await web3.eth.abi.encodeParameters(['address', 'address', 'address', 'bytes', 'address'], [fromAddress, UNISWAP_ADDRESS, UNISWAP_ADDRESS, callData, toAddress]);
+        const defi_contract = ContractInstance(web3, routerABI, DEFI_ADDRESS)
+        const protocol_fee_default = await defi_contract.methods.getProtocolFeeDefault().call();
+        console.log(protocol_fee_default);
+        const params = [[[fromAddress, inputAmount, 2], [0, '0x']],
+        [toAddress, Math.floor(outputAmount * 0.75).toString()],
+        [1, [protocol_fee_default[0], protocol_fee_default[1]], [0, ZERO_ADDRESS], address, SIMPLE_CALLER_ADDRESS, callerCallData],
+        [0, "0x"],
+        [0, "0x"]];
+        console.log(params);
+        let gas = 0;
+        // if (fromAddress === ETH_ADDRESS)
+        //   gas = await defi_contract.methods.execute(
+        //     ...params
+        //   ).estimateGas({from: address, value: inputAmount})
+        // else {
+        //   gas = await defi_contract.methods.execute(
+        //     ...params
+        //   ).estimateGas({from: address})
+        // }
+
+        console.log(gas)
+        if (fromAddress == ETH_ADDRESS) {
+          await defi_contract.methods.execute(
+            ...params
+          ).send({ from: address, value: inputAmount, gasPrice: gas, gasLimit: gasLimit })
+            .on("transactionHash", hash => {
+              _hash = hash
+            });
+        } else
+          await defi_contract.methods.execute(
+            ...params
+          ).send({ from: address })
+            .on("transactionHash", hash => {
+              _hash = hash
+            });
+        console.log(_hash)
+        resolve({
+          status: true,
+          data: { hash: _hash }
+        })
+      } catch (e) {
+        console.log('swap error:', e)
+        return [];
+      }
+    },
+    /**
+     * amountOut
+     */
+    getAmountOut: async (chainName, _fromToken, _toToken) => {
+      let fromAddress = (_fromToken?.address == ETH_ADDRESS ? WETH_ADDRESS : _fromToken?.address);
+      let toAddress = (_toToken?.address == ETH_ADDRESS ? WETH_ADDRESS : _toToken?.address);
+      let amount = 0;
+
+      const result = await getAmountsOut(chainName, UNISWAP_ADDRESS, [fromAddress, toAddress], getBNValue(_fromToken?.amount, _fromToken.decimals))
+      if (result.status) {
+        amount = getCorrectDecValue(result.data[1], _toToken.decimals, -1, false)
+      }
+
+      return amount;
+    }
   };
 };
 

@@ -18,7 +18,7 @@ import { connectAccounts } from '../../redux';
 import { PRIMARY_BLUE } from '../../theme/colors';
 import web3Module, { web3NFTModule } from '../../ethereum/ethereum';
 
-const tokenABI = require('../../ethereum/abi.json');
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 
 const NFTMintScreen = props => {
   const [ethBalance, setEthBalance] = useState(0.0);
