@@ -31,6 +31,7 @@ const TokenSelectModal = ({
   onChange,
   tokenItems,
   stableCoins,
+  addToken,
 }) => {
   const [text, setText] = React.useState('');
   const [tokens, setTokens] = React.useState([]);
@@ -55,6 +56,7 @@ const TokenSelectModal = ({
         setTokens(searchTokens);
       } else if (text.startsWith('0x') && text.length === 42) {
         findToken('ETH', text).then(token => {
+          addToken(token);
           setTokens([token]);
         });
       }

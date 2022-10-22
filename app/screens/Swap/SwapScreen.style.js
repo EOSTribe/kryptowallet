@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5EE',
     borderBottomWidth: 1,
     borderStyle: 'solid',
-    width: 100,
+    width: 150,
   },
   slipInput: {
     borderColor: '#E5E5EE',

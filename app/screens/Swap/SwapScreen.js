@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SafeAreaView, View } from 'react-native';
 
@@ -58,8 +58,13 @@ const stableCoins = [
 
 const SwapScreen = props => {
   const {
-    accountsState: { accounts, addresses, keys, totals, history, config },
+    accountsState: { accounts, tokens: tokensInStore },
+    addToken,
   } = props;
+
+  const tokens = useMemo(() => {
+    return [...tokenItems, ...tokensInStore];
+  }, [tokensInStore]);
 
   console.log('>>>>>>>>>>>>>>>accounts:', accounts);
   const [state, setState] = useState({
@@ -313,7 +318,8 @@ const SwapScreen = props => {
         onClose={handleClose}
         onChange={handleTokenSelect}
         stableCoins={stableCoins}
-        tokenItems={tokenItems}
+        tokenItems={tokens}
+        addToken={addToken}
       />
     </SafeAreaView>
   );
