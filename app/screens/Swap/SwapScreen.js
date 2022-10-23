@@ -66,7 +66,7 @@ const SwapScreen = props => {
   const { swapToken, getAmountOut } = web3CustomModule({
     tokenABI,
     tokenAddress: null,
-    decimals: 18
+    decimals: 18,
   });
 
   const [state, setState] = useState({
@@ -74,9 +74,16 @@ const SwapScreen = props => {
     wallet: null,
     slipping: '',
     fromAmount: '0',
-    fromToken: 'ETH',
+    fromToken: {
+      name: 'Ether',
+      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+      symbol: 'ETH',
+      decimals: 18,
+      chainId: 1,
+      logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+    },
     toAmount: '0',
-    toToken: '',
+    toToken: null,
   });
   const [inputedAmount, setInputedAmount] = useState('0');
 
@@ -110,18 +117,20 @@ const SwapScreen = props => {
     setState(prev => ({ ...prev, ...updateState }));
   }, [accounts]);
 
-  const getOutAmount = async (network, fromToken, toToken) => {
-    // TODO: call contract using web3 to get the rate between fromToken and toToken
-    let _toToken = JSON.parse(JSON.stringify(toToken));
+  const getOutAmount = async (
+    network,
+    fromToken,
+    toToken,
+    fromAmount = '0',
+  ) => {
+    let toAmount = '0';
     if (fromToken?.symbol && toToken?.symbol) {
-      if (!isNaN(fromToken.amount) && Number(fromToken.amount) != 0) {
-        _toToken.amount = await getAmountOut(network, fromToken, toToken);
-      } else {
-        _toToken.amount = 0;
+      if (!isNaN(fromAmount) && Number(fromAmount) !== 0) {
+        toAmount = await getAmountOut(network, fromToken, toToken, fromAmount);
       }
     }
 
-    return _toToken.amount;
+    return `${toAmount}`;
   };
 
   const handleNetWorkChange = useCallback(itemValue => {
@@ -192,15 +201,15 @@ const SwapScreen = props => {
       setState(prev => {
         let newState = { ...prev };
         if (selectedTokenType === 'from') {
-          if (prev.toToken === tokenItem.symbol) {
+          if (prev.toToken?.symbol === tokenItem.symbol) {
             newState.toToken = prev.fromToken;
           }
-          newState.fromToken = tokenItem.symbol;
+          newState.fromToken = tokenItem;
         } else {
-          if (prev.fromToken === tokenItem.symbol) {
+          if (prev.fromToken?.symbol === tokenItem.symbol) {
             newState.fromToken = prev.toToken;
           }
-          newState.toToken = tokenItem.symbol;
+          newState.toToken = tokenItem;
         }
         return newState;
       });
@@ -212,26 +221,24 @@ const SwapScreen = props => {
     if (amountInputtarget === '') {
       return;
     }
-    let fromToken = { symbol: 'ETH', amount: 1, decimals: 18, address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' };
-    let toToken = { symbol: 'DAI', decimals: 18, address: '0x6B175474E89094C44Da98b954EedeAC495271d0F' };
-    if (amountInputtarget === 'from') {
-      fromToken.symbol = state.fromToken;
-      toToken.symbol = state.toToken;
-    } else if (amountInputtarget === 'to') {
-      fromToken.symbol = state.toToken;
-      toToken.symbol = state.fromToken;
+    let fromToken = state.fromToken;
+    let toToken = state.toToken;
+    if (amountInputtarget === 'to') {
+      fromToken = state.toToken;
+      toToken = state.fromToken;
     }
 
-    fromToken.amount = inputedAmount;
-    getOutAmount(state.network, fromToken, toToken).then(outAmount => {
-      let toAmount = `${outAmount}`;
-      console.log({ outAmount, inputedAmount });
-      if (amountInputtarget === 'from') {
-        setState(prev => ({ ...prev, toAmount }));
-      } else if (amountInputtarget === 'to') {
-        setState(prev => ({ ...prev, fromAmount: toAmount }));
-      }
-    });
+    getOutAmount(state.network, fromToken, toToken, inputedAmount).then(
+      outAmount => {
+        let toAmount = `${outAmount}`;
+        console.log({ outAmount, inputedAmount });
+        if (amountInputtarget === 'from') {
+          setState(prev => ({ ...prev, toAmount }));
+        } else if (amountInputtarget === 'to') {
+          setState(prev => ({ ...prev, fromAmount: toAmount }));
+        }
+      },
+    );
   }, [
     amountInputtarget,
     state.network,
@@ -286,7 +293,7 @@ const SwapScreen = props => {
             keyboardType={'numeric'}
           />
           <KButton
-            title={state.fromToken || 'Select Token'}
+            title={state.fromToken?.symbol || 'Select Token'}
             onPress={handleFromTokenSelect}
             style={[styles.button]}
             textStyle={state.fromToken ? {} : styles.placeholder}
@@ -314,7 +321,7 @@ const SwapScreen = props => {
             keyboardType={'numeric'}
           />
           <KButton
-            title={state.toToken || 'Select Token'}
+            title={state.toToken?.symbol || 'Select Token'}
             onPress={handleToTokenSelect}
             style={styles.button}
             textStyle={state.toToken ? {} : styles.placeholder}
