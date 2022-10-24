@@ -11,14 +11,14 @@ import ethereumTokens from '../../ethereum/ethereum-tokens.json';
 import KIconButton from '../../components/KIconButton';
 import KIcon from '../../components/KIcon';
 import web3CustomModule from '../../ethereum/ethereum';
+import { UNISWAP_ADDRESS } from '../../constant/address';
 
-const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 const tokenItems = ethereumTokens.tokens;
-
+const ethMultiplier = 1000000000000000000;
 const stableCoins = [
   {
     name: 'Ether',
-    address: '',
+    address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
     symbol: 'ETH',
     decimals: 18,
     chainId: 1,
@@ -63,11 +63,15 @@ const SwapScreen = props => {
     return [...tokenItems, ...tokensInStore];
   }, [tokensInStore]);
 
-  const { swapToken, getAmountOut } = web3CustomModule({
-    tokenABI,
-    tokenAddress: null,
-    decimals: 18,
-  });
+  const { getBalanceOfAccount, getBalanceOfTokenOfAccount, getCurrentGasPrice, getApproveGasLimit, approve, getAllowance, swapToken, getAmountOut } = web3CustomModule();
+
+  const [isApprove, setIsApprove] = useState(true);
+  const [accountBalance, setAccountBalance] = useState('0');
+  const [availableBalance, setAvailableBalance] = useState('0');
+  const [allowance, setAllowance] = useState('0');
+  const [gasPrice, setGasPrice] = useState(70000000);
+  const [gasApproveLimit, setGasApproveLimit] = useState(0);
+  const [pending, setPending] = useState(false);
 
   const [state, setState] = useState({
     network: null,
@@ -116,6 +120,38 @@ const SwapScreen = props => {
     }
     setState(prev => ({ ...prev, ...updateState }));
   }, [accounts]);
+
+  const loadEthereumAccountBalance = async () => {
+    try {
+      if (state.network === null || state.network === '')
+        return;
+
+      const ethBalanceInGwei = await getBalanceOfAccount(state.network, state.wallet);
+      const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
+      setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
+
+      const tokenBalance = await getBalanceOfTokenOfAccount(state.network, state.wallet, state.fromToken.address, state.fromToken.decimals);
+      setAvailableBalance(parseFloat(tokenBalance).toFixed(4));
+
+      const allowanceAmount = await getAllowance(state.network, state.wallet, UNISWAP_ADDRESS, state.fromToken.address);
+      setAllowance(allowanceAmount);
+
+      const gasValue = await getCurrentGasPrice(state.network);
+      setGasPrice(gasValue);
+
+      const gasLimitation = await getApproveGasLimit(state.network, state.wallet, UNISWAP_ADDRESS, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", state.fromToken.address);
+      setGasApproveLimit(gasLimitation);
+
+      // setLoading(false);
+    } catch (err) {
+      log({
+        description: 'loadEthereumAccountBalance',
+        cause: err,
+        location: 'SwapScreen',
+      });
+      return;
+    }
+  };
 
   const getOutAmount = async (
     network,
@@ -171,6 +207,29 @@ const SwapScreen = props => {
     // TODO: swap function
   }, []);
 
+  const handleApprove = async () => {
+    // TODO: approve function
+    if (pending) {
+      Alert.alert(`Waiting for pending approval!`);
+      return;
+    }
+
+    setPending(true);
+    try {
+      let ret = await approve(state.network, state.wallet, UNISWAP_ADDRESS, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", state.fromToken.address, gasApproveLimit, gasPrice);
+      if (ret !== []) {
+        setTimeout(() => loadEthereumAccountBalance(), 1000)
+        Alert.alert(`Approved!`);
+      }
+      else {
+        Alert.alert(`Failed Approval!`);
+      }
+    } catch (error) {
+      Alert.alert(`Approve error!`);
+    }
+    setPending(false);
+  }
+
   const handleClose = useCallback(() => {
     setModalVisible(false);
   }, []);
@@ -218,6 +277,22 @@ const SwapScreen = props => {
   );
 
   useEffect(() => {
+    if (parseInt(allowance) > 0 || state.fromToken.address === 'ETH')
+      setIsApprove(true);
+  }, [allowance, state.fromToken]);
+
+  useEffect(() => {
+    loadEthereumAccountBalance();
+  }, [
+    state.network,
+    state.wallet,
+    state.fromToken,
+    state.toToken
+  ]);
+
+  useEffect(() => {
+    setIsApprove(state.fromToken?.symbol === 'ETH');
+
     if (amountInputtarget === '') {
       return;
     }
@@ -330,12 +405,20 @@ const SwapScreen = props => {
       </View>
 
       <View style={styles.footer}>
-        <KButton
-          title="Approve"
-          onPress={handleSwap}
-          style={styles.swapButton}
-        />
-        <KButton title="Swap" onPress={handleSwap} style={styles.swapButton} />
+        {isApprove ?
+          <KButton
+            title="Swap"
+            onPress={handleSwap}
+            style={styles.swapButton}
+            isLoading={pending}
+          />
+          :
+          <KButton
+            title="Approve"
+            onPress={handleApprove}
+            style={styles.swapButton}
+          />
+        }
       </View>
 
       <TokenSelectModal

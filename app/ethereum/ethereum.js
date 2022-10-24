@@ -871,15 +871,8 @@ export const web3NFTModule = () => {
 
 /**
  * Web3 Custom Module
- * @param {Array} tokenABI
- * @param {String} tokenAddress
- * @param {Number} decimals
  */
-const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
-  if (!decimals) {
-    decimals = 18;
-  }
-
+const web3CustomModule = () => {
   const ContractInstance = (web3, abi, address) => {
     const contract = new web3.eth.Contract(abi, address);
     return contract;
@@ -972,7 +965,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
     /**
      * Get current token gas price
      */
-    getCurrentTokenGasLimit: async (chainName, account, amount, toAddress) => {
+    getCurrentTokenGasLimit: async (chainName, account, amount, toAddress, tokenAddress, decimals) => {
       const web3 = getWeb3(chainName);
       const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress, {
         from: account.address,
@@ -1064,6 +1057,8 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
       chainName,
       account,
       toAddress,
+      tokenAddress,
+      decimals,
       amount,
       gasLimit = 300000,
       gasPrice = 20000000000,
@@ -1123,7 +1118,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
      * Get Balance ot Token of account
      * @param {String} address
      */
-    getBalanceOfTokenOfAccount: async (chainName, address) => {
+    getBalanceOfTokenOfAccount: async (chainName, address, tokenAddress, decimals) => {
       const web3 = getWeb3(chainName);
       const contract = new web3.eth.Contract(tokenABI, tokenAddress);
       const amount = await contract.methods.balanceOf(address).call();
@@ -1135,7 +1130,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
      * @param {String} accountAddress
      * @param {String} allowAddress
      */
-    getAllowance: async (chainName, accountAddress, allowAddress) => {
+    getAllowance: async (chainName, accountAddress, allowAddress, tokenAddress) => {
       const web3 = getWeb3(chainName);
       const contract = new web3.eth.Contract(tokenABI, tokenAddress);
       const amount = await contract.methods
@@ -1150,7 +1145,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
      * @param {String} approveAddress
      * @param {Number} wad
      */
-    getApproveGasLimit: async (chainName, account, approveAddress, wad) => {
+    getApproveGasLimit: async (chainName, account, approveAddress, wad, tokenAddress) => {
       try {
         const web3 = getWeb3(chainName);
         const contract = new web3.eth.Contract(tokenABI, tokenAddress);
@@ -1181,6 +1176,7 @@ const web3CustomModule = ({ tokenABI, tokenAddress, decimals }) => {
       account,
       approveAddress,
       wad,
+      tokenAddress,
       gasLimit,
       gasPrice,
     ) => {

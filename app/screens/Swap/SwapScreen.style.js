@@ -58,13 +58,18 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   footer: {
+    display: 'flex',
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingTop: 20,
     padding: 20,
+    width: '100%',
   },
-  swapButton: { width: 100, height: 10 },
+  swapButton: {
+    width: '100%',
+    height: 10
+  },
   Kinput: {
     borderColor: '#E5E5EE',
     borderBottomWidth: 1,

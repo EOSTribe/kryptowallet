@@ -26,8 +26,6 @@ import { log } from '../../logger/logger';
 import web3Module from '../../ethereum/ethereum';
 import { getNativeTokenName } from '../../external/blockchains';
 
-const tokenABI = require('../../ethereum/abi/tokenAbi.json');
-
 const ERC20TokenDetailsScreen = props => {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [toAccountName, setToAccountName] = useState('');
@@ -58,11 +56,7 @@ const ERC20TokenDetailsScreen = props => {
     getBalanceOfAccount,
     getBalanceOfTokenOfAccount,
     transterERC20
-  } = web3Module({
-    tokenABI,
-    tokenAddress: token.address,
-    decimals: token.decimals
-  });
+  } = web3Module();
 
   const _handleToAccountChange = value => {
     // trim white space if present:
@@ -74,7 +68,7 @@ const ERC20TokenDetailsScreen = props => {
   };
 
   const refreshBalances = async () => {
-    const balance = await getBalanceOfTokenOfAccount(chainName, account.address);
+    const balance = await getBalanceOfTokenOfAccount(chainName, account.address, token.address, token.decimals);
     setTokenBalance(balance);
     setShowTransfer(true);
   };
@@ -115,7 +109,7 @@ const ERC20TokenDetailsScreen = props => {
       if (tokenBalance < floatAmount) {
         Alert.alert('Insufficient balance to send transfer!');
       } else {
-        const gasLimitation = await getCurrentTokenGasLimit(chainName, account, floatAmount.toString(), toAccountName);
+        const gasLimitation = await getCurrentTokenGasLimit(chainName, account, floatAmount.toString(), toAccountName, token.address, token.decimals);
         setGasLimit(gasLimitation);
 
         const gasValue = await getCurrentGasPrice(chainName);
@@ -144,7 +138,7 @@ const ERC20TokenDetailsScreen = props => {
 
     setPendingTransfer(true);
     try {
-      await transterERC20(chainName, account, toAccountName, amount, gasLimit, gasPrice);
+      await transterERC20(chainName, account, toAccountName, token.address, token.decimals, amount, gasLimit, gasPrice);
       Alert.alert(`${token.name} Transfer submitted!`);
     } catch (error) {
       Alert.alert(`${token.name} Transfer error!`);

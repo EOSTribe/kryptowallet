@@ -21,18 +21,14 @@ const EVMTokenListItem = ({
   const [tokenBalance, setTokenBalance] = useState(0);
   const {
     getBalanceOfTokenOfAccount
-  } = web3Module({
-    tokenABI,
-    tokenAddress: token.address,
-    decimals: token.decimals
-  });
+  } = web3Module();
 
   const handleOnPress = index => {
     onPress(index);
   };
 
   const refreshBalances = async () => {
-    const balance = await getBalanceOfTokenOfAccount(account.chainName, account.address);
+    const balance = await getBalanceOfTokenOfAccount(account.chainName, account.address, token.address, token.decimals);
     setTokenBalance(`${balance} ${token.name}`);
   };
 

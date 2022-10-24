@@ -37,13 +37,9 @@ const EVMTokenBalanceItem = ({
          account.chainName == "AURORA" || 
          account.chainName == "TELOSEVM") {
         const evmToken = getEVMTokenByName(account.chainName, tokenName);
-        const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: evmToken.address,
-          decimals: evmToken.decimals
-        });
+        const { getBalanceOfTokenOfAccount } = web3Module();
         if(evmToken) {
-      	 const accTokenBalance = await getBalanceOfTokenOfAccount(tokenName, account.address);
+      	 const accTokenBalance = await getBalanceOfTokenOfAccount(tokenName, account.address, evmToken.address, evmToken.decimals);
           totalBalance += parseFloat(accTokenBalance);
         }
       }

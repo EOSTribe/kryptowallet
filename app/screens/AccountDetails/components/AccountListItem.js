@@ -24,14 +24,10 @@ const AccountListItem = ({ account, chain, token, onPress, ...props }) => {
   
   const [tokenBalance, setTokenBalance] = useState(0);
   const [count, setCount] = useState(0);
-  const { getBalanceOfTokenOfAccount, } = web3Module({
-    tokenABI,
-    tokenAddress: token.address,
-    decimals: token.decimals
-  });
+  const { getBalanceOfTokenOfAccount, } = web3Module();
 
   const refreshBalances = async () => {
-    const balance = await getBalanceOfTokenOfAccount(chain, account.address);
+    const balance = await getBalanceOfTokenOfAccount(chain, account.address, token.address, token.decimals);
     const fixedBalance = parseFloat(balance).toFixed(4);
     setTokenBalance(fixedBalance);
     setCount(1);

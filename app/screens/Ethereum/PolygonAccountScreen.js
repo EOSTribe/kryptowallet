@@ -71,12 +71,8 @@ const PolygonAccountScreen = props => {
 
   const loadTokenBalance = async (token, setTokenBalance) => {
     if(!token) return;
-    const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: token.address,
-          decimals: token.decimals
-        });
-    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    const { getBalanceOfTokenOfAccount } = web3Module();
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address, token.address, token.decimals);
     console.log(tokenBalance, token.symbol);
     setTokenBalance(tokenBalance);
     refreshTotalUsdValue();
