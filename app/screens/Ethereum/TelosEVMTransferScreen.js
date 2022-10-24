@@ -68,7 +68,6 @@ const TelosEVMTransferScreen = props => {
   	}
   	try {
     	const accountInfo = await getAccount(account.accountName, chain);
-    	console.log(accountInfo);
     	// Calculate balance:
     	var selfUnstaked = 0;
     	if (accountInfo.core_liquid_balance) {
@@ -94,7 +93,6 @@ const TelosEVMTransferScreen = props => {
       const ethBalanceInGwei = await getBalanceOfAccount("TELOSEVM", account.address);
       const ethBalanceInEth = ethBalanceInGwei/ethMultiplier;
       const accBalance = parseFloat(ethBalanceInEth).toFixed(4);
-      console.log(accBalance);
       setAccountBalance(accBalance);
     } catch (err) {
       log({
@@ -138,8 +136,31 @@ const TelosEVMTransferScreen = props => {
   	}
   };
 
-  const _handleTransfer = () => {
-
+  const _handleTransfer = async () => {
+    if (!nativeAccount) {
+      Alert.alert("Native from account not set!");
+      return;
+    }
+    try {
+      const fAmount = parseFloat(amount);
+      if (fAmount > 0) {
+        let res = await transferTelosToEVM(nativeAccount, account.address, fAmount);
+        if(res.transaction_id) {
+          Alert.alert("Transaction sent "+res.transaction_id);
+        } else {
+          Alert.alert("Something went wrong", res);
+        }
+      } else {
+        Alert.alert("Set positive amount to transfer");
+      }
+    } catch (err) {
+      Alert.alert(err.message);
+      log({
+        description: '_handleTransfer',
+        cause: err,
+        location: 'TelosEVMTransferScreen',
+      });
+    }
   }
 
   loadEVMAccountBalance(account);
