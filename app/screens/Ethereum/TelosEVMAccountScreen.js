@@ -294,8 +294,8 @@ const TelosEVMAccountScreen = props => {
             style={styles.button}
             onPress={() => navigate('TelosEVMTransfer', { account })}
           />
-        }
-        { accountBalance > 0 && 
+        }        
+        { accountBalance > 10000000 && 
           <KButton
             title={'Stake TELOS'}
             style={styles.button}
