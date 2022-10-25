@@ -10,7 +10,13 @@ import {
 import KText from './KText';
 import { PRIMARY_BLUE } from '../theme/colors';
 
-const KInput = ({ label, secureTextEntry, containerStyle, ...props }) => {
+const KInput = ({
+  label,
+  secureTextEntry,
+  containerStyle,
+  style,
+  ...props
+}) => {
   const [showText, setShowText] = useState(false);
 
   const handlePressLabel = async () => {
@@ -40,7 +46,7 @@ const KInput = ({ label, secureTextEntry, containerStyle, ...props }) => {
         {...props}
         secureTextEntry={secureTextEntry && !showText}
         underlineColorAndroid={'transparent'}
-        style={styles.input}
+        style={[styles.input, style]}
       />
       {!!props.onPasteHandler && (
         <TouchableOpacity

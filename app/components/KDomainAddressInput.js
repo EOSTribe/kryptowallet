@@ -49,7 +49,9 @@ const KDomainAddressInput = ({ label, chainName, setUDAddress, secureTextEntry, 
     // Wait for X ms and then process the request
     timer.current = setTimeout(async () => {
       let res = await getAddress(chainName, value);
-      setAddress(res);
+      if (res !== '')
+        setAddress(res);
+        
       if (res)
         setUDAddress(res);
     }, waitTime);

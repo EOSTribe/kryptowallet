@@ -69,7 +69,7 @@ import {
   AuroraWithdrawScreen,
 } from './index.js';
 
-const tokenABI = require('../ethereum/abi.json');
+const tokenABI = require('../ethereum/abi/tokenAbi.json');
 const AccountsStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 const TransferStack = createStackNavigator();

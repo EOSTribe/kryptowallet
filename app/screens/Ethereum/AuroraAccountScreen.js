@@ -21,12 +21,11 @@ import { findIndex } from 'lodash';
 import { AURORA_STAKING_ADDRESS } from '../../constant/address';
 import web3Module, { web3AuroraStakingModule, AURORA_STREAM_NUM } from '../../ethereum/ethereum';
 import { log } from '../../logger/logger';
-import { MAIN_PAGE, SECOND_PAGE } from '../../constant/page'
-
+import { MAIN_PAGE, SECOND_PAGE } from '../../constant/page';
+import { AURORA_TOKEN_ADDRESS } from '../../constant/address'
 import { getEVMTokenByName } from '../../ethereum/tokens';
+
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
-const tokenAddress = "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79";
 const {
   getBalanceOfAccount,
   getBalanceOfTokenOfAccount,
@@ -34,11 +33,7 @@ const {
   getAllowance,
   getApproveGasLimit,
   approve,
-} = web3Module({
-  tokenABI,
-  tokenAddress,
-  decimals: 18
-});
+} = web3Module();
 
 const {
   getAprs,
@@ -132,12 +127,8 @@ const AuroraAccountScreen = props => {
 
   const loadTokenBalance = async (token, setTokenBalance) => {
     if(!token) return;
-    const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: token.address,
-          decimals: token.decimals
-        });
-    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address, token.address, token.decimals);
     console.log(tokenBalance, token.symbol);
     setTokenBalance(tokenBalance);
   }
@@ -165,7 +156,7 @@ const AuroraAccountScreen = props => {
       const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
       setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
 
-      const auroraBalance = await getBalanceOfTokenOfAccount("AURORA", account.address);
+      const auroraBalance = await getBalanceOfTokenOfAccount("AURORA", account.address, AURORA_TOKEN_ADDRESS, 18);
       setAvailableBalance(parseFloat(auroraBalance).toFixed(4));
 
       const aprs = await getAprs();
@@ -175,7 +166,7 @@ const AuroraAccountScreen = props => {
         setAprTotal(Math.floor(totalApr));
       }
 
-      const allowanceAmount = await getAllowance("AURORA", account.address, AURORA_STAKING_ADDRESS);
+      const allowanceAmount = await getAllowance("AURORA", account.address, AURORA_STAKING_ADDRESS, AURORA_TOKEN_ADDRESS);
       setAllowance(allowanceAmount);
 
       refreshTotalUsdValue();
@@ -205,7 +196,7 @@ const AuroraAccountScreen = props => {
     const gasValue = await getCurrentGasPrice("AURORA");
     setGasPrice(gasValue);
 
-    const gasLimitation = await getApproveGasLimit("AURORA", account, AURORA_STAKING_ADDRESS, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    const gasLimitation = await getApproveGasLimit("AURORA", account, AURORA_STAKING_ADDRESS, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", AURORA_TOKEN_ADDRESS);
     setGasApproveLimit(gasLimitation);
 
     const estimatedFee = parseFloat((gasValue * gasLimitation) / nativeDivider).toFixed(6);
@@ -225,7 +216,7 @@ const AuroraAccountScreen = props => {
 
     setPending(true);
     try {
-      let ret = await approve("AURORA", account, AURORA_STAKING_ADDRESS, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", gasApproveLimit, gasPrice);
+      let ret = await approve("AURORA", account, AURORA_STAKING_ADDRESS, "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", AURORA_TOKEN_ADDRESS, gasApproveLimit, gasPrice);
       if (ret !== []) {
         setTimeout(() => loadEthereumAccountBalance(account), 1000)
         Alert.alert(`Approved!`);

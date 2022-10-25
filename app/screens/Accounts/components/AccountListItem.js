@@ -19,7 +19,7 @@ import {
 } from '../../../theme/colors';
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../../ethereum/abi.json');
+const tokenABI = require('../../../ethereum/abi/tokenAbi.json');
 const tokenAddress = "";
 const {
   getBalanceOfAccount,

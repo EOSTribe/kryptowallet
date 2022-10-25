@@ -23,17 +23,10 @@ import { log } from '../../logger/logger';
 
 import { getEVMTokenByName } from '../../ethereum/tokens';
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
-const tokenAddress = "";
+
 const {
   getBalanceOfAccount,
-  getBalanceOfTokenOfAccount,
-  } = web3Module({
-    tokenABI,
-    tokenAddress,
-    decimals: 18
-  });
-
+} = web3Module();
 
 const EthereumAccountScreen = props => {
   const [accountBalance, setAccountBalance] = useState();
@@ -57,12 +50,12 @@ const EthereumAccountScreen = props => {
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
 
-  
+
   const refreshTotalUsdValue = async () => {
     var usdValue = 0.0;
-    const name =  "ETH:" + account.address;
+    const name = "ETH:" + account.address;
     for (const elem of totals) {
-      if(elem.account === name) {
+      if (elem.account === name) {
         usdValue = elem.total;
         break;
       }
@@ -72,13 +65,9 @@ const EthereumAccountScreen = props => {
   }
 
   const loadTokenBalance = async (token, setTokenBalance) => {
-    if(!token) return;
-    const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: token.address,
-          decimals: token.decimals
-        });
-    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    if (!token) return;
+    const { getBalanceOfTokenOfAccount } = web3Module();
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address, token.address, token.decimals);
     setTokenBalance(tokenBalance);
     refreshTotalUsdValue();
   }
@@ -153,7 +142,7 @@ const EthereumAccountScreen = props => {
     }
     try {
       const ethBalanceInGwei = await getBalanceOfAccount("ETH", account.address);
-      const ethBalanceInEth = ethBalanceInGwei/ethMultiplier;
+      const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
       setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
       refreshTotalUsdValue();
       checkConnectedFIOAccounts();
@@ -225,20 +214,20 @@ const EthereumAccountScreen = props => {
         </TouchableOpacity>
         <View style={styles.spacer} />
         <View style={styles.column}>
-        <Image
-          source={require('../../../assets/chains/eth.png')}
-          style={styles.buttonIcon}
-        />
-        <Text style={styles.addressLink} onPress={copyToClipboard}>
-          {account.address}
-        </Text>
+          <Image
+            source={require('../../../assets/chains/eth.png')}
+            style={styles.buttonIcon}
+          />
+          <Text style={styles.addressLink} onPress={copyToClipboard}>
+            {account.address}
+          </Text>
         </View>
         <View style={styles.spacer} />
         <KText>ETH Balance: {accountBalance} ETH</KText>
-        { usdtBalance > 0 &&
+        {usdtBalance > 0 &&
           <KText>USDT Balance: {usdtBalance}</KText>
         }
-        { usdcBalance > 0 &&
+        {usdcBalance > 0 &&
           <KText>USDC Balance: {usdcBalance}</KText>
         }
         <KText>Total USD Value: ${totalUsdValue}</KText>
@@ -251,11 +240,11 @@ const EthereumAccountScreen = props => {
         <View style={styles.spacer} />
         <KText>Switch network:</KText>
         <FiveIconsButtons
-          onIcon1Press={()=>navigate('EthereumAccount', { account })}
-          onIcon2Press={()=>navigate('PolygonAccount', { account })}
-          onIcon3Press={()=>navigate('AuroraAccount', { account })}
-          onIcon4Press={()=>navigate('BinanceAccount', { account })}
-          onIcon5Press={()=>navigate('TelosEVMAccount', { account })}
+          onIcon1Press={() => navigate('EthereumAccount', { account })}
+          onIcon2Press={() => navigate('PolygonAccount', { account })}
+          onIcon3Press={() => navigate('AuroraAccount', { account })}
+          onIcon4Press={() => navigate('BinanceAccount', { account })}
+          onIcon5Press={() => navigate('TelosEVMAccount', { account })}
           icon1={() => (
             <Image
               source={require('../../../assets/chains/eth.png')}
