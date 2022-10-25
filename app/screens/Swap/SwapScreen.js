@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SafeAreaView, View } from 'react-native';
 
 import styles from './SwapScreen.style';
-import { KButton, KHeader, KInput, KSelect } from '../../components';
+import { KButton, KInput, KSelect, KText } from '../../components';
 import { connectAccounts } from '../../redux';
 
 import TokenSelectModal from './components/TokenSelectModal';
@@ -12,6 +12,7 @@ import KIconButton from '../../components/KIconButton';
 import KIcon from '../../components/KIcon';
 import web3CustomModule from '../../ethereum/ethereum';
 import { UNISWAP_ADDRESS } from '../../constant/address';
+import Balance from './components/Balance';
 
 const tokenItems = ethereumTokens.tokens;
 const ethMultiplier = 1000000000000000000;
@@ -75,12 +76,22 @@ const SwapScreen = props => {
   } = web3CustomModule();
 
   const [isApprove, setIsApprove] = useState(true);
-  const [ethAmount, setEthAmount] = useState('0');
-  const [fromeTokenAmount, setFromTokenAmount] = useState('0');
+  const [ethBalance, setEthBalance] = useState('0');
+  const [fromTokenBalance, setFromTokenBalance] = useState('0');
+  const [toTokenBalance, setToTokenBalance] = useState('0');
   const [allowance, setAllowance] = useState('0');
   const [gasPrice, setGasPrice] = useState(70000000);
   const [gasApproveLimit, setGasApproveLimit] = useState(0);
   const [pending, setPending] = useState(false);
+
+  const [inputedAmount, setInputedAmount] = useState('0');
+
+  const [networks, setNetworks] = useState([]);
+  const [wallets, setWallets] = useState([]);
+
+  const [selectedTokenType, setSelectedTokenType] = useState('from');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [amountInputtarget, setAmountInputTarget] = useState('');
 
   const [state, setState] = useState({
     network: null,
@@ -98,14 +109,6 @@ const SwapScreen = props => {
     toAmount: '0',
     toToken: null,
   });
-  const [inputedAmount, setInputedAmount] = useState('0');
-
-  const [networks, setNetworks] = useState([]);
-  const [wallets, setWallets] = useState([]);
-
-  const [selectedTokenType, setSelectedTokenType] = useState('from');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [amountInputtarget, setAmountInputTarget] = useState('');
 
   useEffect(() => {
     let networkArray = [];
@@ -131,53 +134,56 @@ const SwapScreen = props => {
   }, [accounts]);
 
   const loadEthereumAccountBalance = async () => {
-    try {
-      if (state.network === null || state.network === '') return;
+    if (state.network === null || state.network === '') {
+      return;
+    }
 
-      const ethBalanceInGwei = await getBalanceOfAccount(
-        state.network,
-        state.wallet,
-      );
-      const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
-      setEthAmount(parseFloat(ethBalanceInEth).toFixed(4));
+    const ethBalanceInGwei = await getBalanceOfAccount(
+      state.network,
+      state.wallet,
+    );
+    const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
+    setEthBalance(parseFloat(ethBalanceInEth).toFixed(4));
 
-      const tokenBalance = await getBalanceOfTokenOfAccount(
+    if (state.fromToken && state.fromToken.symbol !== 'ETH') {
+      const fromBalance = await getBalanceOfTokenOfAccount(
         state.network,
         state.wallet,
         state.fromToken.address,
         state.fromToken.decimals,
       );
-      setFromTokenAmount(parseFloat(tokenBalance).toFixed(4));
-
-      const allowanceAmount = await getAllowance(
-        state.network,
-        state.wallet,
-        UNISWAP_ADDRESS,
-        state.fromToken.address,
-      );
-      setAllowance(allowanceAmount);
-
-      const gasValue = await getCurrentGasPrice(state.network);
-      setGasPrice(gasValue);
-
-      const gasLimitation = await getApproveGasLimit(
-        state.network,
-        state.wallet,
-        UNISWAP_ADDRESS,
-        '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-        state.fromToken.address,
-      );
-      setGasApproveLimit(gasLimitation);
-
-      // setLoading(false);
-    } catch (err) {
-      log({
-        description: 'loadEthereumAccountBalance',
-        cause: err,
-        location: 'SwapScreen',
-      });
-      return;
+      setFromTokenBalance(parseFloat(fromBalance).toFixed(4));
     }
+
+    if (state.toToken && state.toToken.symbol !== 'ETH') {
+      const toBalance = await getBalanceOfTokenOfAccount(
+        state.network,
+        state.wallet,
+        state.toToken.address,
+        state.toToken.decimals,
+      );
+      setToTokenBalance(parseFloat(toBalance).toFixed(4));
+    }
+
+    const allowanceAmount = await getAllowance(
+      state.network,
+      state.wallet,
+      UNISWAP_ADDRESS,
+      state.fromToken.address,
+    );
+    setAllowance(allowanceAmount);
+
+    const gasValue = await getCurrentGasPrice(state.network);
+    setGasPrice(gasValue);
+
+    const gasLimitation = await getApproveGasLimit(
+      state.network,
+      state.wallet,
+      UNISWAP_ADDRESS,
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      state.fromToken.address,
+    );
+    setGasApproveLimit(gasLimitation);
   };
 
   const getOutAmount = async (
@@ -311,8 +317,9 @@ const SwapScreen = props => {
   );
 
   useEffect(() => {
-    if (parseInt(allowance) > 0 || state.fromToken.address === 'ETH')
+    if (parseInt(allowance, 10) > 0 || state.fromToken?.address === 'ETH') {
       setIsApprove(true);
+    }
   }, [allowance, state.fromToken]);
 
   useEffect(() => {
@@ -354,7 +361,7 @@ const SwapScreen = props => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
-        <KHeader title={'Swap'} style={styles.header} />
+        <KText style={styles.header}>{'Swap'}</KText>
         <KSelect
           label={'Blockchain'}
           items={networks}
@@ -384,24 +391,40 @@ const SwapScreen = props => {
           />
           <KIcon name="percent" size={20} color={'gray'} />
         </View>
-        <View style={styles.tokenContainer}>
-          <KInput
-            label={''}
-            placeholder={'From'}
-            value={state.fromAmount}
-            onChangeText={handleFromAmountChange}
-            selectTextOnFocus
-            containerStyle={styles.inputContainer}
-            style={styles.Kinput}
-            autoCapitalize={'none'}
-            keyboardType={'numeric'}
-          />
-          <KButton
-            title={state.fromToken?.symbol || 'Select Token'}
-            onPress={handleFromTokenSelect}
-            style={[styles.button]}
-            textStyle={state.fromToken ? {} : styles.placeholder}
-          />
+        <View>
+          <View style={styles.tokenContainer}>
+            <KInput
+              label={''}
+              placeholder={'From'}
+              value={state.fromAmount}
+              onChangeText={handleFromAmountChange}
+              selectTextOnFocus
+              containerStyle={styles.inputContainer}
+              style={styles.Kinput}
+              autoCapitalize={'none'}
+              keyboardType={'numeric'}
+            />
+            <KButton
+              title={state.fromToken?.symbol || 'Select Token'}
+              onPress={handleFromTokenSelect}
+              style={[styles.button]}
+              textStyle={state.fromToken ? {} : styles.placeholder}
+            />
+          </View>
+          <View>
+            {wallets.length > 0 && state.fromToken && (
+              <Balance
+                style={styles.balance}
+                type="from"
+                balance={
+                  state.fromToken?.symbol === 'ETH'
+                    ? ethBalance
+                    : fromTokenBalance
+                }
+                onMaxClick={handleFromAmountChange}
+              />
+            )}
+          </View>
         </View>
         <View style={styles.switchIconContainer}>
           <KIconButton
@@ -411,25 +434,39 @@ const SwapScreen = props => {
             size={30}
           />
         </View>
+        <View>
+          <View style={styles.tokenContainer}>
+            <KInput
+              label={''}
+              placeholder={'To'}
+              value={state.toAmount}
+              onChangeText={handleToAmountChange}
+              selectTextOnFocus
+              containerStyle={styles.inputContainer}
+              style={styles.Kinput}
+              autoCapitalize={'none'}
+              keyboardType={'numeric'}
+            />
+            <KButton
+              title={state.toToken?.symbol || 'Select Token'}
+              onPress={handleToTokenSelect}
+              style={styles.button}
+              textStyle={state.toToken ? {} : styles.placeholder}
+            />
+          </View>
 
-        <View style={styles.tokenContainer}>
-          <KInput
-            label={''}
-            placeholder={'To'}
-            value={state.toAmount}
-            onChangeText={handleToAmountChange}
-            selectTextOnFocus
-            containerStyle={styles.inputContainer}
-            style={styles.Kinput}
-            autoCapitalize={'none'}
-            keyboardType={'numeric'}
-          />
-          <KButton
-            title={state.toToken?.symbol || 'Select Token'}
-            onPress={handleToTokenSelect}
-            style={styles.button}
-            textStyle={state.toToken ? {} : styles.placeholder}
-          />
+          <View>
+            {wallets.length > 0 && state.toToken && (
+              <Balance
+                style={styles.balance}
+                token={state.toToken}
+                type="to"
+                balance={
+                  state.toToken?.symbol === 'ETH' ? ethBalance : toTokenBalance
+                }
+              />
+            )}
+          </View>
         </View>
       </View>
 

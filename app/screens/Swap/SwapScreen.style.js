@@ -17,7 +17,13 @@ const styles = StyleSheet.create({
   body: {
     backgroundColor: 'white',
     borderBottomColor: '#c1c1c1',
-    paddingTop: 30,
+    // paddingTop: 10,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#78a7e6',
+    paddingVertical: 5,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -45,7 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f5f6fc',
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 20,
     position: 'relative',
     marginVertical: 3,
     marginHorizontal: 20,
@@ -68,7 +74,7 @@ const styles = StyleSheet.create({
   },
   swapButton: {
     width: '100%',
-    height: 10
+    height: 10,
   },
   Kinput: {
     borderColor: '#E5E5EE',
@@ -98,6 +104,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 120,
+    marginBottom: 30,
   },
   switchButton: {
     borderRadius: 50,
@@ -113,6 +120,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     opacity: 0.5,
   },
+  balance: {
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 20,
+    right: 0,
+    marginHorizontal: 20,
+  },
+
+  // maxBalance: { paddingHorizontal:20}
+  // balanceContainer: {paddingVertical:10}
 });
 
 export default styles;
