@@ -44,6 +44,7 @@ import {
   BinanceAccountScreen,
   PolygonAccountScreen,
   TelosEVMAccountScreen,
+  TelosEVMTransferScreen,
   AuroraAccountScreen,
   NewAccountScreen,
   ConnectAccountScreen,
@@ -68,7 +69,7 @@ import {
   AuroraWithdrawScreen,
 } from './index.js';
 
-const tokenABI = require('../ethereum/abi.json');
+const tokenABI = require('../ethereum/abi/tokenAbi.json');
 const AccountsStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 const TransferStack = createStackNavigator();
@@ -169,6 +170,7 @@ const AccountsStackScreen = () => {
       <AccountsStack.Screen name="BinanceAccount" component={BinanceAccountScreen} />
       <AccountsStack.Screen name="PolygonAccount" component={PolygonAccountScreen} />
       <AccountsStack.Screen name="TelosEVMAccount" component={TelosEVMAccountScreen} />
+      <AccountsStack.Screen name="TelosEVMTransfer" component={TelosEVMTransferScreen} />
       <AccountsStack.Screen name="AuroraAccount" component={AuroraAccountScreen} />
       <AccountsStack.Screen name="Swap" component={SwapScreen} />
       <AccountsStack.Screen name="KeyList" component={KeyListScreen} />

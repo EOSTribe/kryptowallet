@@ -32,19 +32,13 @@ const ResendTransferScreen = props => {
   const [ethTotalAmount, setEthTotalAmount] = useState(0.0);
 
   const ethDivider = 1000000000000000000;
-  const tokenABI = require('../../ethereum/abi.json');
-  const tokenAddress = "";
+
   const {
     createKeyPair,
     getCurrentGasPrice,
     transferETH,
-    transterERC20,
     getBalanceOfAccount,
-    } = web3Module({
-      tokenABI,
-      tokenAddress,
-      decimals: 18
-    });
+    } = web3Module();
 
   const {
     addHistory,

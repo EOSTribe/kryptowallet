@@ -45,7 +45,7 @@ const TransferScreen = props => {
   const [ethEstimatedFee, setEthEstimatedFee] = useState(0.0);
   const [ethTotalAmount, setEthTotalAmount] = useState(0.0);
   const ethDivider = 1000000000000000000;
-  const tokenABI = require('../../ethereum/abi.json');
+  const tokenABI = require('../../ethereum/abi/tokenAbi.json');
   const tokenAddress = "";
   const {
     createKeyPair,

@@ -23,7 +23,7 @@ import { log } from '../../logger/logger';
 import { getEVMTokenByName } from '../../ethereum/tokens';
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 const tokenAddress = "";
 const {
   getBalanceOfAccount
@@ -55,6 +55,10 @@ const TelosEVMAccountScreen = props => {
 
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
+
+  const telosAccounts = accounts.filter((value, index, array) => {
+    return (value != null && value.chainName === 'Telos');
+  });
   
   const refreshTotalUsdValue = async () => {
     var usdValue = 0.0;
@@ -71,12 +75,8 @@ const TelosEVMAccountScreen = props => {
 
   const loadTokenBalance = async (token, setTokenBalance) => {
     if(!token) return;
-    const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: token.address,
-          decimals: token.decimals
-        });
-    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    const { getBalanceOfTokenOfAccount } = web3Module();
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address, token.address, token.decimals);
     setTokenBalance(tokenBalance);
     refreshTotalUsdValue();
   }
@@ -222,7 +222,7 @@ const TelosEVMAccountScreen = props => {
         <View style={styles.spacer} />
         <View style={styles.column}>
         <Image
-          source={require('../../../assets/chains/bsc.png')}
+          source={require('../../../assets/chains/telosevm.png')}
           style={styles.buttonIcon}
         />
         <Text style={styles.addressLink} onPress={copyToClipboard}>
@@ -230,7 +230,7 @@ const TelosEVMAccountScreen = props => {
         </Text>
         </View>
         <View style={styles.spacer} />
-        <KText>TLOS Balance: {accountBalance} TLOS</KText>
+        <KText>TLOS EVM Balance: {accountBalance} TLOS</KText>
         { usdtBalance > 0 &&
           <KText>USDT Balance: {usdtBalance}</KText>
         }
@@ -283,6 +283,21 @@ const TelosEVMAccountScreen = props => {
           )}
         />
         <FlatList />
+        { telosAccounts.length > 0 &&
+          <KButton
+            title={'Deposit TELOS'}
+            theme={'brown'}
+            style={styles.button}
+            onPress={() => navigate('TelosEVMTransfer', { account })}
+          />
+        }        
+        { accountBalance > 10000000 && 
+          <KButton
+            title={'Stake TELOS'}
+            style={styles.button}
+            onPress={() => navigate('StakeTelos', { account })}
+          />
+        }
         <TwoIconsButtons
           onIcon1Press={_handleBackupKey}
           onIcon2Press={_handleRemoveAccount}

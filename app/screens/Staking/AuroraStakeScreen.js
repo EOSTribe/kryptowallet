@@ -19,19 +19,15 @@ import { PRIMARY_BLUE } from '../../theme/colors';
 import web3Module, { web3AuroraStakingModule } from '../../ethereum/ethereum';
 import { log } from '../../logger/logger';
 import { MAIN_PAGE, SECOND_PAGE, THIRD_PAGE } from '../../constant/page'
+import { AURORA_TOKEN_ADDRESS } from '../../constant/address'
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
-const tokenAddress = "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79";
+
 const {
   getCurrentGasPrice,
   getBalanceOfAccount,
   getBalanceOfTokenOfAccount
-} = web3Module({
-  tokenABI,
-  tokenAddress,
-  decimals: 18
-});
+} = web3Module();
 
 const {
   stake,
@@ -147,7 +143,7 @@ const AuroraStakeScreen = props => {
       const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
       setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
 
-      const auroraBalance = await getBalanceOfTokenOfAccount("AURORA", account.address);
+      const auroraBalance = await getBalanceOfTokenOfAccount("AURORA", account.address, AURORA_TOKEN_ADDRESS, 18);
       setAvailableBalance(parseFloat(auroraBalance).toFixed(4));
 
       const claims = await getPendingRewards(account);

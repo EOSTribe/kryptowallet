@@ -10,6 +10,7 @@ const KButton = ({
   theme = 'primary',
   icon,
   style,
+  textStyle,
   renderIcon,
   isLoading = false,
   ...props
@@ -46,7 +47,7 @@ const KButton = ({
   };
 
   return (
-    <TouchableOpacity {...props} style={style} disabled={isLoading}>
+    <TouchableOpacity style={style} {...props} disabled={isLoading}>
       <LinearGradient
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -54,7 +55,7 @@ const KButton = ({
         style={styles.container}>
         {renderMaterialIcon()}
         {renderIconComponent()}
-        <KText style={styles.title}>{title}</KText>
+        <KText style={[styles.title, textStyle]}>{title}</KText>
         <Spinner
           type={'FadingCircle'}
           size={16}

@@ -23,7 +23,7 @@ import { log } from '../../logger/logger';
 import { getEVMTokenByName } from '../../ethereum/tokens';
 
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
 const tokenAddress = "";
 const {
   getBalanceOfAccount,
@@ -71,12 +71,8 @@ const PolygonAccountScreen = props => {
 
   const loadTokenBalance = async (token, setTokenBalance) => {
     if(!token) return;
-    const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: token.address,
-          decimals: token.decimals
-        });
-    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address);
+    const { getBalanceOfTokenOfAccount } = web3Module();
+    const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address, token.address, token.decimals);
     console.log(tokenBalance, token.symbol);
     setTokenBalance(tokenBalance);
     refreshTotalUsdValue();

@@ -11,7 +11,7 @@ import {
 const { height, width } = Dimensions.get('window');
 var tokenWidth = width - 90;
 
-const tokenABI = require('../../../ethereum/abi.json');
+const tokenABI = require('../../../ethereum/abi/tokenAbi.json');
 
 const EVMTokenBalanceItem = ({
   accounts,
@@ -37,13 +37,9 @@ const EVMTokenBalanceItem = ({
          account.chainName == "AURORA" || 
          account.chainName == "TELOSEVM") {
         const evmToken = getEVMTokenByName(account.chainName, tokenName);
-        const { getBalanceOfTokenOfAccount } = web3Module({
-          tokenABI,
-          tokenAddress: evmToken.address,
-          decimals: evmToken.decimals
-        });
+        const { getBalanceOfTokenOfAccount } = web3Module();
         if(evmToken) {
-      	 const accTokenBalance = await getBalanceOfTokenOfAccount(tokenName, account.address);
+      	 const accTokenBalance = await getBalanceOfTokenOfAccount(tokenName, account.address, evmToken.address, evmToken.decimals);
           totalBalance += parseFloat(accTokenBalance);
         }
       }

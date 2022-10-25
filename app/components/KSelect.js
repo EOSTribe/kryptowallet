@@ -5,7 +5,13 @@ import KText from './KText';
 import { PRIMARY_BLUE, PRIMARY_BLACK } from '../theme/colors';
 import RNPickerSelect from 'react-native-picker-select';
 
-const KSelect = ({ label, secureTextEntry, containerStyle, ...props }) => {
+const KSelect = ({
+  label,
+  secureTextEntry,
+  containerStyle,
+  style,
+  ...props
+}) => {
   return (
     <View style={[styles.container, containerStyle]}>
       <KText style={styles.label}>{label}</KText>
@@ -21,8 +27,8 @@ const KSelect = ({ label, secureTextEntry, containerStyle, ...props }) => {
         style={{
           viewContainer: styles.picker,
           placeholder: styles.placeholderStyle,
-          inputIOS: styles.pickerInput,
-          inputAndroid: styles.pickerInput,
+          inputIOS: [styles.pickerInput, style],
+          inputAndroid: [styles.pickerInput, style],
         }}
       />
     </View>
