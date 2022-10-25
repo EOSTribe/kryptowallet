@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView, ScrollView, View } from 'react-native';
 
 import styles from './SwapScreen.style';
-import { KButton, KInput, KSelect, KText } from '../../components';
+import { KButton, KHeader, KInput, KSelect, KText } from '../../components';
 import { connectAccounts } from '../../redux';
 
 import TokenSelectModal from './components/TokenSelectModal';
@@ -13,7 +13,7 @@ import KIcon from '../../components/KIcon';
 import web3CustomModule from '../../ethereum/ethereum';
 import { UNISWAP_ADDRESS } from '../../constant/address';
 import Balance from './components/Balance';
-
+import { supportedChains } from '../../eos/chains';
 const tokenItems = ethereumTokens.tokens;
 const ethMultiplier = 1000000000000000000;
 const stableCoins = [
@@ -55,6 +55,19 @@ const stableCoins = [
 ];
 
 const SwapScreen = props => {
+  var importableChains = [
+    { name: 'Algorand', symbol: 'ALGO' },
+    { name: 'Stellar', symbol: 'XRP' },
+    { name: 'Ethereum', symbol: 'ETH' },
+    { name: 'Binance', symbol: 'BNB' },
+    { name: 'Polygon', symbol: 'MATIC' },
+    { name: 'Aurora', symbol: 'AURORA' },
+    { name: 'Telosevm', symbol: 'TELOSEVM' },
+  ];
+
+  supportedChains.map(function(item) {
+    importableChains.push(item);
+  });
   const {
     accountsState: { accounts, tokens: tokensInStore },
     addToken,
@@ -113,21 +126,20 @@ const SwapScreen = props => {
   });
 
   useEffect(() => {
-    let networkArray = [];
     let walletArray = [];
 
     accounts
       .filter(cell => cell.chainName === 'ETH')
       .map(cell => {
-        networkArray.push({ label: cell.chainName, value: cell.chainName });
+        // networkArray.push({ label: cell.chainName, value: cell.chainName });
         walletArray.push({ label: cell.address, value: cell.address });
       });
 
-    setNetworks(networkArray);
+    setNetworks(importableChains);
     setWallets(walletArray);
     let updateState = {};
-    if (networkArray.length > 0 && state.network === null) {
-      updateState.network = networkArray[0].value;
+    if (importableChains.length > 0 && state.network === null) {
+      updateState.network = importableChains[0].value;
     }
     if (walletArray.length > 0 && state.wallet === null) {
       updateState.wallet = walletArray[0].value;
@@ -248,8 +260,8 @@ const SwapScreen = props => {
   }, []);
 
   const getBNValue = (balance, decimal) => {
-    return balance * (10 ** decimal);
-  }
+    return balance * 10 ** decimal;
+  };
 
   const handleSwap = async () => {
     // TODO: swap function
@@ -260,7 +272,11 @@ const SwapScreen = props => {
 
     setPending(true);
     try {
-      const selectedAccount = accounts.find(cell => cell.address === state.fromToken.address && cell.chainName === state.network);
+      const selectedAccount = accounts.find(
+        cell =>
+          cell.address === state.fromToken.address &&
+          cell.chainName === state.network,
+      );
       let ret = await swapToken(
         state.network,
         state.fromToken.address,
@@ -282,7 +298,7 @@ const SwapScreen = props => {
       Alert.alert(`Swap error!`);
     }
     setPending(false);
-  }
+  };
 
   const handleApprove = async () => {
     // TODO: approve function
@@ -402,133 +418,143 @@ const SwapScreen = props => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.body}>
-        <KText style={styles.header}>{'Swap'}</KText>
-        <KSelect
-          label={'Blockchain'}
-          items={networks}
-          onValueChange={handleNetWorkChange}
-          containerStyle={styles.kInputContainer}
-          value={state.network}
-        />
-        <KSelect
-          label={'Wallet'}
-          items={wallets}
-          onValueChange={handleWalletChange}
-          containerStyle={styles.kInputContainer}
-          value={state.wallet}
-        />
-        <View style={styles.slippingContainer}>
-          <KInput
-            label={'Slippage tolerance'}
-            placeholder={'0.10'}
-            value={state.slipping}
-            onChangeText={handleSlippingChange}
-            selectTextOnFocus
-            containerStyle={styles.inputContainer}
-            style={styles.slipInput}
-            autoCapitalize={'none'}
-            keyboardType={'numeric'}
-            textAlign="right"
+      <KHeader
+        title="Swap"
+        subTitle={'Swap tokens on your wallet'}
+        style={styles.header}
+      />
+      <ScrollView style={styles.scrollContentContainer}>
+        <View style={styles.body}>
+          <KSelect
+            label={'Blockchain'}
+            items={networks.map(item => ({
+              label: item.name,
+              value: item,
+            }))}
+            onValueChange={handleNetWorkChange}
+            containerStyle={styles.kInputContainer}
+            value={state.network}
           />
-          <KIcon name="percent" size={20} color={'gray'} />
-        </View>
-        <View>
-          <View style={styles.tokenContainer}>
+          <KSelect
+            label={'Wallet'}
+            items={wallets}
+            onValueChange={handleWalletChange}
+            containerStyle={styles.kInputContainer}
+            value={state.wallet}
+          />
+          <View style={styles.slippingContainer}>
             <KInput
-              label={''}
-              placeholder={'From'}
-              value={state.fromAmount}
-              onChangeText={handleFromAmountChange}
+              label={'Slippage tolerance'}
+              placeholder={'0.10'}
+              value={state.slipping}
+              onChangeText={handleSlippingChange}
               selectTextOnFocus
               containerStyle={styles.inputContainer}
-              style={styles.Kinput}
+              style={styles.slipInput}
               autoCapitalize={'none'}
               keyboardType={'numeric'}
+              textAlign="right"
             />
-            <KButton
-              title={state.fromToken?.symbol || 'Select Token'}
-              onPress={handleFromTokenSelect}
-              style={[styles.button]}
-              textStyle={state.fromToken ? {} : styles.placeholder}
+            <KIcon name="percent" size={20} color={'gray'} />
+          </View>
+          <View>
+            <View style={styles.tokenContainer}>
+              <KInput
+                label={''}
+                placeholder={'From'}
+                value={state.fromAmount}
+                onChangeText={handleFromAmountChange}
+                selectTextOnFocus
+                containerStyle={styles.inputContainer}
+                style={styles.Kinput}
+                autoCapitalize={'none'}
+                keyboardType={'numeric'}
+              />
+              <KButton
+                title={state.fromToken?.symbol || 'Select Token'}
+                onPress={handleFromTokenSelect}
+                style={[styles.button]}
+                textStyle={state.fromToken ? {} : styles.placeholder}
+              />
+            </View>
+            <View>
+              {wallets.length > 0 && state.fromToken && (
+                <Balance
+                  style={styles.balance}
+                  type="from"
+                  balance={
+                    state.fromToken?.symbol === 'ETH'
+                      ? ethBalance
+                      : fromTokenBalance
+                  }
+                  onMaxClick={handleFromAmountChange}
+                />
+              )}
+            </View>
+          </View>
+          <View style={styles.switchIconContainer}>
+            <KIconButton
+              style={styles.switchButton}
+              onPress={handleSwitch}
+              name="swap-vertical-circle-outline"
+              size={30}
             />
           </View>
           <View>
-            {wallets.length > 0 && state.fromToken && (
-              <Balance
-                style={styles.balance}
-                type="from"
-                balance={
-                  state.fromToken?.symbol === 'ETH'
-                    ? ethBalance
-                    : fromTokenBalance
-                }
-                onMaxClick={handleFromAmountChange}
+            <View style={styles.tokenContainer}>
+              <KInput
+                label={''}
+                placeholder={'To'}
+                value={state.toAmount}
+                onChangeText={handleToAmountChange}
+                selectTextOnFocus
+                containerStyle={styles.inputContainer}
+                style={styles.Kinput}
+                autoCapitalize={'none'}
+                keyboardType={'numeric'}
               />
-            )}
+              <KButton
+                title={state.toToken?.symbol || 'Select Token'}
+                onPress={handleToTokenSelect}
+                style={styles.button}
+                textStyle={state.toToken ? {} : styles.placeholder}
+              />
+            </View>
+
+            <View>
+              {wallets.length > 0 && state.toToken && (
+                <Balance
+                  style={styles.balance}
+                  token={state.toToken}
+                  type="to"
+                  balance={
+                    state.toToken?.symbol === 'ETH'
+                      ? ethBalance
+                      : toTokenBalance
+                  }
+                />
+              )}
+            </View>
           </View>
         </View>
-        <View style={styles.switchIconContainer}>
-          <KIconButton
-            style={styles.switchButton}
-            onPress={handleSwitch}
-            name="swap-vertical-circle-outline"
-            size={30}
-          />
-        </View>
-        <View>
-          <View style={styles.tokenContainer}>
-            <KInput
-              label={''}
-              placeholder={'To'}
-              value={state.toAmount}
-              onChangeText={handleToAmountChange}
-              selectTextOnFocus
-              containerStyle={styles.inputContainer}
-              style={styles.Kinput}
-              autoCapitalize={'none'}
-              keyboardType={'numeric'}
-            />
+        <View style={styles.footer}>
+          {isApprove ? (
             <KButton
-              title={state.toToken?.symbol || 'Select Token'}
-              onPress={handleToTokenSelect}
-              style={styles.button}
-              textStyle={state.toToken ? {} : styles.placeholder}
+              title="Swap"
+              onPress={handleSwap}
+              style={styles.swapButton}
+              isLoading={pending}
             />
-          </View>
-
-          <View>
-            {wallets.length > 0 && state.toToken && (
-              <Balance
-                style={styles.balance}
-                token={state.toToken}
-                type="to"
-                balance={
-                  state.toToken?.symbol === 'ETH' ? ethBalance : toTokenBalance
-                }
-              />
-            )}
-          </View>
+          ) : (
+            <KButton
+              title="Approve"
+              onPress={handleApprove}
+              style={styles.swapButton}
+              isLoading={pending}
+            />
+          )}
         </View>
-      </View>
-
-      <View style={styles.footer}>
-        {isApprove ? (
-          <KButton
-            title="Swap"
-            onPress={handleSwap}
-            style={styles.swapButton}
-            isLoading={pending}
-          />
-        ) : (
-          <KButton
-            title="Approve"
-            onPress={handleApprove}
-            style={styles.swapButton}
-            isLoading={pending}
-          />
-        )}
-      </View>
+      </ScrollView>
 
       <TokenSelectModal
         visible={modalVisible}
