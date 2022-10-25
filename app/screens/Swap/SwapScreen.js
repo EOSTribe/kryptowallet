@@ -13,7 +13,7 @@ import KIcon from '../../components/KIcon';
 import web3CustomModule from '../../ethereum/ethereum';
 import { UNISWAP_ADDRESS } from '../../constant/address';
 import Balance from './components/Balance';
-import { supportedChains } from '../../eos/chains';
+
 const tokenItems = ethereumTokens.tokens;
 const ethMultiplier = 1000000000000000000;
 const stableCoins = [
@@ -55,19 +55,6 @@ const stableCoins = [
 ];
 
 const SwapScreen = props => {
-  var importableChains = [
-    { name: 'Algorand', symbol: 'ALGO' },
-    { name: 'Stellar', symbol: 'XRP' },
-    { name: 'Ethereum', symbol: 'ETH' },
-    { name: 'Binance', symbol: 'BNB' },
-    { name: 'Polygon', symbol: 'MATIC' },
-    { name: 'Aurora', symbol: 'AURORA' },
-    { name: 'Telosevm', symbol: 'TELOSEVM' },
-  ];
-
-  supportedChains.map(function(item) {
-    importableChains.push(item);
-  });
   const {
     accountsState: { accounts, tokens: tokensInStore },
     addToken,
@@ -126,20 +113,27 @@ const SwapScreen = props => {
   });
 
   useEffect(() => {
+    let networkArray = [];
     let walletArray = [];
 
     accounts
       .filter(cell => cell.chainName === 'ETH')
       .map(cell => {
-        // networkArray.push({ label: cell.chainName, value: cell.chainName });
+        const exist_network = networkArray.find(
+          _network => _network.label === cell.chainName,
+        );
+        console.log(exist_network);
+        if (!exist_network) {
+          networkArray.push({ label: cell.chainName, value: cell.chainName });
+        }
         walletArray.push({ label: cell.address, value: cell.address });
       });
 
-    setNetworks(importableChains);
+    setNetworks(networkArray);
     setWallets(walletArray);
     let updateState = {};
-    if (importableChains.length > 0 && state.network === null) {
-      updateState.network = importableChains[0].value;
+    if (networkArray.length > 0 && state.network === null) {
+      updateState.network = networkArray[0].value;
     }
     if (walletArray.length > 0 && state.wallet === null) {
       updateState.wallet = walletArray[0].value;
@@ -427,10 +421,7 @@ const SwapScreen = props => {
         <View style={styles.body}>
           <KSelect
             label={'Blockchain'}
-            items={networks.map(item => ({
-              label: item.name,
-              value: item,
-            }))}
+            items={networks}
             onValueChange={handleNetWorkChange}
             containerStyle={styles.kInputContainer}
             value={state.network}
