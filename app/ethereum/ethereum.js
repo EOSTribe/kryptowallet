@@ -919,7 +919,7 @@ const web3CustomModule = () => {
       let int_str = str.split('.')[0];
       let float_str = str.split('.')[1];
       let ret_str = '';
-  
+
       let count = 0;
       for (let i = int_str.length - 1; i >= 0; i--) {
         count++;
@@ -927,7 +927,7 @@ const web3CustomModule = () => {
         if (count % 3 === 0 && i !== 0)
           ret_str = ',' + ret_str
       }
-  
+
       if (float_str) {
         ret_str = ret_str + '.' + float_str
       }
@@ -1227,9 +1227,68 @@ const web3CustomModule = () => {
       }
     },
     /**
+     * swap gas limit
+     */
+     getSwapGasLimit: async (chainName, fromToken, toToken, account, inputAmount, outputAmount, outputMin) => {
+      try {
+        const web3 = getWeb3(chainName);
+        let callData = ''
+        const block = await web3.eth.getBlock("latest")
+        // outputMin = Math.floor(outputMin * 0.9)
+        outputMin = 0;
+
+        const uniswap_contract = ContractInstance(web3, uniswapABI, UNISWAP_ADDRESS)
+        if (fromToken == ETH_ADDRESS) {
+          const method = uniswap_contract.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(outputMin, [WETH_ADDRESS, toToken], DEFI_ADDRESS, block.timestamp + 10000);
+          callData = method.encodeABI();
+        } else if (toToken == ETH_ADDRESS) {
+          const method = uniswap_contract.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromToken, WETH_ADDRESS], DEFI_ADDRESS, block.timestamp + 10000);
+          callData = method.encodeABI();
+        } else {
+          const method = uniswap_contract.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromToken, toToken], DEFI_ADDRESS, block.timestamp + 10000);
+          callData = method.encodeABI();
+        }
+
+        let callerCallData = await web3.eth.abi.encodeParameters(['address', 'address', 'address', 'bytes', 'address'], [fromToken, UNISWAP_ADDRESS, UNISWAP_ADDRESS, callData, toToken]);
+        const defi_contract = ContractInstance(web3, routerABI, DEFI_ADDRESS)
+        const protocol_fee_default = await defi_contract.methods.getProtocolFeeDefault().call();
+        console.log(protocol_fee_default);
+        const params = [[[fromToken, inputAmount, 2], [0, '0x']],
+        [toToken, Math.floor(outputAmount * 0.75).toString()],
+        [1, [protocol_fee_default[0], protocol_fee_default[1]], [0, ZERO_ADDRESS], account.address, SIMPLE_CALLER_ADDRESS, callerCallData],
+        [0, "0x"],
+        [0, "0x"]];
+        console.log(params);
+
+        const transactionData = defi_contract.methods.execute(...params).encodeABI();
+
+        if (fromToken == ETH_ADDRESS) {
+          const tx = {
+            from: account.address,
+            to: DEFI_ADDRESS,
+            value: web3.utils.toHex(inputAmount),
+            data: transactionData,
+          };
+    
+          return web3.eth.estimateGas(tx);
+        } else {
+          const tx = {
+            from: account.address,
+            to: DEFI_ADDRESS,
+            data: transactionData,
+          };
+    
+          return web3.eth.estimateGas(tx);
+        }
+      } catch (e) {
+        console.log('swap gas limmit error:', e)
+        return [];
+      }
+    },
+    /**
      * swap
      */
-     swapToken: async (chainName, fromAddress, toAddress, address, inputAmount, outputAmount, outputMin, gas, gasLimit) => {
+    swapToken: async (chainName, fromToken, toToken, account, inputAmount, outputAmount, outputMin, gas, gasLimit) => {
       try {
         const web3 = getWeb3(chainName);
         let _hash = '';
@@ -1239,58 +1298,83 @@ const web3CustomModule = () => {
         outputMin = 0;
 
         const uniswap_contract = ContractInstance(web3, uniswapABI, UNISWAP_ADDRESS)
-        if (fromAddress == ETH_ADDRESS) {
-          const method = uniswap_contract.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(outputMin, [WETH_ADDRESS, toAddress], DEFI_ADDRESS, block.timestamp + 10000);
+        if (fromToken == ETH_ADDRESS) {
+          const method = uniswap_contract.methods.swapExactETHForTokensSupportingFeeOnTransferTokens(outputMin, [WETH_ADDRESS, toToken], DEFI_ADDRESS, block.timestamp + 10000);
           callData = method.encodeABI();
-        } else if (toAddress == ETH_ADDRESS) {
-          const method = uniswap_contract.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromAddress, WETH_ADDRESS], DEFI_ADDRESS, block.timestamp + 10000);
+        } else if (toToken == ETH_ADDRESS) {
+          const method = uniswap_contract.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromToken, WETH_ADDRESS], DEFI_ADDRESS, block.timestamp + 10000);
           callData = method.encodeABI();
         } else {
-          const method = uniswap_contract.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromAddress, toAddress], DEFI_ADDRESS, block.timestamp + 10000);
+          const method = uniswap_contract.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(inputAmount, outputMin, [fromToken, toToken], DEFI_ADDRESS, block.timestamp + 10000);
           callData = method.encodeABI();
         }
 
-        let callerCallData = await web3.eth.abi.encodeParameters(['address', 'address', 'address', 'bytes', 'address'], [fromAddress, UNISWAP_ADDRESS, UNISWAP_ADDRESS, callData, toAddress]);
+        let callerCallData = await web3.eth.abi.encodeParameters(['address', 'address', 'address', 'bytes', 'address'], [fromToken, UNISWAP_ADDRESS, UNISWAP_ADDRESS, callData, toToken]);
         const defi_contract = ContractInstance(web3, routerABI, DEFI_ADDRESS)
         const protocol_fee_default = await defi_contract.methods.getProtocolFeeDefault().call();
         console.log(protocol_fee_default);
-        const params = [[[fromAddress, inputAmount, 2], [0, '0x']],
-        [toAddress, Math.floor(outputAmount * 0.75).toString()],
-        [1, [protocol_fee_default[0], protocol_fee_default[1]], [0, ZERO_ADDRESS], address, SIMPLE_CALLER_ADDRESS, callerCallData],
+        const params = [[[fromToken, inputAmount, 2], [0, '0x']],
+        [toToken, Math.floor(outputAmount * 0.75).toString()],
+        [1, [protocol_fee_default[0], protocol_fee_default[1]], [0, ZERO_ADDRESS], account.address, SIMPLE_CALLER_ADDRESS, callerCallData],
         [0, "0x"],
         [0, "0x"]];
         console.log(params);
-        let gas = 0;
-        // if (fromAddress === ETH_ADDRESS)
-        //   gas = await defi_contract.methods.execute(
-        //     ...params
-        //   ).estimateGas({from: address, value: inputAmount})
-        // else {
-        //   gas = await defi_contract.methods.execute(
-        //     ...params
-        //   ).estimateGas({from: address})
-        // }
 
-        console.log(gas)
-        if (fromAddress == ETH_ADDRESS) {
-          await defi_contract.methods.execute(
-            ...params
-          ).send({ from: address, value: inputAmount, gasPrice: gas, gasLimit: gasLimit })
-            .on("transactionHash", hash => {
-              _hash = hash
-            });
-        } else
-          await defi_contract.methods.execute(
-            ...params
-          ).send({ from: address })
-            .on("transactionHash", hash => {
-              _hash = hash
-            });
-        console.log(_hash)
-        resolve({
-          status: true,
-          data: { hash: _hash }
-        })
+        const chainId = getChainId(chainName);
+        const providerURL = getNodeUrl(chainName);
+        const FORK_NETWORK = Common.forCustomChain(
+          'mainnet',
+          {
+            name: chainName,
+            networkId: chainId,
+            chainId: chainId,
+            url: providerURL,
+          },
+          'istanbul',
+        );
+
+        const privateKey = toBuffer(account.privateKey);
+        const count = await web3.eth.getTransactionCount(
+          account.address,
+        );
+
+        const transactionData = defi_contract.methods.execute(...params).encodeABI();
+
+        if (fromToken == ETH_ADDRESS) {
+          const rawTransaction = {
+            from: account.address,
+            to: DEFI_ADDRESS,
+            value: web3.utils.toHex(inputAmount),
+            data: transactionData,
+            gasPrice: web3.utils.toHex(gas),
+            gasLimit: web3.utils.toHex(gasLimit),
+            nonce: web3.utils.toHex(count),
+          };
+
+          const tx = new EthereumTx(rawTransaction, { common: FORK_NETWORK });
+          tx.sign(privateKey);
+          const serializedTx = tx.serialize();
+          return web3.eth.sendSignedTransaction(
+            '0x' + serializedTx.toString('hex'),
+          );
+        } else {
+          const rawTransaction = {
+            from: account.address,
+            to: DEFI_ADDRESS,
+            value: '0x0',
+            data: transactionData,
+            gasPrice: web3.utils.toHex(gas),
+            gasLimit: web3.utils.toHex(gasLimit),
+            nonce: web3.utils.toHex(count),
+          };
+
+          const tx = new EthereumTx(rawTransaction, { common: FORK_NETWORK });
+          tx.sign(privateKey);
+          const serializedTx = tx.serialize();
+          return web3.eth.sendSignedTransaction(
+            '0x' + serializedTx.toString('hex'),
+          );
+        }
       } catch (e) {
         console.log('swap error:', e)
         return [];

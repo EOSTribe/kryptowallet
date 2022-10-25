@@ -71,6 +71,7 @@ const SwapScreen = props => {
     getApproveGasLimit,
     approve,
     getAllowance,
+    getSwapGasLimit,
     swapToken,
     getAmountOut,
   } = web3CustomModule();
@@ -82,6 +83,7 @@ const SwapScreen = props => {
   const [allowance, setAllowance] = useState('0');
   const [gasPrice, setGasPrice] = useState(70000000);
   const [gasApproveLimit, setGasApproveLimit] = useState(0);
+  const [gasSwapLimit, setGasSwapLimit] = useState(0);
   const [pending, setPending] = useState(false);
 
   const [inputedAmount, setInputedAmount] = useState('0');
@@ -184,6 +186,15 @@ const SwapScreen = props => {
       state.fromToken.address,
     );
     setGasApproveLimit(gasLimitation);
+
+    // const swapLimitation = await getSwapGasLimit(
+    //   state.network,
+    //   state.wallet,
+    //   UNISWAP_ADDRESS,
+    //   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+    //   state.fromToken.address,
+    // );
+    // setGasSwapLimit(swapLimitation);
   };
 
   const getOutAmount = async (
@@ -236,9 +247,42 @@ const SwapScreen = props => {
     setSelectedTokenType('to');
   }, []);
 
-  const handleSwap = useCallback(() => {
+  const getBNValue = (balance, decimal) => {
+    return balance * (10 ** decimal);
+  }
+
+  const handleSwap = async () => {
     // TODO: swap function
-  }, []);
+    if (pending) {
+      Alert.alert(`Waiting for swap!`);
+      return;
+    }
+
+    setPending(true);
+    try {
+      const selectedAccount = accounts.find(cell => cell.address === state.fromToken.address && cell.chainName === state.network);
+      let ret = await swapToken(
+        state.network,
+        state.fromToken.address,
+        state.toToken.address,
+        selectedAccount,
+        getBNValue(paresFloat(state.fromAmount), state.fromToken.decimals),
+        getBNValue(paresFloat(state.toAmount), state.toToken.decimals),
+        0,
+        gasPrice,
+        gasSwapLimit,
+      );
+      if (ret !== []) {
+        setTimeout(() => loadEthereumAccountBalance(), 1000);
+        Alert.alert(`Swapped!`);
+      } else {
+        Alert.alert(`Failed swap!`);
+      }
+    } catch (error) {
+      Alert.alert(`Swap error!`);
+    }
+    setPending(false);
+  }
 
   const handleApprove = async () => {
     // TODO: approve function
@@ -327,8 +371,6 @@ const SwapScreen = props => {
   }, [state.network, state.wallet, state.fromToken, state.toToken]);
 
   useEffect(() => {
-    setIsApprove(state.fromToken?.symbol === 'ETH');
-
     if (amountInputtarget === '') {
       return;
     }
@@ -483,6 +525,7 @@ const SwapScreen = props => {
             title="Approve"
             onPress={handleApprove}
             style={styles.swapButton}
+            isLoading={pending}
           />
         )}
       </View>
