@@ -19,7 +19,7 @@ const nftABI = require('./nftAbi.json');
 const multiCallABI = require('./multiCallAbi.json');
 const auroraStakingABI = require('./auroraStakingAbi.json');
 
-const alchemyKey = 'YSn_BqGmQWnZy6O4GRtbFQpD11z121GN';
+const alchemyKey = '31402986-e634-4868-9557-dfe48fabf948';
 
 const nftAddress = '0xe5af1c8813a80d34a960e019b7eab7e0b4b1ead5';
 
@@ -172,7 +172,7 @@ export const domanAddressModule = () => {
             Authorization: `Bearer ${getAlchemyAPIKey(chainName)}`
           }
         };
-        const res = await fetch(`https://unstoppabledomains.g.alchemy.com/domains/${domain}`, options);
+        const res = await fetch(`https://resolve.unstoppabledomains.com/domains/${domain}`, options);
         const jsonData = await res.json();
         return jsonData.records["crypto.ETH.address"];
       } catch (err) {
