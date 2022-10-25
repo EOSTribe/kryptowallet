@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  scrollContentContainer: {
-    flex: 1,
-  },
+  // scrollContentContainer: {
+  //   flex: 0.5,
+  // },
   backButton: {
     marginTop: 10,
     marginLeft: 10,
@@ -13,23 +13,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     paddingRight: 10,
     paddingLeft: 10,
+    overflow: 'scroll',
   },
   body: {
     backgroundColor: 'white',
     borderBottomColor: '#c1c1c1',
-    // paddingTop: 10,
+    flex: 1,
   },
   header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#78a7e6',
-    paddingVertical: 5,
+    marginTop: 20,
+    marginBottom: 10,
   },
   inputContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginVertical: 5,
+    marginVertical: 15,
     marginLeft: 20,
     marginRight: 5,
     borderBottomWidth: 0,
@@ -69,7 +68,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingTop: 20,
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 50,
     width: '100%',
   },
   swapButton: {
@@ -128,9 +129,6 @@ const styles = StyleSheet.create({
     right: 0,
     marginHorizontal: 20,
   },
-
-  // maxBalance: { paddingHorizontal:20}
-  // balanceContainer: {paddingVertical:10}
 });
 
 export default styles;
