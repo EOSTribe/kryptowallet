@@ -23,17 +23,10 @@ import { log } from '../../logger/logger';
 import { getAccount } from '../../eos/eos';
 import { transferTelosToEVM } from '../../eos/telosevm';
 
-
 const ethMultiplier = 1000000000000000000;
-const tokenABI = require('../../ethereum/abi.json');
-const tokenAddress = "";
 const {
   getBalanceOfAccount
-  } = web3Module({
-    tokenABI,
-    tokenAddress,
-    decimals: 18
-  });
+  } = web3Module();
 
 
 const TelosEVMTransferScreen = props => {

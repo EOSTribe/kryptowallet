@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   swapButton: {
     width: '100%',
-    height: 10,
+    marginBottom: 30,
   },
   Kinput: {
     borderColor: '#E5E5EE',
@@ -106,6 +106,13 @@ const styles = StyleSheet.create({
   button: {
     width: 120,
     marginBottom: 30,
+  },
+  spacerToBottom: {
+    flex: 1,
+  },
+  buttonIcon: {
+    width: 48,
+    height: 48,
   },
   switchButton: {
     borderRadius: 50,
