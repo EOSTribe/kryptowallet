@@ -1177,7 +1177,7 @@ const web3CustomModule = () => {
       wad,
       tokenAddress,
       gasLimit,
-      gasPrice,
+      gasPrice
     ) => {
       try {
         const web3 = getWeb3(chainName);
@@ -1217,7 +1217,7 @@ const web3CustomModule = () => {
         const tx = new EthereumTx(rawTransaction, { common: FORK_NETWORK });
         tx.sign(privateKey);
         const serializedTx = tx.serialize();
-        
+
         return web3.eth.sendSignedTransaction(
           '0x' + serializedTx.toString('hex'),
         );
@@ -1289,7 +1289,6 @@ const web3CustomModule = () => {
     swapToken: async (chainName, fromToken, toToken, account, inputAmount, outputAmount, outputMin, gas, gasLimit) => {
       try {
         const web3 = getWeb3(chainName);
-        let _hash = '';
         let callData = ''
         const block = await web3.eth.getBlock("latest")
         // outputMin = Math.floor(outputMin * 0.9)

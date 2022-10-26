@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, View, Image } from 'react-native';
+import { SafeAreaView, ScrollView, View, Image, Alert } from 'react-native';
 import styles from './SwapScreen.style';
 import { KButton, KHeader, KInput, KSelect, KText, TwoIconsButtons } from '../../components';
 import { connectAccounts } from '../../redux';
@@ -234,7 +234,7 @@ const SwapScreen = props => {
   }, []);
 
   const getBNValue = (balance, decimal) => {
-    return balance * 10 ** decimal;
+    return (balance * 10 ** decimal).toString();
   };
 
   const handleSwap = async () => {
