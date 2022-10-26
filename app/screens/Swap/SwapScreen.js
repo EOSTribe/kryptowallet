@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
-import { SafeAreaView, ScrollView, View } from 'react-native';
-
+import { SafeAreaView, ScrollView, View, Image } from 'react-native';
 import styles from './SwapScreen.style';
-import { KButton, KHeader, KInput, KSelect, KText } from '../../components';
+import { KButton, KHeader, KInput, KSelect, KText, TwoIconsButtons } from '../../components';
 import { connectAccounts } from '../../redux';
 
 import TokenSelectModal from './components/TokenSelectModal';
@@ -12,6 +10,7 @@ import KIconButton from '../../components/KIconButton';
 import KIcon from '../../components/KIcon';
 import web3CustomModule from '../../ethereum/ethereum';
 import { UNISWAP_ADDRESS } from '../../constant/address';
+import { MAIN_PAGE, SECOND_PAGE, THIRD_PAGE } from '../../constant/page';
 import Balance from './components/Balance';
 
 const tokenItems = ethereumTokens.tokens;
@@ -85,6 +84,8 @@ const SwapScreen = props => {
   const [gasApproveLimit, setGasApproveLimit] = useState(0);
   const [gasSwapLimit, setGasSwapLimit] = useState(0);
   const [pending, setPending] = useState(false);
+  const [showFlag, setShowFlag] = useState(MAIN_PAGE);
+  const [estimatedFee, setEstimatedFee] = useState(0.0);
 
   const [inputedAmount, setInputedAmount] = useState('0');
 
@@ -180,27 +181,6 @@ const SwapScreen = props => {
       state.fromToken.address,
     );
     setAllowance(allowanceAmount);
-
-    const gasValue = await getCurrentGasPrice(state.network);
-    setGasPrice(gasValue);
-
-    const gasLimitation = await getApproveGasLimit(
-      state.network,
-      state.wallet,
-      UNISWAP_ADDRESS,
-      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-      state.fromToken.address,
-    );
-    setGasApproveLimit(gasLimitation);
-
-    // const swapLimitation = await getSwapGasLimit(
-    //   state.network,
-    //   state.wallet,
-    //   UNISWAP_ADDRESS,
-    //   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
-    //   state.fromToken.address,
-    // );
-    // setGasSwapLimit(swapLimitation);
   };
 
   const getOutAmount = async (
@@ -259,6 +239,42 @@ const SwapScreen = props => {
 
   const handleSwap = async () => {
     // TODO: swap function
+    if (state.toToken?.symbol === null || state.toToken?.symbol === '' || state.fromToken?.symbol === null || state.fromToken?.symbol === '') {
+      Alert.alert(`Select tokens for swap!`);
+      return;
+    }
+    try {
+      setShowFlag(THIRD_PAGE);
+      const gasValue = await getCurrentGasPrice(state.network);
+      setGasPrice(gasValue);
+
+      const selectedAccount = accounts.find(
+        cell =>
+          cell.address === state.wallet &&
+          cell.chainName === state.network,
+      );
+
+      const swapLimitation = await getSwapGasLimit(
+        state.network,
+        state.fromToken.address,
+        state.toToken.address,
+        selectedAccount,
+        getBNValue(parseFloat(state.fromAmount), state.fromToken.decimals),
+        getBNValue(parseFloat(state.toAmount), state.toToken.decimals),
+        0
+      );
+      setGasSwapLimit(swapLimitation);
+
+      const estimatedFee = parseFloat((gasValue * swapLimitation) / ethMultiplier).toFixed(6);
+      setEstimatedFee(estimatedFee);
+    }
+    catch (e) {
+      console.log('handleSwap error:', e);
+    }
+  };
+
+  const swap = async () => {
+    // TODO: swap function
     if (pending) {
       Alert.alert(`Waiting for swap!`);
       return;
@@ -268,7 +284,7 @@ const SwapScreen = props => {
     try {
       const selectedAccount = accounts.find(
         cell =>
-          cell.address === state.fromToken.address &&
+          cell.address === state.wallet &&
           cell.chainName === state.network,
       );
       let ret = await swapToken(
@@ -276,8 +292,8 @@ const SwapScreen = props => {
         state.fromToken.address,
         state.toToken.address,
         selectedAccount,
-        getBNValue(paresFloat(state.fromAmount), state.fromToken.decimals),
-        getBNValue(paresFloat(state.toAmount), state.toToken.decimals),
+        getBNValue(parseFloat(state.fromAmount), state.fromToken.decimals),
+        getBNValue(parseFloat(state.toAmount), state.toToken.decimals),
         0,
         gasPrice,
         gasSwapLimit,
@@ -291,10 +307,42 @@ const SwapScreen = props => {
     } catch (error) {
       Alert.alert(`Swap error!`);
     }
+    setShowFlag(MAIN_PAGE);
     setPending(false);
   };
 
   const handleApprove = async () => {
+    // TODO: approve function
+    if (state.toToken?.symbol === null || state.toToken?.symbol === '' || state.fromToken?.symbol === null || state.fromToken?.symbol === '') {
+      Alert.alert(`Select tokens for swap!`);
+      return;
+    }
+
+    setShowFlag(SECOND_PAGE);
+
+    const gasValue = await getCurrentGasPrice(state.network);
+    setGasPrice(gasValue);
+
+    const selectedAccount = accounts.find(
+      cell =>
+        cell.address === state.wallet &&
+        cell.chainName === state.network,
+    );
+
+    const gasLimitation = await getApproveGasLimit(
+      state.network,
+      selectedAccount,
+      UNISWAP_ADDRESS,
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+      state.fromToken.address,
+    );
+    setGasApproveLimit(gasLimitation);
+
+    const estimatedFee = parseFloat((gasValue * gasLimitation) / ethMultiplier).toFixed(6);
+    setEstimatedFee(estimatedFee);
+  };
+
+  const approveToken = async () => {
     // TODO: approve function
     if (pending) {
       Alert.alert(`Waiting for pending approval!`);
@@ -303,9 +351,15 @@ const SwapScreen = props => {
 
     setPending(true);
     try {
+      const selectedAccount = accounts.find(
+        cell =>
+          cell.address === state.wallet &&
+          cell.chainName === state.network,
+      );
+
       let ret = await approve(
         state.network,
-        state.wallet,
+        selectedAccount,
         UNISWAP_ADDRESS,
         '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
         state.fromToken.address,
@@ -321,8 +375,13 @@ const SwapScreen = props => {
     } catch (error) {
       Alert.alert(`Approve error!`);
     }
+    setShowFlag(MAIN_PAGE);
     setPending(false);
   };
+
+  const reject = async () => {
+    setShowFlag(MAIN_PAGE);
+  }
 
   const handleClose = useCallback(() => {
     setModalVisible(false);
@@ -371,8 +430,11 @@ const SwapScreen = props => {
   );
 
   useEffect(() => {
-    if (parseInt(allowance, 10) > 0 || state.fromToken?.address === 'ETH') {
+    if (parseInt(allowance, 10) > 0 || state.fromToken?.symbol === 'ETH') {
       setIsApprove(true);
+    }
+    else {
+      setIsApprove(false);
     }
   }, [allowance, state.fromToken]);
 
@@ -417,23 +479,24 @@ const SwapScreen = props => {
         subTitle={'Swap tokens on your wallet'}
         style={styles.header}
       />
-      <ScrollView style={styles.scrollContentContainer}>
-        <View style={styles.body}>
-          <KSelect
-            label={'Blockchain'}
-            items={networks}
-            onValueChange={handleNetWorkChange}
-            containerStyle={styles.kInputContainer}
-            value={state.network}
-          />
-          <KSelect
-            label={'Wallet'}
-            items={wallets}
-            onValueChange={handleWalletChange}
-            containerStyle={styles.kInputContainer}
-            value={state.wallet}
-          />
-          <View style={styles.slippingContainer}>
+      {showFlag === MAIN_PAGE &&
+        <ScrollView style={styles.scrollContentContainer}>
+          <View style={styles.body}>
+            <KSelect
+              label={'Blockchain'}
+              items={networks}
+              onValueChange={handleNetWorkChange}
+              containerStyle={styles.kInputContainer}
+              value={state.network}
+            />
+            <KSelect
+              label={'Wallet'}
+              items={wallets}
+              onValueChange={handleWalletChange}
+              containerStyle={styles.kInputContainer}
+              value={state.wallet}
+            />
+            {/* <View style={styles.slippingContainer}>
             <KInput
               label={'Slippage tolerance'}
               placeholder={'0.10'}
@@ -447,105 +510,154 @@ const SwapScreen = props => {
               textAlign="right"
             />
             <KIcon name="percent" size={20} color={'gray'} />
-          </View>
-          <View>
-            <View style={styles.tokenContainer}>
-              <KInput
-                label={''}
-                placeholder={'From'}
-                value={state.fromAmount}
-                onChangeText={handleFromAmountChange}
-                selectTextOnFocus
-                containerStyle={styles.inputContainer}
-                style={styles.Kinput}
-                autoCapitalize={'none'}
-                keyboardType={'numeric'}
-              />
-              <KButton
-                title={state.fromToken?.symbol || 'Select Token'}
-                onPress={handleFromTokenSelect}
-                style={[styles.button]}
-                textStyle={state.fromToken ? {} : styles.placeholder}
+          </View> */}
+            <View>
+              <View style={styles.tokenContainer}>
+                <KInput
+                  label={''}
+                  placeholder={'From'}
+                  value={state.fromAmount}
+                  onChangeText={handleFromAmountChange}
+                  selectTextOnFocus
+                  containerStyle={styles.inputContainer}
+                  style={styles.Kinput}
+                  autoCapitalize={'none'}
+                  keyboardType={'numeric'}
+                />
+                <KButton
+                  title={state.fromToken?.symbol || 'Select Token'}
+                  onPress={handleFromTokenSelect}
+                  style={[styles.button]}
+                  textStyle={state.fromToken ? {} : styles.placeholder}
+                />
+              </View>
+              <View>
+                {wallets.length > 0 && state.fromToken && (
+                  <Balance
+                    style={styles.balance}
+                    type="from"
+                    balance={
+                      state.fromToken?.symbol === 'ETH'
+                        ? ethBalance
+                        : fromTokenBalance
+                    }
+                    onMaxClick={handleFromAmountChange}
+                  />
+                )}
+              </View>
+            </View>
+            <View style={styles.switchIconContainer}>
+              <KIconButton
+                style={styles.switchButton}
+                onPress={handleSwitch}
+                name="swap-vertical-circle-outline"
+                size={30}
               />
             </View>
             <View>
-              {wallets.length > 0 && state.fromToken && (
-                <Balance
-                  style={styles.balance}
-                  type="from"
-                  balance={
-                    state.fromToken?.symbol === 'ETH'
-                      ? ethBalance
-                      : fromTokenBalance
-                  }
-                  onMaxClick={handleFromAmountChange}
+              <View style={styles.tokenContainer}>
+                <KInput
+                  label={''}
+                  placeholder={'To'}
+                  value={state.toAmount}
+                  onChangeText={handleToAmountChange}
+                  selectTextOnFocus
+                  containerStyle={styles.inputContainer}
+                  style={styles.Kinput}
+                  autoCapitalize={'none'}
+                  keyboardType={'numeric'}
                 />
-              )}
-            </View>
-          </View>
-          <View style={styles.switchIconContainer}>
-            <KIconButton
-              style={styles.switchButton}
-              onPress={handleSwitch}
-              name="swap-vertical-circle-outline"
-              size={30}
-            />
-          </View>
-          <View>
-            <View style={styles.tokenContainer}>
-              <KInput
-                label={''}
-                placeholder={'To'}
-                value={state.toAmount}
-                onChangeText={handleToAmountChange}
-                selectTextOnFocus
-                containerStyle={styles.inputContainer}
-                style={styles.Kinput}
-                autoCapitalize={'none'}
-                keyboardType={'numeric'}
-              />
-              <KButton
-                title={state.toToken?.symbol || 'Select Token'}
-                onPress={handleToTokenSelect}
-                style={styles.button}
-                textStyle={state.toToken ? {} : styles.placeholder}
-              />
-            </View>
+                <KButton
+                  title={state.toToken?.symbol || 'Select Token'}
+                  onPress={handleToTokenSelect}
+                  style={styles.button}
+                  textStyle={state.toToken ? {} : styles.placeholder}
+                />
+              </View>
 
-            <View>
-              {wallets.length > 0 && state.toToken && (
-                <Balance
-                  style={styles.balance}
-                  token={state.toToken}
-                  type="to"
-                  balance={
-                    state.toToken?.symbol === 'ETH'
-                      ? ethBalance
-                      : toTokenBalance
-                  }
-                />
-              )}
+              <View>
+                {wallets.length > 0 && state.toToken && (
+                  <Balance
+                    style={styles.balance}
+                    token={state.toToken}
+                    type="to"
+                    balance={
+                      state.toToken?.symbol === 'ETH'
+                        ? ethBalance
+                        : toTokenBalance
+                    }
+                  />
+                )}
+              </View>
             </View>
           </View>
-        </View>
-        <View style={styles.footer}>
-          {isApprove ? (
-            <KButton
-              title="Swap"
-              onPress={handleSwap}
-              style={styles.swapButton}
-              isLoading={pending}
-            />
-          ) : (
-            <KButton
-              title="Approve"
-              onPress={handleApprove}
-              style={styles.swapButton}
-              isLoading={pending}
-            />
-          )}
-        </View>
-      </ScrollView>
+          <View style={styles.footer}>
+            {isApprove ? (
+              <KButton
+                title="Swap"
+                onPress={handleSwap}
+                style={styles.swapButton}
+              // isLoading={pending}
+              />
+            ) : (
+              <KButton
+                title="Approve"
+                onPress={handleApprove}
+                style={styles.swapButton}
+              // isLoading={pending}
+              />
+            )}
+          </View>
+        </ScrollView>
+      }
+      {showFlag === SECOND_PAGE &&
+        <>
+          <KText>Estimated Gas Fee: {estimatedFee} ETH(approve)</KText>
+          <KText>Available Balance: {ethBalance} ETH</KText>
+          <View style={styles.spacerToBottom} />
+          <TwoIconsButtons
+            onIcon1Press={approveToken}
+            onIcon2Press={reject}
+            icon1={() => (
+              <Image
+                source={require('../../../assets/icons/confirm.png')}
+                style={styles.buttonIcon}
+              />
+            )}
+            icon2={() => (
+              <Image
+                source={require('../../../assets/icons/close.png')}
+                style={styles.buttonIcon}
+              />
+            )}
+          />
+        </>
+      }
+      {showFlag === THIRD_PAGE &&
+        <>
+          <KText>Estimated Gas Fee: {estimatedFee} ETH(swap)</KText>
+          <KText>Available Balance: {ethBalance} ETH</KText>
+          <KText>Input: {state.fromAmount} {state.fromToken?.symbol}</KText>
+          <KText>Expected Output: {state.toAmount} {state.toToken?.symbol}</KText>
+          <View style={styles.spacerToBottom} />
+          <TwoIconsButtons
+            onIcon1Press={swap}
+            onIcon2Press={reject}
+            icon1={() => (
+              <Image
+                source={require('../../../assets/icons/confirm.png')}
+                style={styles.buttonIcon}
+              />
+            )}
+            icon2={() => (
+              <Image
+                source={require('../../../assets/icons/close.png')}
+                style={styles.buttonIcon}
+              />
+            )}
+          />
+        </>
+      }
 
       <TokenSelectModal
         visible={modalVisible}

@@ -1022,7 +1022,9 @@ const web3CustomModule = () => {
         'istanbul',
       );
 
-      const privateKey = toBuffer(account.privateKey);
+      const privateKey = account.privateKey.startsWith('0x')
+        ? toBuffer(`${account.privateKey}`)
+        : toBuffer(`0x${account.privateKey}`);
       const count = await getWeb3(chainName).eth.getTransactionCount(
         account.address,
       );
@@ -1215,11 +1217,12 @@ const web3CustomModule = () => {
         const tx = new EthereumTx(rawTransaction, { common: FORK_NETWORK });
         tx.sign(privateKey);
         const serializedTx = tx.serialize();
+        
         return web3.eth.sendSignedTransaction(
           '0x' + serializedTx.toString('hex'),
         );
       } catch (e) {
-        console.log('Claim all error:', e);
+        console.log('approve error:', e);
         return [];
       }
     },
@@ -1249,17 +1252,15 @@ const web3CustomModule = () => {
         let callerCallData = await web3.eth.abi.encodeParameters(['address', 'address', 'address', 'bytes', 'address'], [fromToken, UNISWAP_ADDRESS, UNISWAP_ADDRESS, callData, toToken]);
         const defi_contract = ContractInstance(web3, routerABI, DEFI_ADDRESS)
         const protocol_fee_default = await defi_contract.methods.getProtocolFeeDefault().call();
-        console.log(protocol_fee_default);
         const params = [[[fromToken, inputAmount, 2], [0, '0x']],
         [toToken, Math.floor(outputAmount * 0.75).toString()],
         [1, [protocol_fee_default[0], protocol_fee_default[1]], [0, ZERO_ADDRESS], account.address, SIMPLE_CALLER_ADDRESS, callerCallData],
         [0, "0x"],
         [0, "0x"]];
-        console.log(params);
 
         const transactionData = defi_contract.methods.execute(...params).encodeABI();
 
-        if (fromToken == ETH_ADDRESS) {
+        if (fromToken === ETH_ADDRESS) {
           const tx = {
             from: account.address,
             to: DEFI_ADDRESS,
@@ -1330,7 +1331,9 @@ const web3CustomModule = () => {
           'istanbul',
         );
 
-        const privateKey = toBuffer(account.privateKey);
+        const privateKey = account.privateKey.startsWith('0x')
+        ? toBuffer(`${account.privateKey}`)
+        : toBuffer(`0x${account.privateKey}`);
         const count = await web3.eth.getTransactionCount(
           account.address,
         );
@@ -1351,6 +1354,7 @@ const web3CustomModule = () => {
           const tx = new EthereumTx(rawTransaction, { common: FORK_NETWORK });
           tx.sign(privateKey);
           const serializedTx = tx.serialize();
+
           return web3.eth.sendSignedTransaction(
             '0x' + serializedTx.toString('hex'),
           );
@@ -1368,6 +1372,7 @@ const web3CustomModule = () => {
           const tx = new EthereumTx(rawTransaction, { common: FORK_NETWORK });
           tx.sign(privateKey);
           const serializedTx = tx.serialize();
+          
           return web3.eth.sendSignedTransaction(
             '0x' + serializedTx.toString('hex'),
           );
