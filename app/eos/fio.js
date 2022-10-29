@@ -619,7 +619,7 @@ const fioAddPublicAddress = async (fioAccount, account, fee) => {
 };
 
 // Used to add external accounts (BTC, ETH, etc) pubkey to FIO address
-const fioAddExternalAddress = async (fioAccount, chainName, pubkey, fee) => {
+const fioAddExternalAddress = async (fioAccount, chainName, tokenCode, pubkey, fee) => {
   const fioEndpoint = getEndpoint('FIO');
   const rpc = new JsonRpc(fioEndpoint);
 
@@ -652,7 +652,7 @@ const fioAddExternalAddress = async (fioAccount, chainName, pubkey, fee) => {
           public_addresses: [
             {
               chain_code: chainName,
-              token_code: chainName,
+              token_code: tokenCode,
               public_address: pubkey,
             },
           ],

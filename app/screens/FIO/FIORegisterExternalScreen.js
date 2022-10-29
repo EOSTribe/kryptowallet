@@ -21,6 +21,7 @@ import { PRIMARY_BLUE } from '../../theme/colors';
 const FIORegisterExternalScreen = props => {
   const [fioAccount, setFioAccount] = useState();
   const [chain, setChain] = useState();
+  const [token, setToken] = useState();
   const [publicKey, setPublicKey] = useState();
   const [fee, setFee] = useState(0);
   const {
@@ -61,6 +62,7 @@ const FIORegisterExternalScreen = props => {
       const res = await fioAddExternalAddress(
         fioAccount,
         chain,
+        token,
         publicKey,
         fee,
       );
@@ -102,6 +104,14 @@ const FIORegisterExternalScreen = props => {
             placeholder={'BTC, ETH, BNB, MATIC etc'}
             value={chain}
             onChangeText={setChain}
+            containerStyle={styles.inputContainer}
+            autoCapitalize={'none'}
+          />
+          <KInput
+            label={'Token name'}
+            placeholder={'BTC, ETH, WBTC, USDT, etc'}
+            value={token}
+            onChangeText={setToken}
             containerStyle={styles.inputContainer}
             autoCapitalize={'none'}
           />

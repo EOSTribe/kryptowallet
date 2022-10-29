@@ -16,7 +16,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { PieChart, ProgressChart } from 'react-native-chart-kit';
 import { Fio, Ecc } from '@fioprotocol/fiojs';
 import ecc from 'eosjs-ecc-rn';
-import { fioAddPublicAddress, fioAddExternalAddress } from '../../eos/fio';
+import { fioAddPublicAddress } from '../../eos/fio';
 import { log } from '../../logger/logger';
 import styles from './FIOCommon.style';
 import { KHeader, KText, KButton, FiveIconsButtons } from '../../components';
@@ -328,9 +328,7 @@ const FIOAddressActionsScreen = props => {
         if (fioAccount.address !== item.fio_address) {
           if (fioAccount.address === 'pending@tribe') {
             replacePendingFioAddress(item.fio_address);
-          } else {
-            fioAccount.address = item.fio_address;
-          }
+          } 
         }
         setFioExpirationDate(item.expiration);
         return;

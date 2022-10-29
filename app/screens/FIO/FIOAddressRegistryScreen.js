@@ -183,6 +183,7 @@ const FIOAddressRegistryScreen = props => {
         const res = await fioAddExternalAddress(
           fioAccount,
           'ALGO',
+          'ALGO',
           account.account.addr,
           fioFee,
         );
@@ -205,6 +206,7 @@ const FIOAddressRegistryScreen = props => {
         const res = await fioAddExternalAddress(
           fioAccount,
           'XLM',
+          'XLM',
           account.address,
           fioFee,
         );
@@ -226,6 +228,7 @@ const FIOAddressRegistryScreen = props => {
       } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
         const res = await fioAddExternalAddress(
           fioAccount,
+          account.chainName,
           account.chainName,
           account.address,
           fioFee,
@@ -491,6 +494,11 @@ const FIOAddressRegistryScreen = props => {
               onPress={() => _handleConnectAccountToAddress(item)}
             />
           )}
+        />
+        <KButton
+          title={'Manual registration'}
+          style={styles.button}
+          onPress={() => navigate('FIORegisterExternal')}
         />
       </View>
     </SafeAreaView>
