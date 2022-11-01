@@ -33,6 +33,18 @@ import { log } from '../../logger/logger';
 import { web3NFTModule } from '../../ethereum/ethereum';
 import { isEVMNetwork } from '../../external/blockchains';
 
+import SignClient from "@walletconnect/sign-client";
+
+const signClient = await SignClient.init({
+  projectId: "9d735ef2d41882d4b16d25c12ade2e84",
+  metadata: {
+    name: "Tribe Wallet",
+    description: "Tribe Wallet",
+    url: "#",
+    icons: ["https://walletconnect.com/walletconnect-logo.png"],
+  },
+});
+
 const nonNFTURL = require('../../../assets/nft/not-revealed.png');
 const tribeLogoURL = require('../../../assets/logo/tribe-logo.png');
 

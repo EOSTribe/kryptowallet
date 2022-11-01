@@ -13,6 +13,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
 import createStore from './app/redux/store';
 import MainTabScreen from './app/screens/MainTabScreen';
+import "@walletconnect/react-native-compat";
 
 const store = createStore();
 const MainStack = createStackNavigator();
