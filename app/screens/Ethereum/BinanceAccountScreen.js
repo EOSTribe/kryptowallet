@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { KHeader, KText, KButton, TwoIconsButtons, FiveIconsButtons } from '../../components';
+import { KHeader, KText, KButton, TwoIconsButtons, SixIconsButtons } from '../../components';
 import styles from './EthereumAccountScreen.style';
 import { connectAccounts } from '../../redux';
 import { PRIMARY_BLUE } from '../../theme/colors';
@@ -249,12 +249,13 @@ const BinanceAccountScreen = props => {
         <KText>{connectedAddress}</KText>
         <View style={styles.spacer} />
         <KText>Switch network:</KText>
-        <FiveIconsButtons
+        <SixIconsButtons
           onIcon1Press={()=>navigate('EthereumAccount', { account })}
           onIcon2Press={()=>navigate('PolygonAccount', { account })}
           onIcon3Press={()=>navigate('AuroraAccount', { account })}
           onIcon4Press={()=>navigate('BinanceAccount', { account })}
           onIcon5Press={()=>navigate('TelosEVMAccount', { account })}
+          onIcon6Press={()=>navigate('OKCAccount', { account })}
           icon1={() => (
             <Image
               source={require('../../../assets/chains/eth.png')}
@@ -282,6 +283,12 @@ const BinanceAccountScreen = props => {
           icon5={() => (
             <Image
               source={require('../../../assets/chains/telosevm.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+          icon6={() => (
+            <Image
+              source={require('../../../assets/chains/okc.png')}
               style={styles.buttonIcon}
             />
           )}

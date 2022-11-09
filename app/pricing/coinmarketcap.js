@@ -3,19 +3,20 @@ import { log } from '../logger/logger';
 const marketAPIKey = '815df99c-3be5-47bd-ba5b-0a9f988178d3';
 
 const getNativeTokenLatestPrices = async () => {
-  const reqUrl = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=EOS,TLOS,FIO,ALGO,XLM,ETH,BNB,MATIC,AURORA';
+  const reqUrl = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=EOS,TLOS,FIO,ALGO,XLM,ETH,BNB,MATIC,AURORA,OKT';
   // Default price values as of Jan 24, 2022
   var defPriceData = {
-    'EOS': 1.20,
-    'TLOS': 0.18,
+    'EOS': 1.10,
+    'TLOS': 0.20,
     'FIO': 0.05,
     'ALGO': 0.35,
     'XLM': 0.12,
-    'ETH': 1900.0,
+    'ETH': 1600.0,
     'BNB': 320.0,
     'MATIC': 0.92,
     'AURORA': 2.05,
-    'TELOSEVM': 0.18,
+    'TELOSEVM': 0.20,
+    'OKT': 17.0
   };
 
   try {
@@ -36,6 +37,7 @@ const getNativeTokenLatestPrices = async () => {
     const bnbPrice = resJson['data']['BNB']['quote']['USD']['price'];
     const auroraPrice = resJson['data']['AURORA']['quote']['USD']['price'];
     const maticPrice = resJson['data']['MATIC']['quote']['USD']['price'];
+    const oktPrice = resJson['data']['OKT']['quote']['USD']['price'];
     const newPriceData = {
       'EOS': eosPrice,
       'TLOS': tlosPrice,
@@ -47,6 +49,7 @@ const getNativeTokenLatestPrices = async () => {
       'MATIC': maticPrice,
       'AURORA': auroraPrice,
       'TELOSEVM': tlosPrice,
+      'OKT': oktPrice,
     };
     return newPriceData;
   } catch (err) {

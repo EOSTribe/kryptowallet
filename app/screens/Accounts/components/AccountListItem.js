@@ -11,7 +11,7 @@ import { loadAccount } from '../../../stellar/stellar';
 import { getAlgoAccountInfo } from '../../../algo/algo';
 import { log } from '../../../logger/logger';
 import web3Module from '../../../ethereum/ethereum';
-import { getNativeTokenName } from '../../../external/blockchains';
+import { getNativeTokenName, isEVMNetwork } from '../../../external/blockchains';
 import {
   PRIMARY_GRAY,
   PRIMARY_BLACK,
@@ -208,12 +208,13 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
       loadAlgoAccountBalance(account, updateAccountBalance);
     } else if (account.chainName === 'XLM') {
       loadStellarAccountBalance(account, updateAccountBalance);
-    } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
+    } else if ( isEVMNetwork(account.chainName) ) {
       loadEVMAccountBalance(account, updateAccountBalance, 'ETH');
       loadEVMAccountBalance(account, updateAccountBalance, 'BNB');
       loadEVMAccountBalance(account, updateAccountBalance, 'MATIC');
       loadEVMAccountBalance(account, updateAccountBalance, 'AURORA');
       loadEVMAccountBalance(account, updateAccountBalance, 'TELOSEVM');
+      loadEVMAccountBalance(account, updateAccountBalance, 'OKC');
     } else {
       loadAccountBalance(account, updateAccountBalance);
     }
@@ -246,6 +247,8 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
       return require("../../../../assets/chains/aurora.png");
     } else if (name == "TELOSEVM") {
       return require("../../../../assets/chains/telosevm.png");
+    } else if (name == "OKC") {
+      return require("../../../../assets/chains/okc.png");
     } else if (name == "EOS") {
       return require("../../../../assets/chains/eos.png");
     } else if (name == "Telos") {
@@ -309,7 +312,7 @@ const AccountListItem = ({ account, onPress, onTokenPress, onBalanceUpdate, ...p
         </View>
       </View>
     );
-  } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
+  } else if ( isEVMNetwork(account.chainName) ) {
     return (
       <View>
         <View onFocus={refreshBalances} style={styles.rowContainer}>

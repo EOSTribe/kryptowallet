@@ -20,22 +20,29 @@ import { getEndpoint } from '../../eos/chains';
 import web3Module from '../../ethereum/ethereum';
 import Wallet from 'ethereumjs-wallet';
 import { log } from '../../logger/logger';
-
 import { getEVMTokenByName } from '../../ethereum/tokens';
+
 const ethMultiplier = 1000000000000000000;
-
+const tokenABI = require('../../ethereum/abi/tokenAbi.json');
+const tokenAddress = "";
 const {
-  getBalanceOfAccount,
-} = web3Module();
+  getBalanceOfAccount
+  } = web3Module({
+    tokenABI,
+    tokenAddress,
+    decimals: 18
+  });
 
-const EthereumAccountScreen = props => {
+
+const OKCAccountScreen = props => {
   const [accountBalance, setAccountBalance] = useState();
-  const [usdtBalance, setUsdtBalance] = useState(0.0);
-  const [usdcBalance, setUsdcBalance] = useState(0.0);
-  const [totalUsdValue, setTotalUsdValue] = useState(0.0);
   const [connectedHeader, setConnectedHeader] = useState('');
   const [connectedAddress, setConnectedAddress] = useState('');
   const [loaded, setLoaded] = useState(false);
+
+  const [usdtBalance, setUsdtBalance] = useState(0.0);
+  const [usdcBalance, setUsdcBalance] = useState(0.0);
+  const [totalUsdValue, setTotalUsdValue] = useState(0.0);
 
   const {
     navigation: { navigate, goBack },
@@ -44,28 +51,27 @@ const EthereumAccountScreen = props => {
     },
     deleteAccount,
     accountsState: { accounts, addresses, keys, totals, history, config },
-    deleteNFTsByAccount,
   } = props;
 
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
-
+  
 
   const refreshTotalUsdValue = async () => {
     var usdValue = 0.0;
-    const name = "ETH:" + account.address;
+    const name =  "OKC:" + account.address;
     for (const elem of totals) {
-      if (elem.account === name) {
+      if(elem.account === name) {
         usdValue = elem.total;
         break;
       }
     }
-    const totalUsd = (parseFloat(usdValue) + parseFloat(usdtBalance) + parseFloat(usdcBalance)).toFixed(2);
+    const totalUsd = ( parseFloat(usdValue) + parseFloat(usdtBalance) + parseFloat(usdcBalance) ).toFixed(2);
     setTotalUsdValue(totalUsd);
   }
 
   const loadTokenBalance = async (token, setTokenBalance) => {
-    if (!token) return;
+    if(!token) return;
     const { getBalanceOfTokenOfAccount } = web3Module();
     const tokenBalance = await getBalanceOfTokenOfAccount(token.symbol, account.address, token.address, token.decimals);
     setTokenBalance(tokenBalance);
@@ -73,12 +79,13 @@ const EthereumAccountScreen = props => {
   }
 
   // Load USDT Balance:
-  const usdtToken = getEVMTokenByName('ETH', 'USDT');
+  const usdtToken = getEVMTokenByName('OKC', 'USDT');
   loadTokenBalance(usdtToken, setUsdtBalance);
 
   // Load USDC Balance:
-  const usdcToken = getEVMTokenByName('ETH', 'USDC');
+  const usdcToken = getEVMTokenByName('OKC', 'USDC');
   loadTokenBalance(usdcToken, setUsdcBalance);
+
 
   const copyToClipboard = () => {
     Clipboard.setString(account.address);
@@ -115,8 +122,8 @@ const EthereumAccountScreen = props => {
           },
           body: JSON.stringify({
             fio_address: value.address,
-            chain_code: 'ETH',
-            token_code: 'ETH',
+            chain_code: 'OKC',
+            token_code: 'OKT',
           }),
         })
           .then(response => response.json())
@@ -128,7 +135,7 @@ const EthereumAccountScreen = props => {
                 fioEndpoint +
                 '/v1/chain/get_pub_address',
               cause: error,
-              location: 'EthereumAccountScreen',
+              location: 'OKCAccountScreen',
             }),
           );
       }
@@ -141,16 +148,15 @@ const EthereumAccountScreen = props => {
       return;
     }
     try {
-      const ethBalanceInGwei = await getBalanceOfAccount("ETH", account.address);
-      const ethBalanceInEth = ethBalanceInGwei / ethMultiplier;
+      const ethBalanceInGwei = await getBalanceOfAccount("OKC", account.address);
+      const ethBalanceInEth = ethBalanceInGwei/ethMultiplier;
       setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
-      refreshTotalUsdValue();
       checkConnectedFIOAccounts();
     } catch (err) {
       log({
         description: 'loadEthereumAccountBalance',
         cause: err,
-        location: 'EthereumAccountScreen',
+        location: 'OKCAccountScreen',
       });
       return;
     } finally {
@@ -161,7 +167,6 @@ const EthereumAccountScreen = props => {
 
   const _handleDeleteAccount = index => {
     deleteAccount(index);
-    deleteNFTsByAccount(account)
     goBack();
   };
 
@@ -173,7 +178,7 @@ const EthereumAccountScreen = props => {
         el.chainName === account.chainName,
     );
     Alert.alert(
-      'Delete Ethereum Account',
+      'Delete OKC Account',
       'Are you sure you want to delete this account?',
       [
         {
@@ -214,20 +219,20 @@ const EthereumAccountScreen = props => {
         </TouchableOpacity>
         <View style={styles.spacer} />
         <View style={styles.column}>
-          <Image
-            source={require('../../../assets/chains/eth.png')}
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.addressLink} onPress={copyToClipboard}>
-            {account.address}
-          </Text>
+        <Image
+          source={require('../../../assets/chains/okc.png')}
+          style={styles.buttonIcon}
+        />
+        <Text style={styles.addressLink} onPress={copyToClipboard}>
+          {account.address}
+        </Text>
         </View>
         <View style={styles.spacer} />
-        <KText>ETH Balance: {accountBalance} ETH</KText>
-        {usdtBalance > 0 &&
+        <KText>OKT Balance: {accountBalance} OKT</KText>
+        { usdtBalance > 0 &&
           <KText>USDT Balance: {usdtBalance}</KText>
         }
-        {usdcBalance > 0 &&
+        { usdcBalance > 0 &&
           <KText>USDC Balance: {usdcBalance}</KText>
         }
         <KText>Total USD Value: ${totalUsdValue}</KText>
@@ -305,4 +310,4 @@ const EthereumAccountScreen = props => {
   );
 };
 
-export default connectAccounts()(EthereumAccountScreen);
+export default connectAccounts()(OKCAccountScreen);

@@ -17,11 +17,17 @@ import TokenListItem from './components/TokenListItem';
 import EVMTokenListItem from './components/EVMTokenListItem';
 import { getTokens } from '../../eos/tokens';
 import { getEVMTokens } from '../../ethereum/tokens';
+import { isEVMNetwork } from '../../external/blockchains';
 import { PRIMARY_BLUE } from '../../theme/colors';
 
 const getTokenList = chainName => {
   let tokenList;
-  if (chainName === 'ETH' || chainName === 'BNB' || chainName === 'MATIC' || chainName === 'AURORA' || chainName === 'TELOSEVM') {
+  if (chainName == "ETH" 
+    || chainName == "BNB" 
+    || chainName == "MATIC" 
+    || chainName == "AURORA" 
+    || chainName == "TELOSEVM" 
+    || chainName == "OKC" ) {
     tokenList = getEVMTokens(chainName);
   }
   else {
@@ -65,7 +71,7 @@ const TokensScreen = props => {
 
   const getTitle = () => {
     let title;
-    if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
+    if ( isEVMNetwork(account.chainName) ) {
       title = account.chainName + ' tokens';
     }
     else {
@@ -93,8 +99,8 @@ const TokensScreen = props => {
         <FlatList
           data={tokenList}
           keyExtractor={(item, index) => `${index}`}
-          renderItem={({ item, index }) => (
-            account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM' ?
+          renderItem={({ item, index }) => ( 
+            isEVMNetwork(account.chainName) ?
               <EVMTokenListItem
                 account={account}
                 token={item}
@@ -111,7 +117,7 @@ const TokensScreen = props => {
               />
           )}
         />
-        {account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM' ?
+        { isEVMNetwork(account.chainName) ?
           <TouchableOpacity onPress={handleAddToken}>
             <View style={[styles.addContainer, props.style]}>
               <View style={styles.contentContainer}>

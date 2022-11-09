@@ -57,6 +57,7 @@ export { default as StellarAccountScreen } from './Stellar/StellarAccountScreen'
 export { default as EthereumAccountScreen } from './Ethereum/EthereumAccountScreen';
 export { default as BinanceAccountScreen } from './Ethereum/BinanceAccountScreen';
 export { default as PolygonAccountScreen } from './Ethereum/PolygonAccountScreen';
+export { default as OKCAccountScreen } from './Ethereum/OKCAccountScreen';
 export { default as TelosEVMAccountScreen } from './Ethereum/TelosEVMAccountScreen';
 export { default as TelosEVMTransferScreen } from './Ethereum/TelosEVMTransferScreen';
 export { default as AuroraAccountScreen } from './Ethereum/AuroraAccountScreen';

@@ -20,6 +20,11 @@ const externalChains = [
     explorer: 'https://www.teloscan.io/address/',
   },
   {
+    chain_code: 'OKC',
+    token_code: 'OKT',
+    explorer: 'https://www.oklink.com/en/okc/address/',
+  },
+  {
     chain_code: 'MATIC',
     token_code: 'MATIC',
     explorer: 'https://polygonscan.com/address/',
@@ -49,12 +54,19 @@ const getNativeTokenName = chainName => {
   let ret = chainName;
   if (chainName === 'AURORA') ret = 'ETH';
   if (chainName === 'TELOSEVM') ret = 'TLOS';
+  if (chainName === 'OKC') ret = 'OKT';
   return ret;
 };
 
 const isEVMNetwork = chainName => {
   let ret = false;
-  if (chainName == "ETH" || chainName == "BNB" || chainName == "MATIC" || chainName == "AURORA" || chainName == "TELOSEVM" || chainName == "MULTICHAIN") {
+  if (chainName == "ETH" 
+    || chainName == "BNB" 
+    || chainName == "MATIC" 
+    || chainName == "AURORA" 
+    || chainName == "TELOSEVM" 
+    || chainName == "OKC" 
+    || chainName == "MULTICHAIN") {
     ret = true;
   }
   return ret;

@@ -116,6 +116,8 @@ const AccountsScreen = props => {
       navigate('AuroraAccount', { account });
     } else if (account.chainName === 'TELOSEVM') {
       navigate('TelosEVMAccount', { account });
+    } else if (account.chainName === 'OKC') {
+      navigate('OKCAccount', { account });
     } else {
       navigate('AccountDetails', { account });
     }
@@ -135,7 +137,7 @@ const AccountsScreen = props => {
       return (value.chainName === name);
     });
     const evmAccounts = validAccounts.filter((value, index, array) => {  
-      return (value.chainName === 'ETH' || value.chainName === 'BNB' || value.chainName === 'MATIC' || value.chainName === 'AURORA' || value.chainName === 'TELOSEVM');
+      return isEVMNetwork(value.chainName);
     });
     const account = (chainAccount.length > 0) ? chainAccount[0] : evmAccounts[0];
     if (name === 'ETH') {
@@ -148,6 +150,8 @@ const AccountsScreen = props => {
       navigate('AuroraAccount', { account });
     } else if (name === 'TELOSEVM') {
       navigate('TelosEVMAccount', { account });
+    } else if (name === 'OKC') {
+      navigate('OKCAccount', { account });
     } else {
       Alert.alert("Unknown token " + name);
     }
@@ -220,7 +224,14 @@ const AccountsScreen = props => {
     if (chain === "Telos") { chain = "TLOS"; }
     let price = prices[chain];
     let usdval = (price !== null) ? (price * balance).toFixed(2) : 0.0;
-    let name = (chain === 'FIO' || chain === 'XLM' || chain === 'ETH' || chain === 'BNB' || chain === 'MATIC' || chain === 'AURORA' || chain === 'TELOSEVM') ? account.address : account.accountName;
+    let name = (chain === 'FIO' 
+      || chain === 'XLM' 
+      || chain === 'ETH' 
+      || chain === 'BNB' 
+      || chain === 'MATIC' 
+      || chain === 'AURORA' 
+      || chain === 'TELOSEVM' 
+      || chain === 'OKC') ? account.address : account.accountName;
     let record = {
       "account": chain + ":" + name,
       "total": usdval
@@ -425,7 +436,12 @@ const AccountsScreen = props => {
         if (foundKeys.length == 0) {
           addKey({ private: privateKey, public: publicKey });
         }
-      } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
+      } else if (account.chainName === 'ETH' 
+        || account.chainName === 'BNB' 
+        || account.chainName === 'MATIC' 
+        || account.chainName === 'AURORA' 
+        || account.chainName === 'TELOSEVM'
+        || account.chainName === 'OKC') {
         const privateKey = account.privateKey;
         const publicKey = account.publicKey;
         const foundKeys = keys.filter((value, index, array) => {
@@ -609,7 +625,15 @@ if(showAccounts) {
                 coinIcon={require("../../../assets/chains/telosevm.png")}
                 style={styles.listItem}
                 onPress={() => _handlePressEVMCoin('TELOSEVM')}
-              />  
+              /> 
+          <EVMCoinBalanceItem
+                accounts={validAccounts}
+                coinName={'OKC'}
+                showIfZero={false}
+                coinIcon={require("../../../assets/chains/okc.png")}
+                style={styles.listItem}
+                onPress={() => _handlePressEVMCoin('OKC')}
+              />      
           <FIOCoinBalanceItem
                 accounts={validAccounts}
                 coinName={'FIO'}
