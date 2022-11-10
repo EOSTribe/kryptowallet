@@ -50,6 +50,7 @@ const getNativeTokenLatestPrices = async () => {
       'AURORA': auroraPrice,
       'TELOSEVM': tlosPrice,
       'OKT': oktPrice,
+      'OKC': oktPrice,
     };
     return newPriceData;
   } catch (err) {

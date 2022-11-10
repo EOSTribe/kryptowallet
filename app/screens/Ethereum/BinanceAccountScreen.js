@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { KHeader, KText, KButton, TwoIconsButtons, SixIconsButtons } from '../../components';
+import { KHeader, KText, KButton, ThreeIconsButtons, SixIconsButtons } from '../../components';
 import styles from './EthereumAccountScreen.style';
 import { connectAccounts } from '../../redux';
 import { PRIMARY_BLUE } from '../../theme/colors';
@@ -56,7 +56,7 @@ const BinanceAccountScreen = props => {
 
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
-  
+  const chain = 'BNB';
 
   const refreshTotalUsdValue = async () => {
     var usdValue = 0.0;
@@ -209,6 +209,10 @@ const BinanceAccountScreen = props => {
     navigate('Transfer', { account });
   };
 
+  const _handleLoadTokens = () => {
+    navigate('Tokens', { account, chain });
+  }
+
   loadEthereumAccountBalance(account);
 
   return (
@@ -294,16 +298,23 @@ const BinanceAccountScreen = props => {
           )}
         />
         <FlatList />
-        <TwoIconsButtons
-          onIcon1Press={_handleBackupKey}
-          onIcon2Press={_handleRemoveAccount}
+        <ThreeIconsButtons
+          onIcon1Press={_handleLoadTokens}
+          onIcon2Press={_handleBackupKey}
+          onIcon3Press={_handleRemoveAccount}
           icon1={() => (
+            <Image
+              source={require('../../../assets/icons/erc20.png')}
+              style={styles.buttonIcon}
+            />
+          )}
+          icon2={() => (
             <Image
               source={require('../../../assets/icons/save_key.png')}
               style={styles.buttonIcon}
             />
           )}
-          icon2={() => (
+          icon3={() => (
             <Image
               source={require('../../../assets/icons/delete.png')}
               style={styles.buttonIcon}

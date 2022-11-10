@@ -42,16 +42,18 @@ const TokensScreen = props => {
   const {
     navigation: { navigate, goBack },
     route: {
-      params: { account: account },
+      params: { account: account, chain: chain },
     },
     accountsState: { accounts, addresses, keys, totals, history, config, tokens },
   } = props;
 
   const [tokenList, setTokenList] = useState([]);
 
+  const chainName = (chain) ? chain : account.chainName;
+
   useEffect(() => {
-    let list = getTokenList(account.chainName);
-    const addedList = tokens.filter((cell) => cell.chainName === account.chainName);
+    let list = getTokenList(chainName);
+    const addedList = tokens.filter((cell) => cell.chainName === chainName);
     addedList.forEach(element => {
       list.push(element);
     });
@@ -65,17 +67,17 @@ const TokensScreen = props => {
 
   const _handlePressERC20Token = index => {
     let token = tokenList[index];
-    let chainName = account.chainName;
+    let chainName = chainName;
     navigate('ERC20TokenDetails', { account, token, chainName });
   };
 
   const getTitle = () => {
     let title;
-    if ( isEVMNetwork(account.chainName) ) {
-      title = account.chainName + ' tokens';
+    if ( isEVMNetwork(chainName) ) {
+      title = chainName + ' tokens';
     }
     else {
-      title = account.chainName + ':' + account.accountName + ' tokens';
+      title = chainName + ':' + accountName + ' tokens';
     }
 
     return title;
@@ -100,7 +102,7 @@ const TokensScreen = props => {
           data={tokenList}
           keyExtractor={(item, index) => `${index}`}
           renderItem={({ item, index }) => ( 
-            isEVMNetwork(account.chainName) ?
+            isEVMNetwork(chainName) ?
               <EVMTokenListItem
                 account={account}
                 token={item}
@@ -117,7 +119,7 @@ const TokensScreen = props => {
               />
           )}
         />
-        { isEVMNetwork(account.chainName) ?
+        { isEVMNetwork(chainName) ?
           <TouchableOpacity onPress={handleAddToken}>
             <View style={[styles.addContainer, props.style]}>
               <View style={styles.contentContainer}>

@@ -612,7 +612,7 @@ const TransferScreen = props => {
             <KText>Amount: {ethFloatAmount} {getNativeTokenName(chainName)}</KText>
             <KText>Gas fee: {ethEstimatedFee} {getNativeTokenName(chainName)} (Estimated)</KText>
             <KText>Total: {ethTotalAmount} {getNativeTokenName(chainName)}</KText>
-            <KText>Balance: {ethBalance} {getNativeTokenName(fchainName)}</KText>
+            <KText>Balance: {ethBalance} {getNativeTokenName(chainName)}</KText>
             <View style={styles.spacer} />
             <TwoIconsButtons
               onIcon1Press={sendETHTransfer}
