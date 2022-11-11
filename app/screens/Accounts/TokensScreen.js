@@ -17,11 +17,17 @@ import TokenListItem from './components/TokenListItem';
 import EVMTokenListItem from './components/EVMTokenListItem';
 import { getTokens } from '../../eos/tokens';
 import { getEVMTokens } from '../../ethereum/tokens';
+import { isEVMNetwork } from '../../external/blockchains';
 import { PRIMARY_BLUE } from '../../theme/colors';
 
 const getTokenList = chainName => {
   let tokenList;
-  if (chainName === 'ETH' || chainName === 'BNB' || chainName === 'MATIC' || chainName === 'AURORA' || chainName === 'TELOSEVM') {
+  if (chainName == "ETH" 
+    || chainName == "BNB" 
+    || chainName == "MATIC" 
+    || chainName == "AURORA" 
+    || chainName == "TELOSEVM" 
+    || chainName == "OKC" ) {
     tokenList = getEVMTokens(chainName);
   }
   else {
@@ -36,16 +42,19 @@ const TokensScreen = props => {
   const {
     navigation: { navigate, goBack },
     route: {
-      params: { account: account },
+      params: { account: account, chain: chain },
     },
     accountsState: { accounts, addresses, keys, totals, history, config, tokens },
   } = props;
 
   const [tokenList, setTokenList] = useState([]);
 
+  const chainName = (chain) ? chain : account.chainName;
+
+
   useEffect(() => {
-    let list = getTokenList(account.chainName);
-    const addedList = tokens.filter((cell) => cell.chainName === account.chainName);
+    let list = getTokenList(chainName);
+    const addedList = tokens.filter((cell) => cell.chainName === chainName);
     addedList.forEach(element => {
       list.push(element);
     });
@@ -59,17 +68,16 @@ const TokensScreen = props => {
 
   const _handlePressERC20Token = index => {
     let token = tokenList[index];
-    let chainName = account.chainName;
     navigate('ERC20TokenDetails', { account, token, chainName });
   };
 
   const getTitle = () => {
     let title;
-    if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
-      title = account.chainName + ' tokens';
+    if ( isEVMNetwork(chainName) ) {
+      title = chainName + ' tokens';
     }
     else {
-      title = account.chainName + ':' + account.accountName + ' tokens';
+      title = chainName + ':' + accountName + ' tokens';
     }
 
     return title;
@@ -93,8 +101,8 @@ const TokensScreen = props => {
         <FlatList
           data={tokenList}
           keyExtractor={(item, index) => `${index}`}
-          renderItem={({ item, index }) => (
-            account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM' ?
+          renderItem={({ item, index }) => ( 
+            isEVMNetwork(chainName) ?
               <EVMTokenListItem
                 account={account}
                 token={item}
@@ -111,7 +119,7 @@ const TokensScreen = props => {
               />
           )}
         />
-        {account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM' ?
+        { isEVMNetwork(chainName) ?
           <TouchableOpacity onPress={handleAddToken}>
             <View style={[styles.addContainer, props.style]}>
               <View style={styles.contentContainer}>

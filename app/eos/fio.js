@@ -85,7 +85,6 @@ const sendFioTransfer = async (
     method: 'POST',
   });
   const json = await pushResult.json();
-  console.log(json);
   var calltime = new Date().getTime() - sendtime;
 
   if (!json.processed) {

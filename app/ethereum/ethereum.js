@@ -31,11 +31,13 @@ const bscEndpoint = 'https://bsc-dataseed3.binance.org';
 const polygonEndpoint = 'https://polygon-rpc.com';
 const auroraEndpoint = 'https://mainnet.aurora.dev';
 const telosEndpoint = 'https://mainnet.telos.net/evm';
+const okxEndpoint = 'https://exchainrpc.okex.org';
 const ethWeb3 = new Web3(new Web3.providers.HttpProvider(ethEndpoint));
 const bscWeb3 = new Web3(new Web3.providers.HttpProvider(bscEndpoint));
 const polygonWeb3 = new Web3(new Web3.providers.HttpProvider(polygonEndpoint));
 const auroraWeb3 = new Web3(new Web3.providers.HttpProvider(auroraEndpoint));
 const telosWeb3 = new Web3(new Web3.providers.HttpProvider(telosEndpoint));
+const okxWeb3 = new Web3(new Web3.providers.HttpProvider(okxEndpoint));
 
 const getWeb3 = chainName => {
   let ret;
@@ -54,6 +56,9 @@ const getWeb3 = chainName => {
       break;
     case 'TELOSEVM':
       ret = telosWeb3;
+      break;
+    case 'OKC':
+      ret = okxWeb3;
       break;
     default:
       ret = ethWeb3;
@@ -80,6 +85,9 @@ const getChainId = chainName => {
     case 'TELOSEVM':
       ret = 40;
       break;
+    case 'OKC':
+      ret = 66;
+      break;  
     default:
       ret = 1;
   }
@@ -105,6 +113,9 @@ const getNodeUrl = chainName => {
     case 'TELOSEVM':
       ret = telosEndpoint;
       break;
+    case 'OKC': 
+      ret = okxEndpoint; 
+      break; 
     default:
       ret = ethEndpoint;
   }
@@ -112,7 +123,7 @@ const getNodeUrl = chainName => {
   return ret;
 };
 
-const getMulitCallAddress = chainName => {
+const getMultiCallAddress = chainName => {
   let ret = '0x605f4d2Ee9951180eC265d17781a51Fc46D84138';
   switch (chainName) {
     case 'ETH':
@@ -130,8 +141,11 @@ const getMulitCallAddress = chainName => {
     case 'TELOSEVM':
       ret = '';
       break;
+    case 'OKC':
+      ret = '';
+      break;  
     default:
-      ret = ethEndpoint;
+      ret = '';
   }
 
   return ret;
@@ -694,7 +708,7 @@ export const web3HooksModule = () => {
     multicall: async (chainName, abi, calls) => {
       try {
         const web3 = getWeb3(chainName);
-        const multiCallAddress = getMulitCallAddress(chainName);
+        const multiCallAddress = getMultiCallAddress(chainName);
         const multi = new web3.eth.Contract(multiCallABI, multiCallAddress);
         const itf = new Interface(abi);
 

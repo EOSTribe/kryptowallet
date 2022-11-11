@@ -54,6 +54,8 @@ const AccountListItem = ({ account, chain, token, onPress, ...props }) => {
       return require("../../../../assets/chains/aurora.png");
     } else if (name == "TELOSEVM") {
       return require("../../../../assets/chains/telosevm.png");
+    } else if (name == "OKC") {
+      return require("../../../../assets/chains/okc.png");
     } else {
       return "";
     }

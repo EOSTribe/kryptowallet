@@ -42,6 +42,7 @@ import {
   StellarAccountScreen,
   EthereumAccountScreen,
   BinanceAccountScreen,
+  OKCAccountScreen,
   PolygonAccountScreen,
   TelosEVMAccountScreen,
   TelosEVMTransferScreen,
@@ -168,6 +169,7 @@ const AccountsStackScreen = () => {
       <AccountsStack.Screen name="StellarAccount" component={StellarAccountScreen} />
       <AccountsStack.Screen name="EthereumAccount" component={EthereumAccountScreen} />
       <AccountsStack.Screen name="BinanceAccount" component={BinanceAccountScreen} />
+      <AccountsStack.Screen name="OKCAccount" component={OKCAccountScreen} />
       <AccountsStack.Screen name="PolygonAccount" component={PolygonAccountScreen} />
       <AccountsStack.Screen name="TelosEVMAccount" component={TelosEVMAccountScreen} />
       <AccountsStack.Screen name="TelosEVMTransfer" component={TelosEVMTransferScreen} />

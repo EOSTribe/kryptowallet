@@ -28,11 +28,13 @@ const TokenImportScreen = props => {
   const {
     navigation: { navigate, goBack },
     route: {
-      params: { account: account },
+      params: { account: account, chain: chain },
     },
     addToken,
     accountsState: { tokens },
   } = props;
+
+  const chainName = (chain) ? chain : account.chainName;
 
   const {
     getName,
@@ -41,11 +43,11 @@ const TokenImportScreen = props => {
   } = web3TokenInfoModule();
 
   const refreshInfo = async () => {
-    const name = await getName(account.chainName, tokenAddress);
+    const name = await getName(chainName, tokenAddress);
     setTokenName(name);
-    const symbol = await getSymbol(account.chainName, tokenAddress);
+    const symbol = await getSymbol(chainName, tokenAddress);
     setTokenSymbol(symbol);
-    const decimals = await getDecimals(account.chainName, tokenAddress);
+    const decimals = await getDecimals(chainName, tokenAddress);
     setTokenDecimals(decimals);
   };
 
@@ -60,13 +62,13 @@ const TokenImportScreen = props => {
 
   const _handleImportToken = (event) => {
     event.stopPropagation();
-    const index = tokens.findIndex((cell) => cell.chainName === account.chainName && cell.address === tokenAddress);
+    const index = tokens.findIndex((cell) => cell.chainName === chainName && cell.address === tokenAddress);
     if(index >= 0) {
       Alert.alert("Already exist the token!");
       return;
     }
     const item = {
-      chainName: account.chainName,
+      chainName: chainName,
       address: tokenAddress,
       name: tokenName,
       symbol: tokenSymbol,

@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { KText, KButton, TwoIconsButtons, FiveIconsButtons } from '../../components';
+import { KText, KButton, ThreeIconsButtons, SixIconsButtons } from '../../components';
 import styles from './EthereumAccountScreen.style';
 import { connectAccounts } from '../../redux';
 import { PRIMARY_BLUE } from '../../theme/colors';
@@ -133,6 +133,8 @@ const AuroraAccountScreen = props => {
     setTokenBalance(tokenBalance);
   }
 
+  const chain = 'AURORA';
+
   // Load USDT Balance:
   const usdtToken = getEVMTokenByName('AURORA', 'USDT');
   loadTokenBalance(usdtToken, setUsdtBalance);
@@ -239,8 +241,7 @@ const AuroraAccountScreen = props => {
     const index = findIndex(
       accounts,
       el =>
-        el.address === account.address &&
-        el.chainName === account.chainName,
+        el.address === account.address 
     );
     Alert.alert(
       'Delete Aurora Account',
@@ -272,6 +273,10 @@ const AuroraAccountScreen = props => {
   const _handlePressWithdraw = () => {
     navigate('AuroraWithdraw', { account });
   };
+
+  const _handleLoadTokens = () => {
+    navigate('Tokens', { account, chain });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -349,12 +354,13 @@ const AuroraAccountScreen = props => {
                 onPress={_handleApprove}
               />
             }
-            <FiveIconsButtons
+            <SixIconsButtons
               onIcon1Press={()=>navigate('EthereumAccount', { account })}
               onIcon2Press={()=>navigate('PolygonAccount', { account })}
               onIcon3Press={()=>navigate('AuroraAccount', { account })}
               onIcon4Press={()=>navigate('BinanceAccount', { account })}
               onIcon5Press={()=>navigate('TelosEVMAccount', { account })}
+              onIcon6Press={()=>navigate('OKCAccount', { account })}
               icon1={() => (
                 <Image
                   source={require('../../../assets/chains/eth.png')}
@@ -385,17 +391,30 @@ const AuroraAccountScreen = props => {
                   style={styles.buttonIcon}
                 />
               )}
+              icon6={() => (
+                <Image
+                  source={require('../../../assets/chains/okc.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
             />
-            <TwoIconsButtons
-              onIcon1Press={_handleBackupKey}
-              onIcon2Press={_handleRemoveAccount}
+            <ThreeIconsButtons
+              onIcon1Press={_handleLoadTokens}
+              onIcon2Press={_handleBackupKey}
+              onIcon3Press={_handleRemoveAccount}
               icon1={() => (
+                <Image
+                  source={require('../../../assets/icons/erc20.png')}
+                  style={styles.buttonIcon}
+                />
+              )}
+              icon2={() => (
                 <Image
                   source={require('../../../assets/icons/save_key.png')}
                   style={styles.buttonIcon}
                 />
               )}
-              icon2={() => (
+              icon3={() => (
                 <Image
                   source={require('../../../assets/icons/delete.png')}
                   style={styles.buttonIcon}

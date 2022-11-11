@@ -11,22 +11,6 @@
   "keywords": ["uniswap", "default"],
   "tokens": [
     {
-      "name": "Ether",
-      "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-      "symbol": "ETH",
-      "decimals": 18,
-      "chainId": 1,
-      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
-    },
-    {
-      "name": "Tribe coin",
-      "address": "0x4fFcad848248d4931374336fCacCf263638413aE",
-      "symbol": "TRIBE",
-      "decimals": 18,
-      "chainId": 1,
-      "logoURI": ""
-    },
-    {
       "name": "Tether USD",
       "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
       "symbol": "USDT",

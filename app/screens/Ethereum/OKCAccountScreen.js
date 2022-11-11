@@ -34,7 +34,7 @@ const {
   });
 
 
-const BinanceAccountScreen = props => {
+const OKCAccountScreen = props => {
   const [accountBalance, setAccountBalance] = useState();
   const [connectedHeader, setConnectedHeader] = useState('');
   const [connectedAddress, setConnectedAddress] = useState('');
@@ -42,7 +42,6 @@ const BinanceAccountScreen = props => {
 
   const [usdtBalance, setUsdtBalance] = useState(0.0);
   const [usdcBalance, setUsdcBalance] = useState(0.0);
-  const [busdBalance, setBusdBalance] = useState(0.0);
   const [totalUsdValue, setTotalUsdValue] = useState(0.0);
 
   const {
@@ -56,18 +55,19 @@ const BinanceAccountScreen = props => {
 
   const divider = 1000000;
   const fioEndpoint = getEndpoint('FIO');
-  const chain = 'BNB';
+  const chain = 'OKC';
 
   const refreshTotalUsdValue = async () => {
     var usdValue = 0.0;
-    const name =  "BNB:" + account.address;
+    const name =  "OKC:" + account.address;
     for (const elem of totals) {
       if(elem.account === name) {
+        console.log(elem);
         usdValue = elem.total;
         break;
       }
     }
-    const totalUsd = ( parseFloat(usdValue) + parseFloat(usdtBalance) + parseFloat(usdcBalance) + parseFloat(busdBalance) ).toFixed(2);
+    const totalUsd = ( parseFloat(usdValue) + parseFloat(usdtBalance) + parseFloat(usdcBalance) ).toFixed(2);
     setTotalUsdValue(totalUsd);
   }
 
@@ -80,16 +80,13 @@ const BinanceAccountScreen = props => {
   }
 
   // Load USDT Balance:
-  const usdtToken = getEVMTokenByName('BNB', 'USDT');
+  const usdtToken = getEVMTokenByName('OKC', 'USDT');
   loadTokenBalance(usdtToken, setUsdtBalance);
 
   // Load USDC Balance:
-  const usdcToken = getEVMTokenByName('BNB', 'USDC');
+  const usdcToken = getEVMTokenByName('OKC', 'USDC');
   loadTokenBalance(usdcToken, setUsdcBalance);
 
-  // Load USDC Balance:
-  const busdToken = getEVMTokenByName('BNB', 'BUSD');
-  loadTokenBalance(busdToken, setBusdBalance);
 
   const copyToClipboard = () => {
     Clipboard.setString(account.address);
@@ -126,8 +123,8 @@ const BinanceAccountScreen = props => {
           },
           body: JSON.stringify({
             fio_address: value.address,
-            chain_code: 'BNB',
-            token_code: 'BNB',
+            chain_code: 'OKC',
+            token_code: 'OKT',
           }),
         })
           .then(response => response.json())
@@ -139,7 +136,7 @@ const BinanceAccountScreen = props => {
                 fioEndpoint +
                 '/v1/chain/get_pub_address',
               cause: error,
-              location: 'BinanceAccountScreen',
+              location: 'OKCAccountScreen',
             }),
           );
       }
@@ -152,7 +149,7 @@ const BinanceAccountScreen = props => {
       return;
     }
     try {
-      const ethBalanceInGwei = await getBalanceOfAccount("BNB", account.address);
+      const ethBalanceInGwei = await getBalanceOfAccount("OKC", account.address);
       const ethBalanceInEth = ethBalanceInGwei/ethMultiplier;
       setAccountBalance(parseFloat(ethBalanceInEth).toFixed(4));
       checkConnectedFIOAccounts();
@@ -160,7 +157,7 @@ const BinanceAccountScreen = props => {
       log({
         description: 'loadEthereumAccountBalance',
         cause: err,
-        location: 'BinanceAccountScreen',
+        location: 'OKCAccountScreen',
       });
       return;
     } finally {
@@ -178,11 +175,10 @@ const BinanceAccountScreen = props => {
     const index = findIndex(
       accounts,
       el =>
-        el.address === account.address &&
-        el.chainName === account.chainName,
+        el.address === account.address 
     );
     Alert.alert(
-      'Delete Binance Account',
+      'Delete OKC Account',
       'Are you sure you want to delete this account?',
       [
         {
@@ -228,7 +224,7 @@ const BinanceAccountScreen = props => {
         <View style={styles.spacer} />
         <View style={styles.column}>
         <Image
-          source={require('../../../assets/chains/bsc.png')}
+          source={require('../../../assets/chains/okc.png')}
           style={styles.buttonIcon}
         />
         <Text style={styles.addressLink} onPress={copyToClipboard}>
@@ -236,8 +232,7 @@ const BinanceAccountScreen = props => {
         </Text>
         </View>
         <View style={styles.spacer} />
-        <KText>BNB Balance: {accountBalance} BNB</KText>
-        <KText>BUSD Balance: {busdBalance}</KText>
+        <KText>OKT Balance: {accountBalance} OKT</KText>
         { usdtBalance > 0 &&
           <KText>USDT Balance: {usdtBalance}</KText>
         }
@@ -326,4 +321,4 @@ const BinanceAccountScreen = props => {
   );
 };
 
-export default connectAccounts()(BinanceAccountScreen);
+export default connectAccounts()(OKCAccountScreen);
