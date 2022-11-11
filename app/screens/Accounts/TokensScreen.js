@@ -51,6 +51,7 @@ const TokensScreen = props => {
 
   const chainName = (chain) ? chain : account.chainName;
 
+
   useEffect(() => {
     let list = getTokenList(chainName);
     const addedList = tokens.filter((cell) => cell.chainName === chainName);
@@ -67,7 +68,6 @@ const TokensScreen = props => {
 
   const _handlePressERC20Token = index => {
     let token = tokenList[index];
-    let chainName = chainName;
     navigate('ERC20TokenDetails', { account, token, chainName });
   };
 
