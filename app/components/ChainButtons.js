@@ -7,6 +7,7 @@ const ChainButtons = ({
   onChainPress,
   onClosePress,
   closeIcon,
+  okcIcon,
   telosevmIcon,
   bscIcon,
   auroraIcon,
@@ -21,6 +22,15 @@ const ChainButtons = ({
   return (
     <View style={styles.rowContainer}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <TouchableOpacity onPress={() => onChainPress('OKC')}>
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            colors={['#FFFFFF', '#FFFFFF']}
+            style={styles.container}>
+            <View style={styles.icon}>{okcIcon()}</View>
+          </LinearGradient>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => onChainPress('TELOSEVM')}>
           <LinearGradient
             start={{ x: 0, y: 0 }}

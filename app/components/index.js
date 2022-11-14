@@ -13,6 +13,7 @@ export { default as TwoIconsButtons } from './TwoIconsButtons';
 export { default as ThreeIconsButtons } from './ThreeIconsButtons';
 export { default as FourIconsButtons } from './FourIconsButtons';
 export { default as FiveIconsButtons } from './FiveIconsButtons';
+export { default as SixIconsButtons } from './SixIconsButtons';
 export { default as InputSend } from './InputSend';
 export { default as InputAddress } from './InputAddress';
 export { default as EmailCodeSend } from './EmailCodeSend';

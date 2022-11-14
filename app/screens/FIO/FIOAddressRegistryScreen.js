@@ -147,7 +147,14 @@ const FIOAddressRegistryScreen = props => {
     var accPubkey = '';
     if (account.chainName === 'ALGO') {
       accPubkey = account.account.addr;
-    } else if (account.chainName === 'XLM' || account.chainName === 'ETH' || account.chainName === 'FIO' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
+    } else if (account.chainName === 'XLM' 
+      || account.chainName === 'ETH' 
+      || account.chainName === 'FIO' 
+      || account.chainName === 'BNB' 
+      || account.chainName === 'OKC' 
+      || account.chainName === 'MATIC' 
+      || account.chainName === 'AURORA' 
+      || account.chainName === 'TELOSEVM') {
       accPubkey = account.address;
     } else if (account.privateKey) {
       accPubkey = ecc.privateToPublic(account.privateKey);
@@ -183,6 +190,7 @@ const FIOAddressRegistryScreen = props => {
         const res = await fioAddExternalAddress(
           fioAccount,
           'ALGO',
+          'ALGO',
           account.account.addr,
           fioFee,
         );
@@ -205,6 +213,7 @@ const FIOAddressRegistryScreen = props => {
         const res = await fioAddExternalAddress(
           fioAccount,
           'XLM',
+          'XLM',
           account.address,
           fioFee,
         );
@@ -223,9 +232,15 @@ const FIOAddressRegistryScreen = props => {
           log(error);
           Alert.alert('Failed to link Stellar account to FIO address.');
         }
-      } else if (account.chainName === 'ETH' || account.chainName === 'BNB' || account.chainName === 'MATIC' || account.chainName === 'AURORA' || account.chainName === 'TELOSEVM') {
+      } else if (account.chainName === 'ETH' 
+        || account.chainName === 'BNB' 
+        || account.chainName === 'OKC' 
+        || account.chainName === 'MATIC' 
+        || account.chainName === 'AURORA' 
+        || account.chainName === 'TELOSEVM') {
         const res = await fioAddExternalAddress(
           fioAccount,
+          account.chainName,
           account.chainName,
           account.address,
           fioFee,
@@ -290,6 +305,9 @@ const FIOAddressRegistryScreen = props => {
       case 'TELOSEVM':
         ret = 'Telos EVM';
         break;
+      case 'OKC':
+        ret = 'OKCoin';
+        break;  
       default:
         break;
     }
@@ -429,6 +447,8 @@ const FIOAddressRegistryScreen = props => {
       navigate('AuroraAccount', { account });
     } else if (account.chainName === 'TELOSEVM') {
       navigate('TelosEVMAccount', { account });
+    } else if (account.chainName === 'OKC') {
+      navigate('OKCAccount', { account });
     } else {
       navigate('AccountDetails', { account });
     }
@@ -491,6 +511,11 @@ const FIOAddressRegistryScreen = props => {
               onPress={() => _handleConnectAccountToAddress(item)}
             />
           )}
+        />
+        <KButton
+          title={'Manual registration'}
+          style={styles.button}
+          onPress={() => navigate('FIORegisterExternal')}
         />
       </View>
     </SafeAreaView>

@@ -11,8 +11,10 @@ import { sendFioTransfer } from '../../eos/fio';
 import { submitAlgoTransaction } from '../../algo/algo';
 import { getChain, getEndpoint } from '../../eos/chains';
 import { loadAccount, submitStellarPayment, createStellarAccount } from '../../stellar/stellar';
+import { isEVMNetwork } from '../../external/blockchains';
 import web3Module from '../../ethereum/ethereum';
 import { log } from '../../logger/logger';
+
 
 const ResendTransferScreen = props => {
 
@@ -120,7 +122,7 @@ const ResendTransferScreen = props => {
     }
     setPendingEthTransfer(true);
     const keypair = await createKeyPair(transaction.chain, ethFromPrivateKey);
-    const result = await transferETH(ftransaction.chain, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
+    const result = await transferETH(transaction.chain, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
     setPendingEthTransfer(false);
     // Save transaction to History:
     const txRecord = {
@@ -180,7 +182,7 @@ const ResendTransferScreen = props => {
           transaction.memo,
           addTransactionToHistory,
         );
-      } else if (fromAccount.chainName === 'FIO') {
+      } else if (transaction.chain === 'FIO') {
         await sendFioTransfer(
           fromAccount,
           transaction.receiver,
@@ -188,7 +190,7 @@ const ResendTransferScreen = props => {
           transaction.memo,
           addTransactionToHistory,
         );
-      } else if (fromAccount.chainName === 'ETH' || fromAccount.chainName === 'BNB' || fromAccount.chainName === 'MATIC' || fromAccount.chainName === 'AURORA' || fromAccount.chainName === 'TELOSEVM') {
+      } else if ( isEVMNetwork(transaction.chain) ) {
         let receiver = transaction.receiver;
         prepareETHTransfer(fromAccount, receiver, floatAmount);
       } else if (chain) {

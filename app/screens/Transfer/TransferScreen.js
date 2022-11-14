@@ -11,7 +11,7 @@ import { submitAlgoTransaction } from '../../algo/algo';
 import { getChain, getEndpoint } from '../../eos/chains';
 import { loadAccount, submitStellarPayment, createStellarAccount } from '../../stellar/stellar';
 import web3Module from '../../ethereum/ethereum';
-import { getNativeTokenName } from '../../external/blockchains';
+import { getNativeTokenName, isEVMNetwork } from '../../external/blockchains';
 
 import { log } from '../../logger/logger';
 
@@ -78,7 +78,7 @@ const TransferScreen = props => {
   }
 
   const processToPubkeyUpdate = async toAccountPubkey => {
-    const chain = getChain(fromAccount.chainName);
+    const chain = getChain(chainName);
     if (chain && chain.name === 'FIO') {
       setToActor('');
       setToPubkey(toAccountPubkey);
@@ -91,7 +91,7 @@ const TransferScreen = props => {
           'Error fetching account data for ' +
           toActor +
           ' on chain ' +
-          fromAccount.chainName,
+          chainName,
         );
         return;
       }
@@ -105,8 +105,7 @@ const TransferScreen = props => {
   };
 
   const loadToPubkey = async address => {
-    let chainCode =
-      fromAccount.chainName === 'Telos' ? 'TLOS' : fromAccount.chainName;
+    let chainCode = chainName === 'Telos' ? 'TLOS' : chainName;
     fetch(fioEndpoint + '/v1/chain/get_pub_address', {
       method: 'POST',
       headers: {
@@ -228,19 +227,26 @@ const TransferScreen = props => {
     if(!chainName) {
       setChainName(value.chainName);
     }
-    const parseInfo = async () => {
-      const ethBalanceInWei = await getBalanceOfAccount(chainName, value.address);
-      const ethBalanceInEth = parseFloat(ethBalanceInWei / ethDivider).toFixed(4);
-      setEthBalance(ethBalanceInEth);
-    }
     setFromAccount(value);
     if (value && value.chainName !== 'FIO') {
       setAddressInvalidMessage('');
-      if (value.chainName === 'ETH' || value.chainName === 'BNB' || value.chainName === 'MATIC' || value.chainName === 'AURORA' || value.chainName === 'TELOSEVM') {
-        parseInfo();
-      }
     }
   };
+
+  const updateEthBalance = () => {
+    const parseInfo = async () => {
+      const ethBalanceInWei = await getBalanceOfAccount(chainName, fromAccount.address);
+      const ethBalanceInEth = parseFloat(ethBalanceInWei / ethDivider).toFixed(4);
+      setEthBalance(ethBalanceInEth);
+    }
+    if ( isEVMNetwork(chainName) ) {
+        parseInfo();
+    }
+  };
+
+  useEffect(() => {
+    updateEthBalance();
+  }, [fromAccount, chainName]);
 
   const isEVMAccount = () => {
     if ( fromAccount && 
@@ -248,6 +254,7 @@ const TransferScreen = props => {
         fromAccount.chainName === 'BNB' || 
         fromAccount.chainName === 'MATIC' || 
         fromAccount.chainName === 'AURORA' || 
+        fromAccount.chainName === 'OKC' || 
         fromAccount.chainName === 'TELOSEVM') ) {
       return true;
     }
@@ -266,7 +273,7 @@ const TransferScreen = props => {
       value = value.trim();
     }
     // Then validate FIO address (if set):
-    if (fromAccount.chainName === 'FIO') {
+    if (chainName === 'FIO') {
       if (value && value.indexOf('@') > 0) {
         _validateAddress(value);
         setIsFioAddress(true);
@@ -285,7 +292,7 @@ const TransferScreen = props => {
       _validateAddress(value);
       setIsFioAddress(true);
       setToFioAddress(value);
-    } else if (fromAccount.chainName === 'XLM') {
+    } else if (chainName === 'XLM') {
       setIsFioAddress(false);
       setToFioAddress('');
       setAddressInvalidMessage('');
@@ -376,7 +383,7 @@ const TransferScreen = props => {
     }
     setPendingEthTransfer(true);
     const keypair = await createKeyPair(chain, ethFromPrivateKey);
-    const result = await transferETH(fromAccount.chainName, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
+    const result = await transferETH(chain, keypair, ethToAddress, ethFloatAmount, ethGasLimit, ethGasPrice);
     setPendingEthTransfer(false);
     // Save transaction to History:
     const txRecord = {
@@ -420,7 +427,7 @@ const TransferScreen = props => {
     }
 
     // EOSIO chain (undefined for not EOSIO account)
-    let chain = getChain(fromAccount.chainName);
+    let chain = getChain(chainName);
 
     // If to account is FIO address:
     if (isFioAddress) {
@@ -430,7 +437,7 @@ const TransferScreen = props => {
       if (!toPubkey) {
         Alert.alert(
           'Could not determine receiver public key for ' +
-          fromAccount.chainName +
+          chainName +
           ' registered to ' +
           toAddress,
         );
@@ -518,7 +525,7 @@ const TransferScreen = props => {
           memo,
           addTransactionToHistory,
         );
-      } else if (fromAccount.chainName === 'ETH' || fromAccount.chainName === 'BNB' || fromAccount.chainName === 'MATIC' || fromAccount.chainName === 'AURORA' || fromAccount.chainName === 'TELOSEVM') {
+      } else if ( isEVMNetwork(fromAccount.chainName) ) {
         let receiver = toPubkey ? toPubkey : toAddress;
         prepareETHTransfer(fromAccount, receiver, floatAmount, null);
       } else if (chain) {
@@ -545,7 +552,7 @@ const TransferScreen = props => {
       setLoading(false);
       Alert.alert(err.message);
       log({
-        description: '_handleTransfer - transfer: ' + fromAccount.chainName,
+        description: '_handleTransfer - transfer: ' + chainName,
         cause: err.message,
         location: 'TransferScreen',
       });
@@ -559,7 +566,7 @@ const TransferScreen = props => {
   }
 
   const getAccountLabel = (item) => {
-    if(item.chainName === 'ETH' || item.chainName === 'BNB' || item.chainName === 'MATIC' || item.chainName === 'AURORA' || item.chainName === 'TELOSEVM') {
+    if( isEVMNetwork(item.chainName) ) {
       return item.address;
     } else if(item.chainName === 'FIO' || item.chainName === 'XLM') {
       return `${item.chainName}: ${item.address}`;
@@ -569,7 +576,7 @@ const TransferScreen = props => {
   }
 
   const getEVMNetworks = () => {
-    return ['ETH','BNB','MATIC','AURORA','TELOSEVM'];
+    return ['ETH','BNB','MATIC','AURORA','TELOSEVM', 'OKC'];
   }
 
   if (accounts.length === 0) {
@@ -602,10 +609,10 @@ const TransferScreen = props => {
             <KText>From: {ethFromAddress}</KText>
             <KText>To: {ethToAddress}</KText>
             <KText>Memo: {memo}</KText>
-            <KText>Amount: {ethFloatAmount} {getNativeTokenName(fromAccount.chainName)}</KText>
-            <KText>Gas fee: {ethEstimatedFee} {getNativeTokenName(fromAccount.chainName)} (Estimated)</KText>
-            <KText>Total: {ethTotalAmount} {getNativeTokenName(fromAccount.chainName)}</KText>
-            <KText>Balance: {ethBalance} {getNativeTokenName(fromAccount.chainName)}</KText>
+            <KText>Amount: {ethFloatAmount} {getNativeTokenName(chainName)}</KText>
+            <KText>Gas fee: {ethEstimatedFee} {getNativeTokenName(chainName)} (Estimated)</KText>
+            <KText>Total: {ethTotalAmount} {getNativeTokenName(chainName)}</KText>
+            <KText>Balance: {ethBalance} {getNativeTokenName(chainName)}</KText>
             <View style={styles.spacer} />
             <TwoIconsButtons
               onIcon1Press={sendETHTransfer}
@@ -663,7 +670,7 @@ const TransferScreen = props => {
               label={'Sending to'}
               placeholder={'Enter address or domain name (ENS/UD/FIO)'}
               value={toAccountName}
-              chainName={fromAccount?.chainName}
+              chainName={chainName}
               setUDAddress={setUDAddress}
               onChangeText={_handleToAccountChange}
               containerStyle={styles.inputContainer}
@@ -680,10 +687,10 @@ const TransferScreen = props => {
               autoCapitalize={'none'}
               keyboardType={'numeric'}
             />
-            {fromAccount && (fromAccount.chainName === 'ETH' || fromAccount.chainName === 'BNB' || fromAccount.chainName === 'MATIC' || fromAccount.chainName === 'AURORA' || fromAccount.chainName === 'TELOSEVM') ?
+            {fromAccount && isEVMNetwork(fromAccount.chainName) ?
               <View style={styles.balanceView}>
                 <KText style={styles.blueLabel}> Available Balance: </KText>
-                <KText> {ethBalance} {getNativeTokenName(fromAccount.chainName)}</KText>
+                <KText> {ethBalance} {getNativeTokenName(chainName)}</KText>
               </View>
               :
               <KInput

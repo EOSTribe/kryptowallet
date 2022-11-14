@@ -29,8 +29,6 @@ import { getNativeTokenName } from '../../external/blockchains';
 const ERC20TokenDetailsScreen = props => {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [toAccountName, setToAccountName] = useState('');
-  const [transactions, setTransactions] = useState([]);
-  const [showTransfer, setShowTransfer] = useState(false);
   const [amount, setAmount] = useState('');
   const [addressInvalidMessage, setAddressInvalidMessage] = useState();
 
@@ -70,12 +68,8 @@ const ERC20TokenDetailsScreen = props => {
   const refreshBalances = async () => {
     const balance = await getBalanceOfTokenOfAccount(chainName, account.address, token.address, token.decimals);
     setTokenBalance(balance);
-    setShowTransfer(true);
   };
 
-  const _handlePressTransaction = trans => {
-
-  };
 
   const getSubtitle = () => {
     return token.name + ' on ' + getNativeTokenName(chainName);
@@ -165,8 +159,8 @@ const ERC20TokenDetailsScreen = props => {
     refreshBalances();
   }, [])
 
-  if (showTransfer) {
-    if (previewTransfer) {
+
+  if (previewTransfer) {
       return (
         <SafeAreaView style={styles.container}>
           <KeyboardAwareScrollView
@@ -249,52 +243,10 @@ const ERC20TokenDetailsScreen = props => {
               isLoading={loading}
               onPress={_handleTransfer}
             />
-            <View style={styles.spacer} />
-            <OneIconButton
-              onIconPress={() => setShowTransfer(false)}
-              icon={() => (
-                <Image
-                  source={require('../../../assets/icons/history.png')}
-                  style={styles.buttonIcon}
-                />
-              )}
-            />
           </View>
         </SafeAreaView>
       );
-    }
-  } else {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.inner}>
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <MaterialIcon
-              name={'keyboard-backspace'}
-              size={24}
-              color={PRIMARY_BLUE}
-            />
-          </TouchableOpacity>
-          <KHeader
-            title={account.accountName}
-            subTitle={getSubtitle()}
-            style={styles.header}
-          />
-          <KText>Balance: {tokenBalance}</KText>
-          <FlatList
-            data={transactions}
-            keyExtractor={(item, index) => `${index}`}
-            renderItem={({ item, index }) => (
-              <TransactionListItem
-                transaction={item}
-                style={styles.listItem}
-                onPress={() => _handlePressTransaction(item)}
-              />
-            )}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
+    } 
 };
 
 export default connectAccounts()(ERC20TokenDetailsScreen);
