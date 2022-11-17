@@ -13,7 +13,6 @@ import algosdk from 'algosdk';
 import { createKeyPair } from '../../stellar/stellar';
 import Wallet from 'ethereumjs-wallet';
 import { log } from '../../logger/logger';
-import { isEVMNetwork } from '../../external/blockchains';
 
 
 const NewAccountScreen = props => {
