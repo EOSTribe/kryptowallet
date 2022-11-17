@@ -18,6 +18,7 @@
 		8031FA52244C8FF900FD5352 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8031FA42244C8FF900FD5352 /* MaterialIcons.ttf */; };
 		8A1A63DA27086937007041CE /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A1A63D927086937007041CE /* libswiftWebKit.tbd */; };
 		8FCB7514ABA84A74BF1A2885 /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1B74292CD8E84B0CB2304718 /* Nunito-Regular.ttf */; };
+		A1058B4529240DBB006B6DC3 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = A1058B4429240DBA006B6DC3 /* assets */; };
 		B9DDC87E549A404D877BCEE5 /* Nunito-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 323A0A03396542979D37D60E /* Nunito-Light.ttf */; };
 		EDF78EBFDF384CD1B4F2B179 /* Nunito-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF30B7DFF2D8481E8B89CE11 /* Nunito-SemiBold.ttf */; };
 		FFFDF1BC613ED5F86D2F03F2 /* libPods-KryptoWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 24523D1FB883F2C0C62BACB1 /* libPods-KryptoWallet.a */; };
@@ -52,6 +53,7 @@
 		78C468869679999DB607BF46 /* libPods-KryptoWallet-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-KryptoWallet-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8031FA42244C8FF900FD5352 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 		8A1A63D927086937007041CE /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
+		A1058B4429240DBA006B6DC3 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		A24F55CBD08FF19017348E5A /* Pods-KryptoWallet-KryptoWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KryptoWallet-KryptoWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-KryptoWallet-KryptoWalletTests/Pods-KryptoWallet-KryptoWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A346F77679C39D12400DE39C /* Pods-KryptoWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KryptoWallet.release.xcconfig"; path = "Target Support Files/Pods-KryptoWallet/Pods-KryptoWallet.release.xcconfig"; sourceTree = "<group>"; };
 		A40BEC90FF39DBDBB8D23013 /* libPods-KryptoWallet-KryptoWalletTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-KryptoWallet-KryptoWalletTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +161,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A1058B4429240DBA006B6DC3 /* assets */,
 				8031FA32244C8FF900FD5352 /* Fonts */,
 				13B07FAE1A68108700A75B9A /* KryptoWallet */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -288,6 +291,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1058B4529240DBB006B6DC3 /* assets in Resources */,
 				32140C7028994DBA00167423 /* main.jsbundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				8031FA52244C8FF900FD5352 /* MaterialIcons.ttf in Resources */,
@@ -544,7 +548,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = B2N8A6FCMF;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -558,7 +562,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
-				MARKETING_VERSION = 104;
+				MARKETING_VERSION = 110;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -580,7 +584,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = B2N8A6FCMF;
 				INFOPLIST_FILE = KryptoWallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -589,7 +593,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
-				MARKETING_VERSION = 104;
+				MARKETING_VERSION = 110;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

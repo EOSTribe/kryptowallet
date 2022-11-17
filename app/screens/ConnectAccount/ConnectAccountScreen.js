@@ -44,6 +44,7 @@ const ConnectAccountScreen = props => {
     { name: 'Polygon', symbol: 'MATIC' },
     { name: 'Aurora', symbol: 'AURORA' },
     { name: 'Telosevm', symbol: 'TELOSEVM' },
+    { name: 'OKC', symbol: 'OKC' },
   ];
 
   supportedChains.map(function (item) {
@@ -329,7 +330,7 @@ const ConnectAccountScreen = props => {
         </KeyboardAwareScrollView>
       </SafeAreaView>
     );
-  } else if (chain && (chain.name === 'Ethereum' || chain.name === 'Binance' || chain.name === 'Polygon' || chain.name === 'Aurora' || chain.name === 'Telosevm')) {
+  } else if (chain && (chain.name === 'Ethereum' || chain.name === 'Binance' || chain.name === 'Polygon' || chain.name === 'Aurora' || chain.name === 'Telosevm' || chain.name === 'OKC')) {
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView

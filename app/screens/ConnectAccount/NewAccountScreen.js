@@ -13,6 +13,7 @@ import algosdk from 'algosdk';
 import { createKeyPair } from '../../stellar/stellar';
 import Wallet from 'ethereumjs-wallet';
 import { log } from '../../logger/logger';
+import { isEVMNetwork } from '../../external/blockchains';
 
 
 const NewAccountScreen = props => {
@@ -24,12 +25,7 @@ const NewAccountScreen = props => {
   } = props;
 
   const multichainAccount = accounts.filter((value, index, array) => {
-    return (value != null && 
-      ( value.chainName == "ETH" || 
-        value.chainName == "BNB" || 
-        value.chainName == "MATIC" || 
-        value.chainName == "AURORA" || 
-        value.chainName == "TELOSEVM"));
+    return (value != null && isEVMNetwork(value.chainName));
   });
 
   const telosAccount = accounts.filter((value, index, array) => {
@@ -192,10 +188,11 @@ const NewAccountScreen = props => {
           />
           <View style={styles.spacer} />
           <Text style={styles.message}>Multichain account supported networks:</Text>
+          <Text style={styles.chainName}><Image source={require('../../../assets/chains/okc.png')} style={styles.chainIcon} /> OKC</Text>
           <Text style={styles.chainName}><Image source={require('../../../assets/chains/eth.png')} style={styles.chainIcon} /> Ethereum</Text>
           <Text style={styles.chainName}><Image source={require('../../../assets/chains/polygon.png')} style={styles.chainIcon} /> Polygon</Text>
-          <Text style={styles.chainName}><Image source={require('../../../assets/chains/aurora.png')} style={styles.chainIcon} /> Aurora</Text>
           <Text style={styles.chainName}><Image source={require('../../../assets/chains/bsc.png')} style={styles.chainIcon} /> Binance</Text>
+          <Text style={styles.chainName}><Image source={require('../../../assets/chains/aurora.png')} style={styles.chainIcon} /> Aurora</Text>
           <Text style={styles.chainName}><Image source={require('../../../assets/chains/telosevm.png')} style={styles.chainIcon} /> Telos EVM</Text>
       </View>
   </SafeAreaView>
