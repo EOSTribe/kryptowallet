@@ -14,7 +14,7 @@ var supportedChains = [
     symbol: 'TLOS',
     icon: require('../../assets/chains/telos.png'),
     endpoint: 'https://telos.greymass.com',
-    endpoint1: 'https://api.telos.eostribe.io',
+    endpoint1: 'https://telos.eostribe.io',
     endpoint2: 'https://telos.eosusa.io',
     endpoint3: 'https://telos.cryptolions.io',
     newdexAccount: 'newdex',
